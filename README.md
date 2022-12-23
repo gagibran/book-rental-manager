@@ -1,2 +1,2 @@
 # simple-book-management
-A simple book management system project using .NET, Angular, Docker, PostgreSQL and the CQRS architecture.
+A template project using .NET, Angular, Docker, PostgreSQL and the CQRS architecture.
