@@ -25,4 +25,17 @@ public sealed class ResultTests
         // Assert:
         Assert.Equal(errorMessage, result.ErrorMessage);
     }
+
+    [Fact]
+    public void Success_WithValidValue_ReturnsValue()
+    {
+        // Arrange:
+        var validValue = 1;
+
+        // Act:
+        var result = Result<int>.Success(validValue);
+
+        // Assert:
+        Assert.Equal(validValue, result.Value);
+    }
 }

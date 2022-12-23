@@ -6,6 +6,7 @@ public class Result<TValue>
 {
     public bool IsSuccess { get; }
     public string? ErrorMessage { get; }
+    public TValue? Value { get; set; }
 
     private Result(bool isSuccess, TValue? value, string? errorMessage = null)
     {
@@ -15,6 +16,7 @@ public class Result<TValue>
         }
         IsSuccess = isSuccess;
         ErrorMessage = errorMessage;
+        Value = value;
     }
 
     public static Result<TValue> Success(TValue value)
