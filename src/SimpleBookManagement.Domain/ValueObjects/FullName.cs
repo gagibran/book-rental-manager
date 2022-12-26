@@ -4,9 +4,9 @@ public sealed class FullName : ValueObject
 {
     public string CompleteName { get; }
 
-    private FullName(string firstName, string lastName)
+    private FullName(string completeName)
     {
-        CompleteName = firstName + "" + lastName;
+        CompleteName = completeName;
     }
 
     public static Result<FullName> Create(string firstName, string lastName)
@@ -19,7 +19,7 @@ public sealed class FullName : ValueObject
         {
             return Result<FullName>.Fail("Last name cannot be empty.");
         }
-        return Result<FullName>.Success(new FullName(firstName, lastName));
+        return Result<FullName>.Success(new FullName(firstName + "" + lastName));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

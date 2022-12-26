@@ -2,53 +2,25 @@ namespace SimpleBookManagement.UnitTests.Domain.ValueObjects;
 
 public sealed class PhoneNumberTests
 {
-    private readonly string _expectedAreaCodeErrorMessage;
-    private readonly string _expectedActualPhoneNumberErrorMessage;
+    private const string ExpectedAreaCodeErrorMessage = "Invalid area code.";
+    private const string ExpectedActualPhoneNumberErrorMessage = "Invalid phone number.";
 
-    public PhoneNumberTests()
-    {
-        _expectedAreaCodeErrorMessage = "Invalid area code.";
-        _expectedActualPhoneNumberErrorMessage = "Invalid phone number.";
-    }
-
-    [Fact]
-    public void Create_WithAreaCodeSmallerThanTheAllowedMinimum_ReturnErrorMessage()
-    {
-        // Act:
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(39, 3345679);
-
-        // Assert:
-        Assert.Equal(_expectedAreaCodeErrorMessage, phoneNumberResult.ErrorMessage);
-    }
-
-    [Fact]
-    public void Create_WithAreaCodeSmallerThanTheAllowedMaximum_ReturnErrorMessage()
+    [Theory]
+    [InlineData(39, 3345679, ExpectedAreaCodeErrorMessage)]
+    [InlineData(3432, 3345679, ExpectedAreaCodeErrorMessage)]
+    [InlineData(564, 33456, ExpectedActualPhoneNumberErrorMessage)]
+    [InlineData(564, 34533456, ExpectedActualPhoneNumberErrorMessage)]
+    public void Create_WithInvalidPhoneNumber_ReturnErrorMessage(
+        int areaCode,
+        int actualPhoneNumber,
+        string expectedErrorMessage
+    )
     {
         // Act:
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(3432, 3345679);
+        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(areaCode, actualPhoneNumber);
 
         // Assert:
-        Assert.Equal(_expectedAreaCodeErrorMessage, phoneNumberResult.ErrorMessage);
-    }
-
-    [Fact]
-    public void Create_WithActualPhoneNumberSmallerThanTheAllowedMinimum_ReturnErrorMessage()
-    {
-        // Act:
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(564, 33456);
-
-        // Assert:
-        Assert.Equal(_expectedActualPhoneNumberErrorMessage, phoneNumberResult.ErrorMessage);
-    }
-
-    [Fact]
-    public void Create_WithActualPhoneNumberSmallerThanTheAllowedMaximum_ReturnErrorMessage()
-    {
-        // Act:
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(564, 34533456);
-
-        // Assert:
-        Assert.Equal(_expectedActualPhoneNumberErrorMessage, phoneNumberResult.ErrorMessage);
+        Assert.Equal(expectedErrorMessage, phoneNumberResult.ErrorMessage);
     }
 
     [Fact]

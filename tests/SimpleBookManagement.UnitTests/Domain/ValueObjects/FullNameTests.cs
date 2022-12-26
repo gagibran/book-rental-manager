@@ -2,27 +2,17 @@ namespace SimpleBookManagement.UnitTests.Domain.ValueObjects;
 
 public sealed class FullNameTests
 {
-    [Fact]
-    public void Create_WithEmptyFirstName_ReturnsErrorMessage()
+    [Theory]
+    [InlineData(" ", "Doe", "First name cannot be empty.")]
+    [InlineData("John", "", "Last name cannot be empty.")]
+    public void Create_WithInvalidFullName_ReturnsErrorMessage(
+        string firstName,
+        string lastName,
+        string expectedErrorMessage
+    )
     {
-        // Arrange:
-        var expectedErrorMessage = "First name cannot be empty.";
-
         // Act:
-        Result<FullName> fullNameResult = FullName.Create(" ", "Doe");
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, fullNameResult.ErrorMessage);
-    }
-
-    [Fact]
-    public void Create_WithEmptyLastName_ReturnsErrorMessage()
-    {
-        // Arrange:
-        var expectedErrorMessage = "Last name cannot be empty.";
-
-        // Act:
-        Result<FullName> fullNameResult = FullName.Create("John", "");
+        Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, fullNameResult.ErrorMessage);
