@@ -6,30 +6,37 @@ public abstract class ValueObject
 
     public override bool Equals(object? obj)
     {
-        if (obj is null || obj.GetType() != GetType())
+        if (obj is null || GetType() != obj.GetType())
         {
             return false;
         }
         var otherValueObject = (ValueObject)obj;
-        IEnumerable<object> otherEqualityComponents = otherValueObject.GetEqualityComponents();
-        IEnumerable<object> thisEqualityComponents = GetEqualityComponents();
-        return thisEqualityComponents.SequenceEqual(otherEqualityComponents);
+        return GetEqualityComponents()
+            .SequenceEqual(otherValueObject.GetEqualityComponents());
     }
 
     public override int GetHashCode()
     {
         return GetEqualityComponents()
-            .Select(x => x != null ? x.GetHashCode() : 0)
+            .Select(thisValueObject => thisValueObject != null ? thisValueObject.GetHashCode() : 0)
             .Aggregate((x, y) => x ^ y);
     }
 
     public static bool operator ==(ValueObject left, ValueObject right)
     {
+        if (left is null && right is null)
+        {
+            return true;
+        }
+        if (left is null || right is null)
+        {
+            return false;
+        }
         return left.Equals(right);
     }
 
     public static bool operator !=(ValueObject left, ValueObject right)
     {
-        return !left.Equals(right);
+        return !(left == right);
     }
 }

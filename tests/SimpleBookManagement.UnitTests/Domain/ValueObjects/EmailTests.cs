@@ -24,4 +24,36 @@ public sealed class EmailTests
         // Assert:
         Assert.True(emailResult.IsSuccess);
     }
+
+    [Theory]
+    [InlineData("", "  ")]
+    [InlineData("2es-d@2dsd.asd", "2es-d@2dsd.asd")]
+    public void Create_CompareTwoIdenticalEmails_ReturnsTrue(string left, string right)
+    {
+        // Arrange:
+        Result<Email> emailResultLeft = Email.Create(left);
+        Result<Email> emailResultRight = Email.Create(right);
+
+        // Act:
+        bool isEqual = emailResultLeft.Value == emailResultRight.Value;
+
+        // Assert:
+        Assert.True(isEqual);
+    }
+
+    [Theory]
+    [InlineData("", "2es-d@2dsd.asd")]
+    [InlineData("2es-d@2dsd.asd", "2es-d@2dsd.rty")]
+    public void Create_CompareTwoDifferentEmails_ReturnsFalse(string left, string right)
+    {
+        // Arrange:
+        Result<Email> emailResultLeft = Email.Create(left);
+        Result<Email> emailResultRight = Email.Create(right);
+
+        // Act:
+        bool isNotEqual = emailResultLeft.Value != emailResultRight.Value;
+
+        // Assert:
+        Assert.True(isNotEqual);
+    }
 }
