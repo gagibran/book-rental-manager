@@ -1,6 +1,6 @@
 namespace SimpleBookManagement.Domain.Enums;
 
-public enum CustomerStatus
+public enum CustomerType
 {
     Explorer,
     Adventurer,

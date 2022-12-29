@@ -19,7 +19,7 @@ public sealed class FullName : ValueObject
         {
             return Result<FullName>.Fail("Last name cannot be empty.");
         }
-        return Result<FullName>.Success(new FullName(firstName + "" + lastName));
+        return Result<FullName>.Success(new FullName(firstName + " " + lastName));
     }
 
     public override IEnumerable<object> GetEqualityComponents()
