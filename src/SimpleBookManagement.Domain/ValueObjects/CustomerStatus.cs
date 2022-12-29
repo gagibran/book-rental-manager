@@ -29,20 +29,20 @@ public sealed class CustomerStatus : ValueObject
             && CustomerType is CustomerType.Adventurer)
         {
             return Result<CustomerStatus>
-                .Fail(AvailabilityErrorMessage + $"{CustomerType}: ({MaximumAmountOfBooksAdventurer}).");
+                .Fail(AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksAdventurer}).");
         }
         if (customerBookCount >= MaximumAmountOfBooksMaster
             && CustomerType is CustomerType.Master)
         {
             return Result<CustomerStatus>
-                .Fail(AvailabilityErrorMessage + $"{CustomerType}: ({MaximumAmountOfBooksMaster}).");
+                .Fail(AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksMaster}).");
         }
         return Result<CustomerStatus>.Success(new CustomerStatus(CustomerType));
     }
 
-    public CustomerStatus PromoteCustomerStatus(int customerPoints)
+    public static CustomerStatus PromoteCustomerStatus(int customerPoints)
     {
-        if (customerPoints == MaxCustomerPoints)
+        if (customerPoints >= MaxCustomerPoints)
         {
             return new CustomerStatus(CustomerType.Master);
         }
