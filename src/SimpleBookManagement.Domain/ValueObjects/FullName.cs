@@ -13,13 +13,13 @@ public sealed class FullName : ValueObject
     {
         if (string.IsNullOrWhiteSpace(firstName))
         {
-            return Result<FullName>.Fail("First name cannot be empty.");
+            return Result.Fail<FullName>("First name cannot be empty.");
         }
         if (string.IsNullOrWhiteSpace(lastName))
         {
-            return Result<FullName>.Fail("Last name cannot be empty.");
+            return Result.Fail<FullName>("Last name cannot be empty.");
         }
-        return Result<FullName>.Success(new FullName(firstName + " " + lastName));
+        return Result.Success<FullName>(new FullName(firstName + " " + lastName));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

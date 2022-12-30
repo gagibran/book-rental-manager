@@ -22,7 +22,7 @@ public sealed class BookTests
         var expectedErrorMessage = $"Eric Evans has already been added as an author to this book.";
 
         // Act:
-        Result<FullName> addAuthorResult = _book.AddBookAuthor(author);
+        Result addAuthorResult = _book.AddBookAuthor(author);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, addAuthorResult.ErrorMessage);

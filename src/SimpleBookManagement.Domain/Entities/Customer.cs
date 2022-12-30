@@ -26,43 +26,43 @@ public sealed class Customer : BaseEntity
         CustomerStatus = new CustomerStatus(CustomerType.Explorer);
     }
 
-    public Result<Book> RentBook(Book book)
+    public Result RentBook(Book book)
     {
-        Result<Book> availabilityResult = CheckBookAvailability(book);
-        if (availabilityResult.ErrorMessage is not null)
+        Result availabilityResult = CheckBookAvailability(book);
+        if (!string.IsNullOrWhiteSpace(availabilityResult.ErrorMessage))
         {
-            return Result<Book>.Fail(availabilityResult.ErrorMessage);
+            return Result.Fail(availabilityResult.ErrorMessage);
         }
         book.IsAvailable = false;
         _books.Add(book);
         CustomerPoints++;
         CustomerStatus = CustomerStatus.PromoteCustomerStatus(CustomerPoints);
-        return Result<Book>.Success(book);
+        return Result.Success();
     }
 
-    public Result<Book> CheckBookAvailability(Book book)
+    public Result CheckBookAvailability(Book book)
     {
         if (!book.IsAvailable)
         {
-            return Result<Book>.Fail($"The book '{book.BookTitle}' is not available.");
+            return Result.Fail($"The book '{book.BookTitle}' is not available.");
         }
         Result<CustomerStatus> customerStatusResult = CustomerStatus
             .CheckCustomerTypeBookAvailability(Books.Count());
-        if (customerStatusResult.ErrorMessage is not null)
+        if (!string.IsNullOrWhiteSpace(customerStatusResult.ErrorMessage))
         {
-            return Result<Book>.Fail(customerStatusResult.ErrorMessage);
+            return Result.Fail(customerStatusResult.ErrorMessage);
         }
-        return Result<Book>.Success(book);
+        return Result.Success();
     }
 
-    public Result<Book> ReturnBook(Book book)
+    public Result ReturnBook(Book book)
     {
         if (!Books.Contains(book))
         {
-            return Result<Book>.Fail($"You don't have the book '{book.BookTitle}'.");
+            return Result.Fail($"You don't have the book '{book.BookTitle}'.");
         }
         _books.Remove(book);
         book.IsAvailable = true;
-        return Result<Book>.Success(book);
+        return Result.Success();
     }
 }

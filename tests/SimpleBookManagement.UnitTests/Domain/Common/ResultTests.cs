@@ -9,18 +9,18 @@ public sealed class ResultTests
     {
         // Assert:
         Assert.Throws<UnsuccessfulResultMustHaveErrorMessageException>(
-            () => Result<int>.Fail(" ")
+            () => Result.Fail(" ")
         );
     }
 
     [Fact]
-    public void Fail_WithErrorMessage_ThrowsException()
+    public void Fail_WithErrorMessage_ReturnsErrorMessage()
     {
         // Arrange:
         var errorMessage = "This is an error message.";
 
         // Act:
-        var result = Result<int>.Fail(errorMessage);
+        Result result = Result.Fail(errorMessage);
 
         // Assert:
         Assert.Equal(errorMessage, result.ErrorMessage);
@@ -33,9 +33,29 @@ public sealed class ResultTests
         var validValue = 1;
 
         // Act:
-        var result = Result<int>.Success(validValue);
+        Result<int> result = Result.Success<int>(validValue);
 
         // Assert:
         Assert.Equal(validValue, result.Value);
+    }
+
+    [Fact]
+    public void Success_WithoutAnyValue_ReturnsSuccessful()
+    {
+        // Act:
+        Result result = Result.Success();
+
+        // Assert:
+        Assert.True(result.IsSuccess);
+    }
+
+    [Fact]
+    public void Fail_WithErrorMessage_ReturnsUnsuccessful()
+    {
+        // Act:
+        Result result = Result.Fail("This is an error message.");
+
+        // Assert:
+        Assert.False(result.IsSuccess);
     }
 }

@@ -19,7 +19,7 @@ public sealed class VolumeTests
     public void Create_WithInvalidVolumeNumber_ReturnsSuccess()
     {
         // Act:
-        var volumeResult = Volume.Create(2);
+        Result<Volume> volumeResult = Volume.Create(2);
 
         // Assert:
         Assert.True(volumeResult.IsSuccess);

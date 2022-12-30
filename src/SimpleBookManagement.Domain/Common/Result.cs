@@ -2,13 +2,12 @@ using SimpleBookManagement.Domain.Exceptions;
 
 namespace SimpleBookManagement.Domain.Common;
 
-public class Result<TValue>
+public class Result
 {
     public bool IsSuccess { get; }
-    public string? ErrorMessage { get; }
-    public TValue? Value { get; set; }
+    public string ErrorMessage { get; }
 
-    private Result(bool isSuccess, TValue? value, string? errorMessage = null)
+    protected Result(bool isSuccess, string errorMessage)
     {
         if (!isSuccess && string.IsNullOrWhiteSpace(errorMessage))
         {
@@ -16,16 +15,36 @@ public class Result<TValue>
         }
         IsSuccess = isSuccess;
         ErrorMessage = errorMessage;
-        Value = value;
     }
 
-    public static Result<TValue> Success(TValue value)
+    public static Result Success()
     {
-        return new Result<TValue>(true, value);
+        return new Result(true, string.Empty);
     }
 
-    public static Result<TValue> Fail(string errorMessage)
+    public static Result Fail(string errorMessage)
+    {
+        return new Result(false, errorMessage);
+    }
+
+    public static Result<TValue> Success<TValue>(TValue value)
+    {
+        return new Result<TValue>(true, value, string.Empty);
+    }
+
+    public static Result<TValue> Fail<TValue>(string errorMessage)
     {
         return new Result<TValue>(false, default(TValue), errorMessage);
+    }
+}
+
+public sealed class Result<TValue> : Result
+{
+    public TValue? Value { get; }
+
+    internal Result(bool isSuccess, TValue? value, string errorMessage)
+        : base(isSuccess, errorMessage)
+    {
+        Value = value;
     }
 }

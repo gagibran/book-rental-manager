@@ -18,7 +18,7 @@ public sealed class CustomerStatusTests
         var customerStatus = new CustomerStatus(customerType);
 
         // Act:
-        Result<CustomerStatus> customerTypeAvailability = customerStatus
+        Result customerTypeAvailability = customerStatus
             .CheckCustomerTypeBookAvailability(customerBookCount);
 
         // Assert:

@@ -18,14 +18,16 @@ public sealed class PhoneNumber : ValueObject
     {
         if (areaCode < MinAreaCode || areaCode > MaxAreaCode)
         {
-            return Result<PhoneNumber>.Fail("Invalid area code.");
+            return Result.Fail<PhoneNumber>("Invalid area code.");
         }
         if (actualPhoneNumber < MinActualPhoneNumber
             || actualPhoneNumber > MaxActualPhoneNumber)
         {
-            return Result<PhoneNumber>.Fail("Invalid phone number.");
+            return Result.Fail<PhoneNumber>("Invalid phone number.");
         }
-        return Result<PhoneNumber>.Success(new PhoneNumber(areaCode, actualPhoneNumber));
+        return Result.Success<PhoneNumber>(
+            new PhoneNumber(areaCode, actualPhoneNumber)
+        );
     }
 
     public override IEnumerable<object> GetEqualityComponents()

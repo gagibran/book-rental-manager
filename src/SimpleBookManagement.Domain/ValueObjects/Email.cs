@@ -19,9 +19,9 @@ public sealed class Email : ValueObject
         );
         if (!isEmailValid)
         {
-            return Result<Email>.Fail("Email address is not in a valid format.");
+            return Result.Fail<Email>("Email address is not in a valid format.");
         }
-        return Result<Email>.Success(new Email(emailAddress));
+        return Result.Success<Email>(new Email(emailAddress));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

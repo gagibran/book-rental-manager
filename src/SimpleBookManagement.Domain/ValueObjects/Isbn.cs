@@ -14,10 +14,10 @@ public sealed class Isbn : ValueObject
         if (isbnNumber < 1_000_000_000
             || isbnNumber > 9_999_999_999)
         {
-            return Result<Isbn>.Fail("Invalid ISBN format.");
+            return Result.Fail<Isbn>("Invalid ISBN format.");
         }
         var isbn = new Isbn(isbnNumber);
-        return Result<Isbn>.Success(isbn);
+        return Result.Success<Isbn>(isbn);
     }
 
     public override IEnumerable<object> GetEqualityComponents()

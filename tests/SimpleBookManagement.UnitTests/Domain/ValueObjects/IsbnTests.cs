@@ -24,7 +24,7 @@ public sealed class IsbnTests
     public void Create_WithValidIsbn_ReturnsSuccess(long isbnNumber)
     {
         // Act:
-        var isbnResult = Isbn.Create(isbnNumber);
+        Result<Isbn> isbnResult = Isbn.Create(isbnNumber);
 
         // Assert:
         Assert.True(isbnResult.IsSuccess);

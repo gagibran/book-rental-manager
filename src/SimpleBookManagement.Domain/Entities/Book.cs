@@ -24,14 +24,14 @@ public sealed class Book : BaseEntity
         IsAvailable = true;
     }
 
-    public Result<FullName> AddBookAuthor(FullName bookAuthor)
+    public Result AddBookAuthor(FullName bookAuthor)
     {
         if (_bookAuthors.Contains(bookAuthor))
         {
-            return Result<FullName>
+            return Result
                 .Fail($"{bookAuthor.CompleteName} has already been added as an author to this book.");
         }
         _bookAuthors.Add(bookAuthor);
-        return Result<FullName>.Success(bookAuthor);
+        return Result.Success();
     }
 }

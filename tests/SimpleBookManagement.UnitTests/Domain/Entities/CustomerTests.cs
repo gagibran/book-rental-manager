@@ -63,7 +63,7 @@ public sealed class CustomerTests
         _customer.RentBook(book2);
 
         // Act:
-        Result<Book> availabilityResult = _customer.RentBook(book3);
+        Result availabilityResult = _customer.RentBook(book3);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, availabilityResult.ErrorMessage);
@@ -77,7 +77,7 @@ public sealed class CustomerTests
         _customer.RentBook(_book);
 
         // Act:
-        Result<Book> availabilityResult = _customer.RentBook(_book);
+        Result availabilityResult = _customer.RentBook(_book);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, availabilityResult.ErrorMessage);
@@ -90,7 +90,7 @@ public sealed class CustomerTests
         var expectedCustomerPoints = 1;
 
         // Act:
-        Result<Book> availabilityResult = _customer.RentBook(_book);
+        Result availabilityResult = _customer.RentBook(_book);
 
         // Then
         Assert.Equal(expectedCustomerPoints, _customer.CustomerPoints);
@@ -116,7 +116,7 @@ public sealed class CustomerTests
         var expectedErrorMessage = "You don't have the book 'Domain-Driven Design: Tackling Complexity in the Heart of Software'.";
 
         // Act:
-        Result<Book> availabilityResult = _customer.ReturnBook(_book);
+        Result availabilityResult = _customer.ReturnBook(_book);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, availabilityResult.ErrorMessage);

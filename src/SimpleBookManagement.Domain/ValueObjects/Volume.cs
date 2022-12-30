@@ -13,10 +13,10 @@ public sealed class Volume : ValueObject
     {
         if (volumeNumber < 1)
         {
-            return Result<Volume>.Fail("The volume number can't be smaller than 1.");
+            return Result.Fail<Volume>("The volume number can't be smaller than 1.");
         }
         var volume = new Volume(volumeNumber);
-        return Result<Volume>.Success(volume);
+        return Result.Success<Volume>(volume);
     }
 
     public override IEnumerable<object> GetEqualityComponents()
