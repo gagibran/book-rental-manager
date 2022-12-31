@@ -9,7 +9,7 @@ public sealed class PhoneNumber : ValueObject
 
     public string CompletePhoneNumber { get; } = default!;
 
-    public PhoneNumber()
+    private PhoneNumber()
     {
     }
 

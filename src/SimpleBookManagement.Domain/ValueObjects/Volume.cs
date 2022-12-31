@@ -4,7 +4,7 @@ public sealed class Volume : ValueObject
 {
     public int VolumeNumber { get; } = default!;
 
-    public Volume()
+    private Volume()
     {
     }
 

@@ -6,7 +6,7 @@ public sealed class Email : ValueObject
 {
     public string EmailAddress { get; } = default!;
 
-    public Email()
+    private Email()
     {
     }
 

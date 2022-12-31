@@ -4,7 +4,7 @@ public sealed class FullName : ValueObject
 {
     public string CompleteName { get; } = default!;
 
-    public FullName()
+    private FullName()
     {
     }
 

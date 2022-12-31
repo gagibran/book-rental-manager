@@ -12,7 +12,7 @@ public sealed class CustomerStatus : ValueObject
 
     public CustomerType CustomerType { get; } = default!;
 
-    public CustomerStatus()
+    private CustomerStatus()
     {
     }
 

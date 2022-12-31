@@ -4,7 +4,7 @@ public sealed class Isbn : ValueObject
 {
     public long IsbnNumber { get; } = default!;
 
-    public Isbn()
+    private Isbn()
     {
     }
 

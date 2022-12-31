@@ -12,7 +12,7 @@ public sealed class Book : BaseEntity
     public bool IsAvailable { get; internal set; } = default!;
     public Customer Customer { get; } = default!;
 
-    public Book()
+    private Book()
     {
     }
 

@@ -13,7 +13,7 @@ public sealed class Customer : BaseEntity
     public CustomerStatus CustomerStatus { get; private set; } = default!;
     public int CustomerPoints { get; private set; } = default!;
 
-    public Customer()
+    private Customer()
     {
     }
 
