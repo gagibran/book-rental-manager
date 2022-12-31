@@ -4,8 +4,9 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
 {
     public void Configure(EntityTypeBuilder<Customer> customerBuilder)
     {
-        customerBuilder.ToTable("Customer");
-        customerBuilder.HasKey(customer => customer.Id);
+        customerBuilder
+            .ToTable("Customer")
+            .HasKey(customer => customer.Id);
         customerBuilder
             .OwnsOne(customer => customer.FullName)
             .Property(fullName => fullName.CompleteName)

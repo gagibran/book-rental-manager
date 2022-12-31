@@ -4,17 +4,23 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
 {
     public void Configure(EntityTypeBuilder<Book> bookBuilder)
     {
-        bookBuilder.ToTable("Book");
-        bookBuilder.HasKey(book => book.Id);
+        bookBuilder
+            .ToTable("Book")
+            .HasKey(book => book.Id);
         bookBuilder
             .Property(book => book.BookTitle)
             .HasColumnName("BookTitle")
             .IsRequired();
         bookBuilder
-            .OwnsMany(book => book.BookAuthors)
-            .Property(authors => authors.CompleteName)
-            .HasColumnName("AuthorName")
-            .IsRequired();
+            .HasMany(book => book.BookAuthors)
+            .WithMany(bookAuthors => bookAuthors.Books)
+            .UsingEntity(bookBuilder =>
+            {
+                bookBuilder
+                    .ToTable("Book_BookAuthor")
+                    .Property("BooksId")
+                    .HasColumnName("BookId");
+            });
         bookBuilder
             .OwnsOne(book => book.Volume)
             .Property(volume => volume.VolumeNumber)

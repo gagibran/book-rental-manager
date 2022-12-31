@@ -3,12 +3,13 @@ namespace SimpleBookManagement.UnitTests.Domain.Entities;
 public sealed class BookTests
 {
     private readonly Book _book;
+    private readonly BookAuthor _bookAuthor;
 
     public BookTests()
     {
+        _bookAuthor = new BookAuthor(FullName.Create("Eric", "Evans").Value);
         _book = new Book(
             "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-            new List<FullName> { FullName.Create("Eric", "Evans").Value },
             Volume.Create(1).Value,
             Isbn.Create(9780321125217).Value
         );
@@ -18,11 +19,12 @@ public sealed class BookTests
     public void AddBookAuthor_WithExistingAuthor_ReturnsErrorMessage()
     {
         // Arrange:
-        FullName author = FullName.Create("Eric", "Evans").Value;
+        var bookAuthor = new BookAuthor(FullName.Create("Eric", "Evans").Value);
         var expectedErrorMessage = $"Eric Evans has already been added as an author to this book.";
+        _book.AddBookAuthor(bookAuthor);
 
         // Act:
-        Result addAuthorResult = _book.AddBookAuthor(author);
+        Result addAuthorResult = _book.AddBookAuthor(bookAuthor);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, addAuthorResult.ErrorMessage);
@@ -32,7 +34,7 @@ public sealed class BookTests
     public void AddBookAuthor_WithNonexistingAuthor_ReturnsAddedAuthor()
     {
         // Arrange:
-        FullName author = FullName.Create("John", "Doe").Value;
+        var author = new BookAuthor(FullName.Create("John", "Doe").Value);
 
         // Act:
         _book.AddBookAuthor(author);

@@ -1,17 +1,28 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace SimpleBookManagement.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedCustomerAndBook : Migration
+    public partial class AddedInitialEntities : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "BookAuthor",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FullName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookAuthor", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Customer",
                 columns: table => new
@@ -51,19 +62,23 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Book_BookAuthors",
+                name: "Book_BookAuthor",
                 columns: table => new
                 {
-                    BookId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AuthorName = table.Column<string>(type: "text", nullable: false)
+                    BookAuthorId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Book_BookAuthors", x => new { x.BookId, x.Id });
+                    table.PrimaryKey("PK_Book_BookAuthor", x => new { x.BookAuthorId, x.BookId });
                     table.ForeignKey(
-                        name: "FK_Book_BookAuthors_Book_BookId",
+                        name: "FK_Book_BookAuthor_BookAuthor_BookAuthorId",
+                        column: x => x.BookAuthorId,
+                        principalTable: "BookAuthor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Book_BookAuthor_Book_BookId",
                         column: x => x.BookId,
                         principalTable: "Book",
                         principalColumn: "Id",
@@ -74,13 +89,21 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
                 name: "IX_Book_CustomerId",
                 table: "Book",
                 column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Book_BookAuthor_BookId",
+                table: "Book_BookAuthor",
+                column: "BookId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Book_BookAuthors");
+                name: "Book_BookAuthor");
+
+            migrationBuilder.DropTable(
+                name: "BookAuthor");
 
             migrationBuilder.DropTable(
                 name: "Book");

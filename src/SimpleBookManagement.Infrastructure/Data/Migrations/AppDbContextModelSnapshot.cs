@@ -22,6 +22,23 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BookBookAuthor", b =>
+                {
+                    b.Property<Guid>("BookAuthorsId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BookAuthorId");
+
+                    b.Property<Guid>("BooksId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BookId");
+
+                    b.HasKey("BookAuthorsId", "BooksId");
+
+                    b.HasIndex("BooksId");
+
+                    b.ToTable("Book_BookAuthor", (string)null);
+                });
+
             modelBuilder.Entity("SimpleBookManagement.Domain.Entities.Book", b =>
                 {
                     b.Property<Guid>("Id")
@@ -47,6 +64,17 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
                     b.ToTable("Book", (string)null);
                 });
 
+            modelBuilder.Entity("SimpleBookManagement.Domain.Entities.BookAuthor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BookAuthor", (string)null);
+                });
+
             modelBuilder.Entity("SimpleBookManagement.Domain.Entities.Customer", b =>
                 {
                     b.Property<Guid>("Id")
@@ -62,6 +90,21 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
                     b.ToTable("Customer", (string)null);
                 });
 
+            modelBuilder.Entity("BookBookAuthor", b =>
+                {
+                    b.HasOne("SimpleBookManagement.Domain.Entities.BookAuthor", null)
+                        .WithMany()
+                        .HasForeignKey("BookAuthorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SimpleBookManagement.Domain.Entities.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BooksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("SimpleBookManagement.Domain.Entities.Book", b =>
                 {
                     b.HasOne("SimpleBookManagement.Domain.Entities.Customer", "Customer")
@@ -69,30 +112,6 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.OwnsMany("SimpleBookManagement.Domain.ValueObjects.FullName", "BookAuthors", b1 =>
-                        {
-                            b1.Property<Guid>("BookId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
-
-                            b1.Property<string>("CompleteName")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("AuthorName");
-
-                            b1.HasKey("BookId", "Id");
-
-                            b1.ToTable("Book_BookAuthors");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BookId");
-                        });
 
                     b.OwnsOne("SimpleBookManagement.Domain.ValueObjects.Isbn", "Isbn", b1 =>
                         {
@@ -128,14 +147,36 @@ namespace SimpleBookManagement.Infrastructure.Data.Migrations
                                 .HasForeignKey("BookId");
                         });
 
-                    b.Navigation("BookAuthors");
-
                     b.Navigation("Customer");
 
                     b.Navigation("Isbn")
                         .IsRequired();
 
                     b.Navigation("Volume")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SimpleBookManagement.Domain.Entities.BookAuthor", b =>
+                {
+                    b.OwnsOne("SimpleBookManagement.Domain.ValueObjects.FullName", "FullName", b1 =>
+                        {
+                            b1.Property<Guid>("BookAuthorId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CompleteName")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("FullName");
+
+                            b1.HasKey("BookAuthorId");
+
+                            b1.ToTable("BookAuthor");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookAuthorId");
+                        });
+
+                    b.Navigation("FullName")
                         .IsRequired();
                 });
 

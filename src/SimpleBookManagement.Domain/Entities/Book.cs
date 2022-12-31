@@ -2,10 +2,10 @@ namespace SimpleBookManagement.Domain.Entities;
 
 public sealed class Book : BaseEntity
 {
-    private readonly List<FullName> _bookAuthors = default!;
+    private readonly List<BookAuthor> _bookAuthors = default!;
 
     public string BookTitle { get; } = default!;
-    public IReadOnlyList<FullName> BookAuthors => _bookAuthors;
+    public IReadOnlyList<BookAuthor> BookAuthors => _bookAuthors;
     public Volume Volume { get; } = default!;
     public Isbn Isbn { get; } = default!;
 
@@ -18,26 +18,26 @@ public sealed class Book : BaseEntity
 
     public Book(
         string bookTitle,
-        List<FullName> bookAuthors,
         Volume volume,
         Isbn isbn
     )
     {
-        _bookAuthors = bookAuthors;
+        _bookAuthors = new List<BookAuthor>();
         BookTitle = bookTitle;
         Volume = volume;
         Isbn = isbn;
         IsAvailable = true;
     }
 
-    public Result AddBookAuthor(FullName bookAuthor)
+    public Result AddBookAuthor(BookAuthor bookAuthor)
     {
         if (_bookAuthors.Contains(bookAuthor))
         {
             return Result
-                .Fail($"{bookAuthor.CompleteName} has already been added as an author to this book.");
+                .Fail($"{bookAuthor.FullName.CompleteName} has already been added as an author to this book.");
         }
         _bookAuthors.Add(bookAuthor);
+        bookAuthor.AddBook(this);
         return Result.Success();
     }
 }
