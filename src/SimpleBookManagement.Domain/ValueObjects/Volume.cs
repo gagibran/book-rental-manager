@@ -2,7 +2,11 @@ namespace SimpleBookManagement.Domain.ValueObjects;
 
 public sealed class Volume : ValueObject
 {
-    public int VolumeNumber { get; }
+    public int VolumeNumber { get; } = default!;
+
+    public Volume()
+    {
+    }
 
     private Volume(int volumeNumber)
     {

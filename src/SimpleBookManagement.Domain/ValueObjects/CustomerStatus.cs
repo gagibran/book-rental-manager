@@ -10,7 +10,11 @@ public sealed class CustomerStatus : ValueObject
     private const int MaximumAmountOfBooksMaster = 7;
     private const string AvailabilityErrorMessage = "You've reached the maximum amount of books per customer category";
 
-    public CustomerType CustomerType { get; }
+    public CustomerType CustomerType { get; } = default!;
+
+    public CustomerStatus()
+    {
+    }
 
     public CustomerStatus(CustomerType customerType)
     {

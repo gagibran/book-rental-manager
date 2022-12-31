@@ -7,7 +7,11 @@ public sealed class PhoneNumber : ValueObject
     private const int MinActualPhoneNumber = 2_000_000;
     private const int MaxActualPhoneNumber = 9_999_999;
 
-    public string CompletePhoneNumber { get; }
+    public string CompletePhoneNumber { get; } = default!;
+
+    public PhoneNumber()
+    {
+    }
 
     private PhoneNumber(int areaCode, int actualPhoneNumber)
     {

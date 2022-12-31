@@ -1,17 +1,21 @@
-var builder = WebApplication.CreateBuilder(args);
+using SimpleBookManagement.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container:
 builder.Services.AddControllers();
+builder.Services.AddDbContext<AppDbContext>(dbContextOptionsBuilder =>
+{
+    dbContextOptionsBuilder.UseNpgsql(
+        builder.Configuration.GetConnectionString("DevelopmentConnectionString")
+    );
+});
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-
+// Configure the HTTP request pipeline:
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

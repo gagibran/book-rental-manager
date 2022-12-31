@@ -4,7 +4,11 @@ namespace SimpleBookManagement.Domain.ValueObjects;
 
 public sealed class Email : ValueObject
 {
-    public string EmailAddress { get; }
+    public string EmailAddress { get; } = default!;
+
+    public Email()
+    {
+    }
 
     private Email(string emailAddress)
     {

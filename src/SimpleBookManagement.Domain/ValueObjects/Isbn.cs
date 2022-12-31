@@ -2,7 +2,11 @@ namespace SimpleBookManagement.Domain.ValueObjects;
 
 public sealed class Isbn : ValueObject
 {
-    public long IsbnNumber { get; }
+    public long IsbnNumber { get; } = default!;
+
+    public Isbn()
+    {
+    }
 
     private Isbn(long isbnNumber)
     {

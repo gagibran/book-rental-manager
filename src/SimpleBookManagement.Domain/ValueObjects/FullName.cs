@@ -2,7 +2,11 @@ namespace SimpleBookManagement.Domain.ValueObjects;
 
 public sealed class FullName : ValueObject
 {
-    public string CompleteName { get; }
+    public string CompleteName { get; } = default!;
+
+    public FullName()
+    {
+    }
 
     private FullName(string completeName)
     {

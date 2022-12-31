@@ -4,14 +4,18 @@ namespace SimpleBookManagement.Domain.Entities;
 
 public sealed class Customer : BaseEntity
 {
-    private readonly List<Book> _books;
+    private readonly List<Book> _books = default!;
 
-    public FullName FullName { get; }
-    public Email Email { get; }
-    public PhoneNumber PhoneNumber { get; }
+    public FullName FullName { get; } = default!;
+    public Email Email { get; } = default!;
+    public PhoneNumber PhoneNumber { get; } = default!;
     public IReadOnlyList<Book> Books => _books;
-    public CustomerStatus CustomerStatus { get; private set; }
-    public int CustomerPoints { get; private set; }
+    public CustomerStatus CustomerStatus { get; private set; } = default!;
+    public int CustomerPoints { get; private set; } = default!;
+
+    public Customer()
+    {
+    }
 
     public Customer(
         FullName fullName,

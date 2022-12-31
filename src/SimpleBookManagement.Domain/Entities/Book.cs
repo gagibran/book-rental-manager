@@ -2,13 +2,19 @@ namespace SimpleBookManagement.Domain.Entities;
 
 public sealed class Book : BaseEntity
 {
-    private readonly List<FullName> _bookAuthors;
+    private readonly List<FullName> _bookAuthors = default!;
 
-    public string BookTitle { get; }
+    public string BookTitle { get; } = default!;
     public IReadOnlyList<FullName> BookAuthors => _bookAuthors;
-    public Volume Volume { get; }
-    public Isbn Isbn { get; }
-    public bool IsAvailable { get; internal set; }
+    public Volume Volume { get; } = default!;
+    public Isbn Isbn { get; } = default!;
+
+    public bool IsAvailable { get; internal set; } = default!;
+    public Customer Customer { get; } = default!;
+
+    public Book()
+    {
+    }
 
     public Book(
         string bookTitle,
