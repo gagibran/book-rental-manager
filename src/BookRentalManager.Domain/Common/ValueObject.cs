@@ -1,4 +1,4 @@
-namespace BookRentalManager.Domain.ValueObjects;
+namespace BookRentalManager.Domain.Common;
 
 public abstract class ValueObject
 {

@@ -1,4 +1,6 @@
+using BookRentalManager.Application.Extensions;
 using BookRentalManager.Infrastructure.Data;
+using BookRentalManager.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(dbContextOptionsBuilder =>
         builder.Configuration.GetConnectionString("DevelopmentConnectionString")
     );
 });
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices();
 
 WebApplication app = builder.Build();
 

@@ -1,4 +1,4 @@
-namespace BookRentalManager.Domain.Entities;
+namespace BookRentalManager.Domain.Common;
 
 public class BaseEntity
 {

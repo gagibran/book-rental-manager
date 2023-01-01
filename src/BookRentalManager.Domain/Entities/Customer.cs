@@ -28,6 +28,7 @@ public sealed class Customer : BaseEntity
         Email = email;
         PhoneNumber = phoneNumber;
         CustomerStatus = new CustomerStatus(CustomerType.Explorer);
+        CustomerPoints = 0;
     }
 
     public Result RentBook(Book book)
