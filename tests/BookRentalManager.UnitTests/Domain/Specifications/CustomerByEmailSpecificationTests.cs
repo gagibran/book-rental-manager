@@ -8,11 +8,7 @@ public sealed class CustomerByEmailSpecificationTests
 
     public CustomerByEmailSpecificationTests()
     {
-        _customer = new(
-            FullName.Create("John", "Doe").Value,
-            Email.Create("john.doe@email.com").Value,
-            PhoneNumber.Create(200, 2_000_000).Value
-        );
+        _customer = TestFixtures.CreateDummyCustomer();
     }
 
     [Fact]

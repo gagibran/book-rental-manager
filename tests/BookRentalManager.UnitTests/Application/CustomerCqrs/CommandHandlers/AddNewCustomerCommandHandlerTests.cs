@@ -1,8 +1,7 @@
 using BookRentalManager.Application.CustomerCqrs.Commands;
-using BookRentalManager.Application.CustomerCqrs.Handlers;
-using BookRentalManager.Domain.Interfaces;
+using BookRentalManager.Application.CustomerCqrs.CommandHandlers;
 
-namespace BookRentalManager.UnitTests.Application.CustomerCqrs;
+namespace BookRentalManager.UnitTests.Application.CustomerCqrs.CommandHandlers;
 
 public sealed class AddNewCustomerCommandHandlerTests
 {

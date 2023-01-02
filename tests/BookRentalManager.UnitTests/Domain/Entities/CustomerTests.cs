@@ -12,11 +12,7 @@ public sealed class CustomerTests
             Volume.Create(1).Value,
             Isbn.Create(9780321125217).Value
         );
-        _customer = new(
-            FullName.Create("John", "Doe").Value,
-            Email.Create("johndoe@email.com").Value,
-            PhoneNumber.Create(200, 2_000_000).Value
-        );
+        _customer = TestFixtures.CreateDummyCustomer();
     }
 
     [Fact]
@@ -69,7 +65,7 @@ public sealed class CustomerTests
     }
 
     [Fact]
-    public void RentBook_WithCorrectAvailibitly_ReturnsIncreasedCustomerPoints()
+    public void RentBook_WithCorrectAvailability_ReturnsIncreasedCustomerPoints()
     {
         // Arrange:
         var expectedCustomerPoints = 1;

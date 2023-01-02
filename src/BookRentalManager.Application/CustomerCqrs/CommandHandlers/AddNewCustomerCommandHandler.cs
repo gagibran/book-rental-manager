@@ -1,8 +1,6 @@
-using BookRentalManager.Domain.Entities;
-using BookRentalManager.Domain.Interfaces;
 using BookRentalManager.Domain.Specifications;
 
-namespace BookRentalManager.Application.CustomerCqrs.Handlers;
+namespace BookRentalManager.Application.CustomerCqrs.CommandHandlers;
 
 internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCustomerCommand>
 {

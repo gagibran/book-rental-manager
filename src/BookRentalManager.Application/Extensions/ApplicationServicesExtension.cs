@@ -1,5 +1,5 @@
 using BookRentalManager.Application.Common;
-using BookRentalManager.Application.CustomerCqrs.Handlers;
+using BookRentalManager.Application.CustomerCqrs.CommandHandlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BookRentalManager.Application.Extensions;
