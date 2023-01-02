@@ -8,7 +8,6 @@ public sealed class Book : Entity
     public IReadOnlyList<BookAuthor> BookAuthors => _bookAuthors;
     public Volume Volume { get; } = default!;
     public Isbn Isbn { get; } = default!;
-
     public bool IsAvailable { get; internal set; } = default!;
     public Customer Customer { get; } = default!;
 

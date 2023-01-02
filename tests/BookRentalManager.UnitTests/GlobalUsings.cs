@@ -6,3 +6,6 @@ global using BookRentalManager.Domain.Enums;
 global using Moq;
 global using BookRentalManager.UnitTests.Common;
 global using BookRentalManager.Domain.Interfaces;
+global using BookRentalManager.Application.Dtos;
+global using BookRentalManager.Application.Interfaces;
+global using BookRentalManager.Application.Mappers;

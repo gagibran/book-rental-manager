@@ -3,16 +3,21 @@ using BookRentalManager.Application.CustomerCqrs.Queries;
 namespace BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
 internal sealed class GetAllCustomersQueryHandler
-    : IQueryHandler<GetAllCustomersQuery, IReadOnlyList<Customer>>
+    : IQueryHandler<GetAllCustomersQuery, IReadOnlyList<GetCustomerDto>>
 {
     private readonly IRepository<Customer> _customerRepository;
+    private readonly IMapper<Customer, GetCustomerDto> _getCustomerDtoMapper;
 
-    public GetAllCustomersQueryHandler(IRepository<Customer> customerRepository)
+    public GetAllCustomersQueryHandler(
+        IRepository<Customer> customerRepository,
+        IMapper<Customer, GetCustomerDto> getCustomerDtoMapper
+    )
     {
         _customerRepository = customerRepository;
+        _getCustomerDtoMapper = getCustomerDtoMapper;
     }
 
-    public async Task<Result<IReadOnlyList<Customer>>> HandleAsync(
+    public async Task<Result<IReadOnlyList<GetCustomerDto>>> HandleAsync(
         GetAllCustomersQuery query,
         CancellationToken cancellationToken
     )
@@ -22,8 +27,10 @@ internal sealed class GetAllCustomersQueryHandler
         if (!customers.Any())
         {
             return Result
-                .Fail<IReadOnlyList<Customer>>("There are currently no customers registered.");
+                .Fail<IReadOnlyList<GetCustomerDto>>("There are currently no customers registered.");
         }
-        return Result.Success<IReadOnlyList<Customer>>(customers);
+        IEnumerable<GetCustomerDto> customersDto = from customer in customers
+                                                   select _getCustomerDtoMapper.Map(customer);
+        return Result.Success<IReadOnlyList<GetCustomerDto>>(customersDto.ToList());
     }
 }

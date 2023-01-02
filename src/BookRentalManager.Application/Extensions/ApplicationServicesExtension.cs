@@ -11,14 +11,23 @@ public static class ApplicationServicesExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddSingleton<IDispatcher, Dispatcher>();
-        services.AddApplicationCustomerServices();
+        services.AddApplicationQueriesAndCommandsServices();
+        services.AddApplicationMappersService();
         return services;
     }
 
-    private static IServiceCollection AddApplicationCustomerServices(this IServiceCollection services)
+    private static IServiceCollection AddApplicationQueriesAndCommandsServices(this IServiceCollection services)
     {
         services.AddTransient<ICommandHandler<AddNewCustomerCommand>, AddNewCustomerCommandHandler>();
-        services.AddTransient<IQueryHandler<GetAllCustomersQuery, IReadOnlyList<Customer>>, GetAllCustomersQueryHandler>();
+        services.AddTransient<IQueryHandler<GetAllCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetAllCustomersQueryHandler>();
+        return services;
+    }
+
+    private static IServiceCollection AddApplicationMappersService(this IServiceCollection services)
+    {
+        services.AddTransient<IMapper<Customer, GetCustomerDto>, GetCustomerDtoMapper>();
+        services.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>>, GetCustomerBooksDtoMapper>();
+        services.AddTransient<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>>, GetBookAuthorsForCustomerBooksDtoMapper>();
         return services;
     }
 }

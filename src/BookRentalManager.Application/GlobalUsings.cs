@@ -4,3 +4,5 @@ global using BookRentalManager.Domain.ValueObjects;
 global using BookRentalManager.Application.CustomerCqrs.Commands;
 global using BookRentalManager.Domain.Entities;
 global using BookRentalManager.Domain.Interfaces;
+global using BookRentalManager.Application.Dtos;
+global using BookRentalManager.Application.Mappers;
