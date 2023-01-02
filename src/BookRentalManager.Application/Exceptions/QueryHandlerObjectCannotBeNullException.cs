@@ -1,8 +1,8 @@
 namespace BookRentalManager.Application.Exceptions;
 
-public sealed class QueryHandlerObjectCannotBeNull : Exception
+public sealed class QueryHandlerObjectCannotBeNullException : Exception
 {
-    public QueryHandlerObjectCannotBeNull()
+    public QueryHandlerObjectCannotBeNullException()
         : base("The query handler object cannot be null.")
     {
     }

@@ -7,12 +7,12 @@ public sealed class CustomerTests
 
     public CustomerTests()
     {
-        _book = new Book(
+        _book = new(
             "Domain-Driven Design: Tackling Complexity in the Heart of Software",
             Volume.Create(1).Value,
             Isbn.Create(9780321125217).Value
         );
-        _customer = new Customer(
+        _customer = new(
             FullName.Create("John", "Doe").Value,
             Email.Create("johndoe@email.com").Value,
             PhoneNumber.Create(200, 2_000_000).Value

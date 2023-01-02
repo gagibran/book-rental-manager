@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Book : BaseEntity
+public sealed class Book : Entity
 {
     private readonly List<BookAuthor> _bookAuthors = default!;
 
@@ -22,7 +22,7 @@ public sealed class Book : BaseEntity
         Isbn isbn
     )
     {
-        _bookAuthors = new List<BookAuthor>();
+        _bookAuthors = new();
         BookTitle = bookTitle;
         Volume = volume;
         Isbn = isbn;

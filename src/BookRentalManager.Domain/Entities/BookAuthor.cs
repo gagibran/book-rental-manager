@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class BookAuthor : BaseEntity
+public sealed class BookAuthor : Entity
 {
     private readonly List<Book> _books = default!;
 
@@ -14,7 +14,7 @@ public sealed class BookAuthor : BaseEntity
     public BookAuthor(FullName fullName)
     {
         FullName = fullName;
-        _books = new List<Book>();
+        _books = new();
     }
 
     internal void AddBook(Book book)

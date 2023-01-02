@@ -2,7 +2,7 @@ using BookRentalManager.Domain.Enums;
 
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Customer : BaseEntity
+public sealed class Customer : Entity
 {
     private readonly List<Book> _books = default!;
 
@@ -23,7 +23,7 @@ public sealed class Customer : BaseEntity
         PhoneNumber phoneNumber
     )
     {
-        _books = new List<Book>();
+        _books = new();
         FullName = fullName;
         Email = email;
         PhoneNumber = phoneNumber;

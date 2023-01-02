@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BookRentalManager.Domain\BookRentalManager.Domain.csproj" />
+    <ProjectReference Include="..\..\src\BookRentalManager.Application\BookRentalManager.Application.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,7 @@ using BookRentalManager.Infrastructure.Data;
 
 namespace BookRentalManager.Infrastructure.Common;
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 {
     private readonly AppDbContext _appDbContext;
     private readonly DbSet<TEntity> _dbSet;
@@ -45,5 +45,16 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEnti
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         await _appDbContext.SaveChangesAsync();
+    }
+
+    public async Task<TEntity?> GetBySpecificationAsync(
+        Specification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _dbSet.FirstOrDefaultAsync(
+            specification.ToExpression(),
+            cancellationToken
+        );
     }
 }

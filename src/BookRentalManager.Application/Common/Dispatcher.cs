@@ -20,7 +20,7 @@ public sealed class Dispatcher : IDispatcher
             .GetService(commandHandlerGenericType);
         if (commandHandler is null)
         {
-            throw new CommandHandlerObjectCannotBeNull();
+            throw new CommandHandlerObjectCannotBeNullException();
         }
         return await commandHandler.HandleAsync(command, cancellationToken);
     }
@@ -42,7 +42,7 @@ public sealed class Dispatcher : IDispatcher
             .GetService(queryHandlerGenericType);
         if (queryHandler is null)
         {
-            throw new QueryHandlerObjectCannotBeNull();
+            throw new QueryHandlerObjectCannotBeNullException();
         }
         return await queryHandler.HandleAsync(query, cancellationToken);
     }

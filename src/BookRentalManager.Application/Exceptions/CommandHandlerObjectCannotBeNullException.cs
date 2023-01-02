@@ -1,8 +1,8 @@
 namespace BookRentalManager.Application.Exceptions;
 
-public sealed class CommandHandlerObjectCannotBeNull : Exception
+public sealed class CommandHandlerObjectCannotBeNullException : Exception
 {
-    public CommandHandlerObjectCannotBeNull()
+    public CommandHandlerObjectCannotBeNullException()
         : base("The command handler object cannot be null.")
     {
     }

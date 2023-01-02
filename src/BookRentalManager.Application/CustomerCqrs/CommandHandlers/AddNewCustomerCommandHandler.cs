@@ -1,5 +1,6 @@
 using BookRentalManager.Domain.Entities;
 using BookRentalManager.Domain.Interfaces;
+using BookRentalManager.Domain.Specifications;
 
 namespace BookRentalManager.Application.CustomerCqrs.Handlers;
 
@@ -17,18 +18,20 @@ internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCusto
         CancellationToken cancellationToken
     )
     {
+        Customer? customerWithEmail = await _customerRepository.GetBySpecificationAsync(
+            new CustomerByEmailSpecification(command.Email),
+            cancellationToken
+        );
+        if (customerWithEmail is not null)
+        {
+            return Result
+                .Fail($"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
+        }
         var newCustomer = new Customer(
             command.FullName,
             command.Email,
             command.PhoneNumber
         );
-        IReadOnlyList<Customer> allCustomers = await _customerRepository.GetAllAsync(cancellationToken);
-        Customer? customerWithEmail = allCustomers.FirstOrDefault(customer => customer.Email == newCustomer.Email);
-        if (customerWithEmail is not null)
-        {
-            return Result.Fail($"A customer with the email {customerWithEmail.Email} already exists.");
-        }
-
         await _customerRepository.CreateAsync(newCustomer, cancellationToken);
         return Result.Success();
     }
