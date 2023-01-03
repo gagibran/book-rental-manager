@@ -12,7 +12,7 @@ public static class ApplicationServicesExtension
     {
         services.AddSingleton<IDispatcher, Dispatcher>();
         services.AddApplicationQueriesAndCommandsServices();
-        services.AddApplicationMappersService();
+        services.AddApplicationMappersServices();
         return services;
     }
 
@@ -23,7 +23,7 @@ public static class ApplicationServicesExtension
         return services;
     }
 
-    private static IServiceCollection AddApplicationMappersService(this IServiceCollection services)
+    private static IServiceCollection AddApplicationMappersServices(this IServiceCollection services)
     {
         services.AddTransient<IMapper<Customer, GetCustomerDto>, GetCustomerDtoMapper>();
         services.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>>, GetCustomerBooksDtoMapper>();

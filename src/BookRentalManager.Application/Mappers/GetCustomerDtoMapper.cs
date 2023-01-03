@@ -2,13 +2,13 @@ namespace BookRentalManager.Application.Mappers;
 
 internal sealed class GetCustomerDtoMapper : IMapper<Customer, GetCustomerDto>
 {
-    private readonly IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>> _getCustomerBooksDto;
+    private readonly IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>> _getCustomerBooksDtoMapper;
 
     public GetCustomerDtoMapper(
         IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>> getCustomerBooksDto
     )
     {
-        _getCustomerBooksDto = getCustomerBooksDto;
+        _getCustomerBooksDtoMapper = getCustomerBooksDto;
     }
 
     public GetCustomerDto Map(Customer customer)
@@ -18,7 +18,7 @@ internal sealed class GetCustomerDtoMapper : IMapper<Customer, GetCustomerDto>
             customer.FullName,
             customer.Email,
             customer.PhoneNumber,
-            _getCustomerBooksDto.Map(customer.Books),
+            _getCustomerBooksDtoMapper.Map(customer.Books),
             customer.CustomerStatus,
             customer.CustomerPoints
         );
