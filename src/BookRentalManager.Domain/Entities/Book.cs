@@ -6,7 +6,7 @@ public sealed class Book : Entity
 
     public string BookTitle { get; } = default!;
     public IReadOnlyList<BookAuthor> BookAuthors => _bookAuthors;
-    public Volume Volume { get; } = default!;
+    public Edition Edition { get; } = default!;
     public Isbn Isbn { get; } = default!;
     public bool IsAvailable { get; internal set; } = default!;
     public Customer Customer { get; } = default!;
@@ -17,13 +17,13 @@ public sealed class Book : Entity
 
     public Book(
         string bookTitle,
-        Volume volume,
+        Edition edition,
         Isbn isbn
     )
     {
         _bookAuthors = new();
         BookTitle = bookTitle;
-        Volume = volume;
+        Edition = edition;
         Isbn = isbn;
         IsAvailable = true;
     }

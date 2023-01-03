@@ -28,14 +28,19 @@ public sealed class FullNameTests
         Assert.True(fullNameResult.IsSuccess);
     }
 
-    [Fact]
-    public void Create_WithValidFullName_ReturnsCorrectlyFormattedFullName()
+    [Theory]
+    [InlineData("John", "Doe")]
+    [InlineData("John ", "  Doe ")]
+    public void Create_WithValidFullName_ReturnsCorrectlyFormattedFullName(
+        string firstName,
+        string lastName
+    )
     {
         // Arrange:
         var expectedFullName = "John Doe";
 
         // Act:
-        Result<FullName> fullNameResult = FullName.Create("John", "Doe");
+        Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
 
         // Assert:
         Assert.Equal(expectedFullName, fullNameResult.Value.CompleteName);

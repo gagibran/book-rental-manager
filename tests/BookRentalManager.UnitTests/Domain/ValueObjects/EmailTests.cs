@@ -27,7 +27,7 @@ public sealed class EmailTests
 
     [Theory]
     [InlineData("", "  ")]
-    [InlineData("2es-d@2dsd.asd", "2es-d@2dsd.asd")]
+    [InlineData("2es-d@2dsd.asd ", " 2es-d@2dsd.asd     ")]
     public void Create_CompareTwoIdenticalEmails_ReturnsTrue(string left, string right)
     {
         // Arrange:

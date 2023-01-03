@@ -22,14 +22,15 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
                     .HasColumnName("BookId");
             });
         bookBuilder
-            .OwnsOne(book => book.Volume)
-            .Property(volume => volume.VolumeNumber)
-            .HasColumnName("Volume")
+            .OwnsOne(book => book.Edition)
+            .Property(edition => edition.EditionNumber)
+            .HasColumnName("Edition")
             .IsRequired();
         bookBuilder
             .OwnsOne(book => book.Isbn)
-            .Property(isbn => isbn.IsbnNumber)
+            .Property(isbn => isbn.IsbnValue)
             .HasColumnName("Isbn")
+            .HasMaxLength(13)
             .IsRequired();
         bookBuilder
             .Property(book => book.IsAvailable)

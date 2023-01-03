@@ -10,8 +10,8 @@ public sealed class BookTests
         _bookAuthor = new(FullName.Create("Eric", "Evans").Value);
         _book = new(
             "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-            Volume.Create(1).Value,
-            Isbn.Create(9780321125217).Value
+            Edition.Create(1).Value,
+            Isbn.Create("978-0321125217").Value
         );
     }
 

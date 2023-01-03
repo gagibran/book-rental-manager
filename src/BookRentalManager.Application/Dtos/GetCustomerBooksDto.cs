@@ -4,19 +4,19 @@ public sealed class GetCustomerBooksDto
 {
     public string BookTitle { get; }
     public IReadOnlyList<GetBookAuthorsForCustomerBooksDto> BookAuthors { get; }
-    public Volume Volume { get; }
+    public Edition Edition { get; }
     public Isbn Isbn { get; }
 
     public GetCustomerBooksDto(
         string bookTitle,
         IReadOnlyList<GetBookAuthorsForCustomerBooksDto> bookAuthors,
-        Volume volume,
+        Edition edition,
         Isbn isbn
     )
     {
         BookTitle = bookTitle;
         BookAuthors = bookAuthors;
-        Volume = volume;
+        Edition = edition;
         Isbn = isbn;
     }
 }

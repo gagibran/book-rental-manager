@@ -10,7 +10,7 @@ public sealed class GetCustomerBooksDtoMapperTests
         var expectedGetCustomerBooksDto = new GetCustomerBooksDto(
             book.BookTitle,
             new List<GetBookAuthorsForCustomerBooksDto>(),
-            book.Volume,
+            book.Edition,
             book.Isbn
         );
         var getBookAuthorsForCustomerBooksDtoMapperStub =
@@ -28,7 +28,7 @@ public sealed class GetCustomerBooksDtoMapperTests
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetCustomerBooksDto.BookTitle, getCustomerBooksDtos.FirstOrDefault().BookTitle);
         Assert.Equal(expectedGetCustomerBooksDto.BookAuthors, getCustomerBooksDtos.FirstOrDefault().BookAuthors);
-        Assert.Equal(expectedGetCustomerBooksDto.Volume, getCustomerBooksDtos.FirstOrDefault().Volume);
+        Assert.Equal(expectedGetCustomerBooksDto.Edition, getCustomerBooksDtos.FirstOrDefault().Edition);
         Assert.Equal(expectedGetCustomerBooksDto.Isbn, getCustomerBooksDtos.FirstOrDefault().Isbn);
     }
 }

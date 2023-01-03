@@ -25,7 +25,7 @@ public sealed class Email : ValueObject
         {
             return Result.Fail<Email>("Email address is not in a valid format.");
         }
-        return Result.Success<Email>(new Email(emailAddress));
+        return Result.Success<Email>(new Email(emailAddress.Trim()));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

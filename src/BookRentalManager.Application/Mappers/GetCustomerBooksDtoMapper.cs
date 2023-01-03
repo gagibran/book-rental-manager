@@ -18,7 +18,7 @@ internal sealed class GetCustomerBooksDtoMapper : IMapper<IReadOnlyList<Book>, I
                                                                    book.BookTitle,
                                                                    _getBookAuthorsForCustomerBooksDtoMapper
                                                                        .Map(book.BookAuthors),
-                                                                   book.Volume,
+                                                                   book.Edition,
                                                                    book.Isbn
                                                                );
         return getCustomerBooksDto.ToList();

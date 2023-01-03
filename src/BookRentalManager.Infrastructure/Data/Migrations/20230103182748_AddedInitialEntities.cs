@@ -30,7 +30,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     FullName = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character(12)", fixedLength: true, maxLength: 12, nullable: false),
                     CustomerStatus = table.Column<int>(type: "integer", nullable: false),
                     CustomerPoints = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -45,8 +45,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     BookTitle = table.Column<string>(type: "text", nullable: false),
-                    Volume = table.Column<int>(type: "integer", nullable: false),
-                    Isbn = table.Column<long>(type: "bigint", nullable: false),
+                    Edition = table.Column<int>(type: "integer", nullable: false),
+                    Isbn = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },

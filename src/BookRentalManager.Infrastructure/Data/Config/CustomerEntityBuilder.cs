@@ -21,6 +21,8 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .OwnsOne(customer => customer.PhoneNumber)
             .Property(phoneNumber => phoneNumber.CompletePhoneNumber)
             .HasColumnName("PhoneNumber")
+            .HasMaxLength(12)
+            .IsFixedLength()
             .IsRequired();
         customerBuilder
             .HasMany(customer => customer.Books)

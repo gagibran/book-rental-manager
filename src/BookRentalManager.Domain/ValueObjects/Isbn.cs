@@ -1,31 +1,33 @@
+using System.Text.RegularExpressions;
+
 namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class Isbn : ValueObject
 {
-    public long IsbnNumber { get; } = default!;
+    public string IsbnValue { get; } = default!;
 
     private Isbn()
     {
     }
 
-    private Isbn(long isbnNumber)
+    private Isbn(string isbnValue)
     {
-        IsbnNumber = isbnNumber;
+        IsbnValue = isbnValue;
     }
 
-    public static Result<Isbn> Create(long isbnNumber)
+    public static Result<Isbn> Create(string isbnValue)
     {
-        if (isbnNumber < 1_000_000_000
-            || isbnNumber > 9_999_999_999)
+        string formattedIsbn = Regex.Replace(isbnValue, @"\s+|-+", "").ToUpper();
+        if (formattedIsbn.Length != 10 && formattedIsbn.Length != 13)
         {
             return Result.Fail<Isbn>("Invalid ISBN format.");
         }
-        var isbn = new Isbn(isbnNumber);
+        var isbn = new Isbn(formattedIsbn);
         return Result.Success<Isbn>(isbn);
     }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
-        yield return IsbnNumber;
+        yield return IsbnValue;
     }
 }

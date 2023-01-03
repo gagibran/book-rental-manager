@@ -14,9 +14,9 @@ public static class TestFixtures
     public static Book CreateDummyBook()
     {
         return new Book(
-            "Test Book",
-            Volume.Create(1).Value,
-            Isbn.Create(1_000_000_000).Value
+            "The Pragmatic Programmer: From Journeyman to Master",
+            Edition.Create(1).Value,
+            Isbn.Create("0-201-61622-X").Value
         );
     }
 
