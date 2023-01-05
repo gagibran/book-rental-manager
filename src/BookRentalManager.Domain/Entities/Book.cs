@@ -9,7 +9,7 @@ public sealed class Book : Entity
     public Edition Edition { get; } = default!;
     public Isbn Isbn { get; } = default!;
     public bool IsAvailable { get; internal set; } = default!;
-    public Customer Customer { get; } = default!;
+    public Customer? Customer { get; } = default!;
 
     private Book()
     {

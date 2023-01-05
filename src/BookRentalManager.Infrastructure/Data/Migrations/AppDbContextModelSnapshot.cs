@@ -50,7 +50,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("BookTitle");
 
-                    b.Property<Guid>("CustomerId")
+                    b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
                     b.Property<bool>("IsAvailable")
@@ -109,9 +109,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 {
                     b.HasOne("BookRentalManager.Domain.Entities.Customer", "Customer")
                         .WithMany("Books")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CustomerId");
 
                     b.OwnsOne("BookRentalManager.Domain.ValueObjects.Edition", "Edition", b1 =>
                         {

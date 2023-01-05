@@ -26,8 +26,7 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .IsRequired();
         customerBuilder
             .HasMany(customer => customer.Books)
-            .WithOne(books => books.Customer)
-            .IsRequired();
+            .WithOne(books => books.Customer);
         customerBuilder
             .OwnsOne(customer => customer.CustomerStatus)
             .Property(customerStatus => customerStatus.CustomerType)

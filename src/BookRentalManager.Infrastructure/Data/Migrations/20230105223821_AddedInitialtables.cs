@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedInitialEntities : Migration
+    public partial class AddedInitialtables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,7 +48,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     Edition = table.Column<int>(type: "integer", nullable: false),
                     Isbn = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,8 +57,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         name: "FK_Book_Customer_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
