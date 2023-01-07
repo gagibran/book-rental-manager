@@ -1,5 +1,3 @@
-using BookRentalManager.Domain.Enums;
-
 namespace BookRentalManager.Domain.Entities;
 
 public sealed class Customer : Entity

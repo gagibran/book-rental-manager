@@ -1,3 +1,5 @@
+namespace BookRentalManager.Application.CustomerCqrs.QueryHandlers;
+
 internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>
 {
     private readonly IRepository<Customer> _customerRepository;

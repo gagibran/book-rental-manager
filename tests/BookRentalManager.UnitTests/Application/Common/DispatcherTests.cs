@@ -34,7 +34,7 @@ public sealed class DispatcherTests
         // Act:
         Result dispatcherResult = await _dispatcher.DispatchAsync(
             _commandStub.Object,
-            default(CancellationToken)
+            default
         );
 
         // Assert:
@@ -80,7 +80,7 @@ public sealed class DispatcherTests
         // Act:
         Result dispatcherResult = await _dispatcher.DispatchAsync<Customer>(
             _queryStub.Object,
-            default(CancellationToken)
+            default
         );
 
         // Assert:

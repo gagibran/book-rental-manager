@@ -31,8 +31,8 @@ internal sealed class GetCustomersQueryHandler
                 "There are currently no customers registered."
             );
         }
-        IEnumerable<GetCustomerDto> customersDto = from customer in customers
-                                                   select _getCustomerDtoMapper.Map(customer);
-        return Result.Success<IReadOnlyList<GetCustomerDto>>(customersDto.ToList());
+        IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers
+                                                      select _getCustomerDtoMapper.Map(customer);
+        return Result.Success<IReadOnlyList<GetCustomerDto>>(getCustomersDto.ToList());
     }
 }

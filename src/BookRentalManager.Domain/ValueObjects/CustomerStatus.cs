@@ -1,5 +1,3 @@
-using BookRentalManager.Domain.Enums;
-
 namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class CustomerStatus : ValueObject

@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class Isbn : ValueObject

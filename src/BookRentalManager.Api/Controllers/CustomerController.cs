@@ -1,7 +1,4 @@
 using BookRentalManager.Application.CustomerCqrs.Queries;
-using BookRentalManager.Application.Dtos;
-using BookRentalManager.Application.Interfaces;
-using BookRentalManager.Domain.Common;
 
 namespace BookRentalManager.Api.Controllers;
 

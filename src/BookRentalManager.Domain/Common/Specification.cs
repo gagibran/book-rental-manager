@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-
 namespace BookRentalManager.Domain.Common;
 
 public abstract class Specification<TEntity> where TEntity : Entity

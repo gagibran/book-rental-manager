@@ -1,7 +1,6 @@
 using BookRentalManager.Application.CustomerCqrs.Queries;
 using BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
-
 namespace BookRentalManager.UnitTests.Application.CustomerCqrs.QueryHandlers;
 
 public sealed class GetCustomersQueryHandlerTests
@@ -47,13 +46,13 @@ public sealed class GetCustomersQueryHandlerTests
             .Setup(customerRepository => customerRepository.GetPaginatedAllAsync(
                 _pageIndex,
                 _totalItemsPerPage,
-                default(CancellationToken)
+                default
             ))
             .ReturnsAsync(new List<Customer>());
 
         // Act:
         Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
-            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default(CancellationToken));
+            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
@@ -71,13 +70,13 @@ public sealed class GetCustomersQueryHandlerTests
             .Setup(customerRepository => customerRepository.GetPaginatedAllAsync(
                 _pageIndex,
                 _totalItemsPerPage,
-                default(CancellationToken)
+                default
             ))
             .ReturnsAsync(expectedListOfCustomers);
 
         // Act:
         Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
-            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default(CancellationToken));
+            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default);
 
         // Assert:
         Assert.Equal(_getCustomerDto, handlerResult.Value.FirstOrDefault());

@@ -1,5 +1,3 @@
-using BookRentalManager.Application.Interfaces;
-
 namespace BookRentalManager.Api.Common;
 
 [ApiController]

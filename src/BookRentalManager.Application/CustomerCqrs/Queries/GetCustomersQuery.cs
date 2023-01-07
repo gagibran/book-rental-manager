@@ -1,15 +1,11 @@
+using BookRentalManager.Application.Interfaces;
+
 namespace BookRentalManager.Application.CustomerCqrs.Queries;
 
-public sealed class GetCustomersQuery : IQuery<IReadOnlyList<GetCustomerDto>>
+public sealed class GetCustomersQuery : GetAllEntitiesQuery, IQuery<IReadOnlyList<GetCustomerDto>>
 {
-    private const int MaxTotalItemsPerPage = 50;
-
-    public int PageIndex { get; }
-    public int TotalItemsPerPage { get; }
-
     public GetCustomersQuery(int pageIndex, int totalItemsPerPage)
+        : base(pageIndex, totalItemsPerPage)
     {
-        PageIndex = pageIndex;
-        TotalItemsPerPage = totalItemsPerPage > MaxTotalItemsPerPage ? MaxTotalItemsPerPage : totalItemsPerPage;
     }
 }

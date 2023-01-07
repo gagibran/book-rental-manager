@@ -32,14 +32,14 @@ public sealed class AddNewCustomerCommandHandlerTests
             .Setup(customerRepository =>
                 customerRepository.GetBySpecificationAsync(
                     It.IsAny<Specification<Customer>>(),
-                    default(CancellationToken)
+                    default
                 )
             )
             .ReturnsAsync(customer);
 
         // Act:
         var handleResult = await _addNewCustomerCommandHandler
-            .HandleAsync(_addNewCustomerCommand, default(CancellationToken));
+            .HandleAsync(_addNewCustomerCommand, default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
@@ -53,14 +53,14 @@ public sealed class AddNewCustomerCommandHandlerTests
             .Setup(customerRepository =>
                 customerRepository.CreateAsync(
                     It.IsAny<Customer>(),
-                    default(CancellationToken)
+                    default
                 )
             )
             .Verifiable();
 
         // Act:
         var handleResult = await _addNewCustomerCommandHandler
-            .HandleAsync(_addNewCustomerCommand, default(CancellationToken));
+            .HandleAsync(_addNewCustomerCommand, default);
 
         // Assert:
         Assert.True(handleResult.IsSuccess);
