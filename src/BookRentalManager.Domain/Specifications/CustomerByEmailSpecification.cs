@@ -1,6 +1,3 @@
-using System.Linq.Expressions;
-using BookRentalManager.Domain.Entities;
-
 namespace BookRentalManager.Domain.Specifications;
 
 public sealed class CustomerByEmailSpecification : Specification<Customer>

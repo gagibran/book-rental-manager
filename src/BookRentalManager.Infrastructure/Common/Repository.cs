@@ -1,4 +1,5 @@
 using BookRentalManager.Domain.Common;
+using BookRentalManager.Infrastructure.Extensions;
 
 namespace BookRentalManager.Infrastructure.Common;
 
@@ -13,14 +14,30 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         _dbSet = appDbContext.Set<TEntity>();
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TEntity>> GetPaginatedAllAsync(
+        int pageIndex,
+        int totalItemsPerPage,
+        CancellationToken cancellationToken = default
+    )
     {
-        return await _dbSet.ToListAsync(cancellationToken);
+        return await _dbSet.ToReadOnlyPaginatedListAsync(
+            pageIndex,
+            totalItemsPerPage,
+            cancellationToken
+        );
     }
 
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FindAsync(id, cancellationToken);
+    }
+
+    public async Task<TEntity?> GetBySpecificationAsync(
+        Specification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _dbSet.FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -44,16 +61,5 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         await _appDbContext.SaveChangesAsync();
-    }
-
-    public async Task<TEntity?> GetBySpecificationAsync(
-        Specification<TEntity> specification,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _dbSet.FirstOrDefaultAsync(
-            specification.ToExpression(),
-            cancellationToken
-        );
     }
 }

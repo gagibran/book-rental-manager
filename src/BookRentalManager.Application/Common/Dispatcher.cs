@@ -16,13 +16,12 @@ public sealed class Dispatcher : IDispatcher
         Type commandHandlerType = typeof(ICommandHandler<>);
         Type commandType = command.GetType();
         Type commandHandlerGenericType = commandHandlerType.MakeGenericType(commandType);
-        var commandHandler = (ICommandHandler<ICommand>?)_serviceProvider
-            .GetService(commandHandlerGenericType);
+        dynamic? commandHandler = _serviceProvider.GetService(commandHandlerGenericType);
         if (commandHandler is null)
         {
             throw new CommandHandlerObjectCannotBeNullException();
         }
-        return await commandHandler.HandleAsync(command, cancellationToken);
+        return await commandHandler.HandleAsync((dynamic)command, cancellationToken);
     }
 
     public async Task<Result<TResult>> DispatchAsync<TResult>(

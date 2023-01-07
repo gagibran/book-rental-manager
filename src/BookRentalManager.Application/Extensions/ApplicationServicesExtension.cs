@@ -19,7 +19,8 @@ public static class ApplicationServicesExtension
     private static IServiceCollection AddApplicationQueriesAndCommandsServices(this IServiceCollection services)
     {
         services.AddScoped<ICommandHandler<AddNewCustomerCommand>, AddNewCustomerCommandHandler>();
-        services.AddScoped<IQueryHandler<GetAllCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetAllCustomersQueryHandler>();
+        services.AddScoped<IQueryHandler<GetCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersQueryHandler>();
+        services.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
         return services;
     }
 

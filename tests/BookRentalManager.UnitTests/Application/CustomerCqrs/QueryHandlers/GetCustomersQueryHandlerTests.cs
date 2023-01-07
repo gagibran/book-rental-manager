@@ -4,15 +4,19 @@ using BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
 namespace BookRentalManager.UnitTests.Application.CustomerCqrs.QueryHandlers;
 
-public sealed class GetAllCustomersQueryHandlerTests
+public sealed class GetCustomersQueryHandlerTests
 {
+    private readonly int _pageIndex;
+    private readonly int _totalItemsPerPage;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
-    private readonly GetAllCustomersQueryHandler _getAllCustomersQueryHandler;
+    private readonly GetCustomersQueryHandler _getCustomersQueryHandler;
     private readonly GetCustomerDto _getCustomerDto;
 
-    public GetAllCustomersQueryHandlerTests()
+    public GetCustomersQueryHandlerTests()
     {
+        _pageIndex = 1;
+        _totalItemsPerPage = 50;
         Customer customer = TestFixtures.CreateDummyCustomer();
         _getCustomerDto = new(
             Guid.NewGuid(),
@@ -25,7 +29,7 @@ public sealed class GetAllCustomersQueryHandlerTests
         );
         _getCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
-        _getAllCustomersQueryHandler = new(
+        _getCustomersQueryHandler = new(
             _customerRepositoryStub.Object,
             _getCustomerDtoMapperStub.Object
         );
@@ -40,12 +44,16 @@ public sealed class GetAllCustomersQueryHandlerTests
         // Assert:
         var expectedErrorMessage = "There are currently no customers registered.";
         _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetAllAsync(default(CancellationToken)))
+            .Setup(customerRepository => customerRepository.GetPaginatedAllAsync(
+                _pageIndex,
+                _totalItemsPerPage,
+                default(CancellationToken)
+            ))
             .ReturnsAsync(new List<Customer>());
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getAllCustomersQueryHandler
-            .HandleAsync(new GetAllCustomersQuery(), default(CancellationToken));
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
+            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default(CancellationToken));
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
@@ -60,12 +68,16 @@ public sealed class GetAllCustomersQueryHandlerTests
             TestFixtures.CreateDummyCustomer()
         };
         _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetAllAsync(default(CancellationToken)))
+            .Setup(customerRepository => customerRepository.GetPaginatedAllAsync(
+                _pageIndex,
+                _totalItemsPerPage,
+                default(CancellationToken)
+            ))
             .ReturnsAsync(expectedListOfCustomers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getAllCustomersQueryHandler
-            .HandleAsync(new GetAllCustomersQuery(), default(CancellationToken));
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
+            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default(CancellationToken));
 
         // Assert:
         Assert.Equal(_getCustomerDto, handlerResult.Value.FirstOrDefault());

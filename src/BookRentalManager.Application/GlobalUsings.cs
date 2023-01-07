@@ -6,3 +6,4 @@ global using BookRentalManager.Domain.Entities;
 global using BookRentalManager.Domain.Interfaces;
 global using BookRentalManager.Application.Dtos;
 global using BookRentalManager.Application.Mappers;
+global using BookRentalManager.Application.CustomerCqrs.Queries;
