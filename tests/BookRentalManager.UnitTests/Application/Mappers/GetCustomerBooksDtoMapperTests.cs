@@ -2,27 +2,32 @@ namespace BookRentalManager.UnitTests.Application.Mappers;
 
 public sealed class GetCustomerBooksDtoMapperTests
 {
+    private readonly Mock<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>>> _getBookAuthorsForCustomerBooksDtoMapperStub;
+    private readonly GetCustomerBooksDtoMapper _getCustomerBooksDtoMapper;
+
+    public GetCustomerBooksDtoMapperTests()
+    {
+        _getBookAuthorsForCustomerBooksDtoMapperStub = new();
+        _getBookAuthorsForCustomerBooksDtoMapperStub
+            .Setup(getBookAuthorsForCustomerBooksDtoMapper => getBookAuthorsForCustomerBooksDtoMapper
+                .Map(It.IsAny<IReadOnlyList<BookAuthor>>()));
+        _getCustomerBooksDtoMapper = new(_getBookAuthorsForCustomerBooksDtoMapperStub.Object);
+    }
+
     [Fact]
-    public void Map_WithValidBooks_ReturnsValidGetCustomerBooksDto()
+    public void Map_WithValidBookCollection_ReturnsValidGetCustomerBooksDto()
     {
         // Arrange:
         Book book = TestFixtures.CreateDummyBook();
         var expectedGetCustomerBooksDto = new GetCustomerBooksDto(
             book.BookTitle,
-            new List<GetBookAuthorsForCustomerBooksDto>(),
+            null,
             book.Edition,
             book.Isbn
         );
-        var getBookAuthorsForCustomerBooksDtoMapperStub =
-            new Mock<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>>>();
-        getBookAuthorsForCustomerBooksDtoMapperStub
-            .Setup(getBookAuthorsForCustomerBooksDtoMapper => getBookAuthorsForCustomerBooksDtoMapper
-                .Map(It.IsAny<IReadOnlyList<BookAuthor>>()))
-            .Returns(new List<GetBookAuthorsForCustomerBooksDto>());
-        var getCustomerBooksDtoMapper = new GetCustomerBooksDtoMapper(getBookAuthorsForCustomerBooksDtoMapperStub.Object);
 
         // Act:
-        IReadOnlyList<GetCustomerBooksDto> getCustomerBooksDtos = getCustomerBooksDtoMapper
+        IReadOnlyList<GetCustomerBooksDto> getCustomerBooksDtos = _getCustomerBooksDtoMapper
             .Map(new List<Book> { book });
 
         // Assert (maybe refactor this using FluentAssertions):
@@ -30,5 +35,15 @@ public sealed class GetCustomerBooksDtoMapperTests
         Assert.Equal(expectedGetCustomerBooksDto.BookAuthors, getCustomerBooksDtos.FirstOrDefault().BookAuthors);
         Assert.Equal(expectedGetCustomerBooksDto.Edition, getCustomerBooksDtos.FirstOrDefault().Edition);
         Assert.Equal(expectedGetCustomerBooksDto.Isbn, getCustomerBooksDtos.FirstOrDefault().Isbn);
+    }
+
+    [Fact]
+    public void Map_WithNullBookCollection_ReturnsEmptyGetCustomerBooksDto()
+    {
+        // Act:
+        IReadOnlyList<GetCustomerBooksDto> getCustomerBooksDtos = _getCustomerBooksDtoMapper.Map(null);
+
+        // Assert:
+        Assert.Empty(getCustomerBooksDtos);
     }
 }

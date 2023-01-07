@@ -10,7 +10,7 @@ public static class ApplicationServicesExtension
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddSingleton<IDispatcher, Dispatcher>();
+        services.AddScoped<IDispatcher, Dispatcher>();
         services.AddApplicationQueriesAndCommandsServices();
         services.AddApplicationMappersServices();
         return services;
@@ -18,8 +18,8 @@ public static class ApplicationServicesExtension
 
     private static IServiceCollection AddApplicationQueriesAndCommandsServices(this IServiceCollection services)
     {
-        services.AddTransient<ICommandHandler<AddNewCustomerCommand>, AddNewCustomerCommandHandler>();
-        services.AddTransient<IQueryHandler<GetAllCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetAllCustomersQueryHandler>();
+        services.AddScoped<ICommandHandler<AddNewCustomerCommand>, AddNewCustomerCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetAllCustomersQueryHandler>();
         return services;
     }
 

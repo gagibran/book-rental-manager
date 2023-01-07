@@ -23,19 +23,13 @@ WebApplication app = builder.Build();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+using IServiceScope serviceScope = app.Services.CreateScope();
+IServiceProvider serviceProvider = serviceScope.ServiceProvider;
+AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
+await appDbContext.Database.MigrateAsync();
 if (app.Environment.IsDevelopment())
 {
-    using IServiceScope serviceScope = app.Services.CreateScope();
-    IServiceProvider serviceProvider = serviceScope.ServiceProvider;
-    AppDbContext? appDbContext = serviceProvider.GetService<AppDbContext>();
-    TestDataSeeder? testDataSeeder = serviceProvider.GetService<TestDataSeeder>();
-    if (appDbContext is not null)
-    {
-        await appDbContext.Database.MigrateAsync();
-    }
-    if (testDataSeeder is not null)
-    {
-        await testDataSeeder.SeedTestDataAsync();
-    }
+    TestDataSeeder testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
+    await testDataSeeder.SeedTestDataAsync();
 }
 app.Run();

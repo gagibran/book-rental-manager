@@ -7,6 +7,10 @@ internal sealed class GetBookAuthorsForCustomerBooksDtoMapper
         IReadOnlyList<BookAuthor> bookAuthors
     )
     {
+        if (bookAuthors is null)
+        {
+            return new List<GetBookAuthorsForCustomerBooksDto>();
+        }
         IEnumerable<GetBookAuthorsForCustomerBooksDto> getBookAuthorsForCustomerBooksDto = from bookAuthor in bookAuthors
                                                                                            select new GetBookAuthorsForCustomerBooksDto(
                                                                                                bookAuthor.FullName

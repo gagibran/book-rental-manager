@@ -38,12 +38,11 @@ public sealed class Dispatcher : IDispatcher
         };
         Type queryHandlerGenericType = queryHandlerType
             .MakeGenericType(queryHandlerArgumentTypes);
-        var queryHandler = (IQueryHandler<IQuery<TResult>, TResult>?)_serviceProvider
-            .GetService(queryHandlerGenericType);
+        dynamic? queryHandler = _serviceProvider.GetService(queryHandlerGenericType);
         if (queryHandler is null)
         {
             throw new QueryHandlerObjectCannotBeNullException();
         }
-        return await queryHandler.HandleAsync(query, cancellationToken);
+        return await queryHandler.HandleAsync((dynamic)query, cancellationToken);
     }
 }

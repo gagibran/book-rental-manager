@@ -4,8 +4,8 @@ public sealed class GetCustomerBooksDto
 {
     public string BookTitle { get; }
     public IReadOnlyList<GetBookAuthorsForCustomerBooksDto> BookAuthors { get; }
-    public Edition Edition { get; }
-    public Isbn Isbn { get; }
+    public int Edition { get; }
+    public string Isbn { get; }
 
     public GetCustomerBooksDto(
         string bookTitle,
@@ -16,7 +16,7 @@ public sealed class GetCustomerBooksDto
     {
         BookTitle = bookTitle;
         BookAuthors = bookAuthors;
-        Edition = edition;
-        Isbn = isbn;
+        Edition = edition.EditionNumber;
+        Isbn = isbn.IsbnValue;
     }
 }

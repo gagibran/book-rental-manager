@@ -3,11 +3,11 @@ namespace BookRentalManager.Application.Dtos;
 public sealed class GetCustomerDto
 {
     public Guid Id { get; }
-    public FullName FullName { get; }
-    public Email Email { get; }
-    public PhoneNumber PhoneNumber { get; }
+    public string FullName { get; }
+    public string Email { get; }
+    public string PhoneNumber { get; }
     public IReadOnlyList<GetCustomerBooksDto> Books { get; }
-    public CustomerStatus CustomerStatus { get; }
+    public string CustomerStatus { get; }
     public int CustomerPoints { get; }
 
     public GetCustomerDto(
@@ -21,11 +21,11 @@ public sealed class GetCustomerDto
     )
     {
         Id = id;
-        FullName = fullName;
-        Email = email;
-        PhoneNumber = phoneNumber;
+        FullName = fullName.CompleteName;
+        Email = email.EmailAddress;
+        PhoneNumber = phoneNumber.CompletePhoneNumber;
         Books = books;
-        CustomerStatus = customerStatus;
+        CustomerStatus = customerStatus.CustomerType.ToString();
         CustomerPoints = customerPoints;
     }
 }
