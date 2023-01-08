@@ -14,30 +14,38 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         _dbSet = appDbContext.Set<TEntity>();
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetPaginatedAllAsync(
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync(
         int pageIndex,
         int totalItemsPerPage,
         CancellationToken cancellationToken = default
     )
     {
         return await _dbSet.ToReadOnlyPaginatedListAsync(
+            cancellationToken,
             pageIndex,
-            totalItemsPerPage,
-            cancellationToken
+            totalItemsPerPage
         );
+    }
+
+    public async Task<IReadOnlyList<TEntity>> GetAllAsync(
+        int pageIndex,
+        int totalItemsPerPage,
+        Specification<TEntity> specification,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _dbSet
+            .Where(specification.ToExpression())
+            .ToReadOnlyPaginatedListAsync(
+                cancellationToken,
+                pageIndex,
+                totalItemsPerPage
+            );
     }
 
     public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FindAsync(id, cancellationToken);
-    }
-
-    public async Task<TEntity?> GetBySpecificationAsync(
-        Specification<TEntity> specification,
-        CancellationToken cancellationToken = default
-    )
-    {
-        return await _dbSet.FirstOrDefaultAsync(specification.ToExpression(), cancellationToken);
     }
 
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)

@@ -16,10 +16,13 @@ internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCusto
         CancellationToken cancellationToken
     )
     {
-        Customer? customerWithEmail = await _customerRepository.GetBySpecificationAsync(
-            new CustomerByEmailSpecification(command.Email),
+        IReadOnlyList<Customer> customersWithEmail = await _customerRepository.GetAllAsync(
+            1,
+            50,
+            new CustomerByEmailSpecification(command.Email.EmailAddress),
             cancellationToken
         );
+        Customer? customerWithEmail = customersWithEmail?.FirstOrDefault();
         if (customerWithEmail is not null)
         {
             return Result

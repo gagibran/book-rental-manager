@@ -14,11 +14,19 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
         _getCustomerDtoMapper = getCustomerDtoMapper;
     }
 
-    public Task<Result<GetCustomerDto>> HandleAsync(
+    public async Task<Result<GetCustomerDto>> HandleAsync(
         GetCustomerByIdQuery getCustomerByIdQuery,
         CancellationToken cancellationToken
     )
     {
-        throw new NotImplementedException();
+        var customer = await _customerRepository.GetByIdAsync(
+            getCustomerByIdQuery.Id,
+            cancellationToken
+        );
+        if (customer is null)
+        {
+            return Result.Fail<GetCustomerDto>($"No customer with the ID of '{getCustomerByIdQuery.Id} was found.");
+        }
+        return Result.Success<GetCustomerDto>(_getCustomerDtoMapper.Map(customer!));
     }
 }

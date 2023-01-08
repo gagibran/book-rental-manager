@@ -20,7 +20,7 @@ internal sealed class GetBookAuthorsQueryHandler
         CancellationToken cancellationToken
     )
     {
-        IReadOnlyList<BookAuthor> bookAuthors = await _bookAuthorRepository.GetPaginatedAllAsync(
+        IReadOnlyList<BookAuthor> bookAuthors = await _bookAuthorRepository.GetAllAsync(
             getBookAuthorsQuery.PageIndex,
             getBookAuthorsQuery.TotalItemsPerPage,
             cancellationToken

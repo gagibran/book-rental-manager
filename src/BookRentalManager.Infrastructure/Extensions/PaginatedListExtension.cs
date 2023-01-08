@@ -6,11 +6,15 @@ public static class PaginatedListExtension
 
     public static async Task<IReadOnlyList<TItem>> ToReadOnlyPaginatedListAsync<TItem>(
         this IQueryable<TItem> items,
+        CancellationToken cancellationToken,
         int pageIndex,
-        int totalItemsPerPage,
-        CancellationToken cancellationToken
+        int totalItemsPerPage
     )
     {
+        if (!items.Any())
+        {
+            return new List<TItem>();
+        }
         var actualTotalItemsPerPage = totalItemsPerPage > MaxItemsPerPage ? MaxItemsPerPage : totalItemsPerPage;
         var totalPages = (int)Math.Ceiling(items.Count() / (double)actualTotalItemsPerPage);
         var actualPageIndex = pageIndex > totalPages ? totalPages : pageIndex;

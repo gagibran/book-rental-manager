@@ -11,13 +11,15 @@ public sealed class CustomerController : BaseController
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<GetCustomerDto>>> GetCustomersAsync(
+        CancellationToken cancellationToken,
         int pageIndex = 1,
-        int totalItemsPerPage = 50
+        int totalItemsPerPage = 50,
+        string email = ""
     )
     {
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
-            new GetCustomersQuery(pageIndex, totalItemsPerPage),
-            default
+            new GetCustomersQuery(pageIndex, totalItemsPerPage, email),
+            cancellationToken
         );
         if (!getAllCustomersResult.IsSuccess)
         {
@@ -27,11 +29,18 @@ public sealed class CustomerController : BaseController
         return Ok(getAllCustomersResult.Value);
     }
 
-    // [HttpGet("{id}")]
-    // public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(Guid id)
-    // {
-    //     Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
-    //         new GetC
-    //     );
-    // }
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(CancellationToken cancellationToken, Guid id)
+    {
+        Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
+            new GetCustomerByIdQuery(id),
+            cancellationToken
+        );
+        if (!getCustomerByIdResult.IsSuccess)
+        {
+            _baseControllerLogger.Log(LogLevel.Error, getCustomerByIdResult.ErrorMessage);
+            return NotFound(getCustomerByIdResult.ErrorMessage);
+        }
+        return Ok(getCustomerByIdResult.Value);
+    }
 }

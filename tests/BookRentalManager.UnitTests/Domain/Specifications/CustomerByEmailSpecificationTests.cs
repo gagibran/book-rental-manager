@@ -15,8 +15,9 @@ public sealed class CustomerByEmailSpecificationTests
     public void IsSatisfiedBy_WithExistingEmail_ReturnsTrue()
     {
         // Arrange:
-        var email = Email.Create("john.doe@email.com").Value;
-        var customerByEmailSpecification = new CustomerByEmailSpecification(email);
+        var customerByEmailSpecification = new CustomerByEmailSpecification(
+            "john.doe@email.com"
+        );
 
         // Act:
         bool isSatisfiedBy = customerByEmailSpecification.IsSatisfiedBy(_customer);
@@ -29,8 +30,9 @@ public sealed class CustomerByEmailSpecificationTests
     public void IsSatisfiedBy_WithNonexistingEmail_ReturnsFalse()
     {
         // Arrange:
-        var email = Email.Create("john.doe2@email.com").Value;
-        var customerByEmailSpecification = new CustomerByEmailSpecification(email);
+        var customerByEmailSpecification = new CustomerByEmailSpecification(
+            "john.doe2@email.com"
+        );
 
         // Act:
         bool isSatisfiedBy = customerByEmailSpecification.IsSatisfiedBy(_customer);

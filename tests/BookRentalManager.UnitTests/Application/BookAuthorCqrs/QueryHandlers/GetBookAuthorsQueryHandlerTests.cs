@@ -35,7 +35,7 @@ public sealed class GetBookAuthorsQueryHandlerTests
         // Assert:
         var expectedErrorMessage = "There are currently no book authors registered.";
         _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetPaginatedAllAsync(
+            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllAsync(
                 _pageIndex,
                 _totalItemsPerPage,
                 default
@@ -59,7 +59,7 @@ public sealed class GetBookAuthorsQueryHandlerTests
             TestFixtures.CreateDummyBookAuthor()
         };
         _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetPaginatedAllAsync(
+            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllAsync(
                 _pageIndex,
                 _totalItemsPerPage,
                 default

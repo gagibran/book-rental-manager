@@ -1,3 +1,5 @@
+using BookRentalManager.Domain.Specifications;
+
 namespace BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
 internal sealed class GetCustomersQueryHandler
@@ -20,16 +22,25 @@ internal sealed class GetCustomersQueryHandler
         CancellationToken cancellationToken
     )
     {
-        IReadOnlyList<Customer> customers = await _customerRepository.GetPaginatedAllAsync(
+        IReadOnlyList<Customer> customers = await _customerRepository.GetAllAsync(
             getCustomersQuery.PageIndex,
             getCustomersQuery.TotalItemsPerPage,
             cancellationToken
         );
+        var errorMessage = $"There are currently no customers registered.";
+        if (!string.IsNullOrWhiteSpace(getCustomersQuery.Email))
+        {
+            customers = await _customerRepository.GetAllAsync(
+                getCustomersQuery.PageIndex,
+                getCustomersQuery.TotalItemsPerPage,
+                new CustomerByEmailSpecification(getCustomersQuery.Email),
+                cancellationToken
+            );
+            errorMessage = $"There are currently no customers with the email address '{getCustomersQuery.Email}' registered.";
+        }
         if (!customers.Any())
         {
-            return Result.Fail<IReadOnlyList<GetCustomerDto>>(
-                "There are currently no customers registered."
-            );
+            return Result.Fail<IReadOnlyList<GetCustomerDto>>(errorMessage);
         }
         IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers
                                                       select _getCustomerDtoMapper.Map(customer);
