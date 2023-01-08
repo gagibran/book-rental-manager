@@ -1,12 +1,12 @@
 namespace BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
-internal sealed class GetCustomersQueryHandler
-    : IQueryHandler<GetCustomersQuery, IReadOnlyList<GetCustomerDto>>
+internal sealed class GetCustomersWithQueryParameterQueryHandler
+    : IQueryHandler<GetCustomersWithQueryParameterQuery, IReadOnlyList<GetCustomerDto>>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _getCustomerDtoMapper;
 
-    public GetCustomersQueryHandler(
+    public GetCustomersWithQueryParameterQueryHandler(
         IRepository<Customer> customerRepository,
         IMapper<Customer, GetCustomerDto> getCustomerDtoMapper
     )
@@ -16,19 +16,20 @@ internal sealed class GetCustomersQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetCustomerDto>>> HandleAsync(
-        GetCustomersQuery getCustomersQuery,
+        GetCustomersWithQueryParameterQuery getCustomersWithQueryParameterQuery,
         CancellationToken cancellationToken
     )
     {
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllAsync(
-            getCustomersQuery.PageIndex,
-            getCustomersQuery.TotalItemsPerPage,
+            getCustomersWithQueryParameterQuery.PageIndex,
+            getCustomersWithQueryParameterQuery.TotalItemsPerPage,
+            new CustomerWithQueryParameterSpecification(getCustomersWithQueryParameterQuery.QueryParameter),
             cancellationToken
         );
         if (!customers.Any())
         {
             return Result.Fail<IReadOnlyList<GetCustomerDto>>(
-                $"There are currently no customers registered."
+                $"There are currently no customers containing the value '{getCustomersWithQueryParameterQuery.QueryParameter}' registered."
             );
         }
         IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers

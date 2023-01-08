@@ -1,14 +1,9 @@
-using BookRentalManager.Application.Interfaces;
-
 namespace BookRentalManager.Application.CustomerCqrs.Queries;
 
-public sealed class GetCustomersQuery : GetAllEntitiesQuery, IQuery<IReadOnlyList<GetCustomerDto>>
+public sealed class GetCustomersQuery : GetEntitiesQuery, IQuery<IReadOnlyList<GetCustomerDto>>
 {
-    public string Email { get; }
-
-    public GetCustomersQuery(int pageIndex, int totalItemsPerPage, string email)
+    public GetCustomersQuery(int pageIndex, int totalItemsPerPage)
         : base(pageIndex, totalItemsPerPage)
     {
-        Email = email;
     }
 }

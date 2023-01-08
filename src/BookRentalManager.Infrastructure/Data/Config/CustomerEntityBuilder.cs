@@ -1,3 +1,5 @@
+using BookRentalManager.Domain.Enums;
+
 namespace BookRentalManager.Infrastructure.Data.Config;
 
 public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
@@ -31,6 +33,10 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .OwnsOne(customer => customer.CustomerStatus)
             .Property(customerStatus => customerStatus.CustomerType)
             .HasColumnName("CustomerStatus")
+            .HasConversion(
+                customerType => customerType.ToString(),
+                customerType => (CustomerType)Enum.Parse(typeof(CustomerType), customerType)
+            )
             .IsRequired();
         customerBuilder
             .Property(customer => customer.CustomerPoints)

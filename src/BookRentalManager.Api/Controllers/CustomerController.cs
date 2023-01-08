@@ -14,16 +14,25 @@ public sealed class CustomerController : BaseController
         CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
-        string email = ""
+        [FromQuery(Name = "search")] string queryParameter = ""
     )
     {
+        IQuery<IReadOnlyList<GetCustomerDto>> getCustomersQuery = new GetCustomersQuery(pageIndex, totalItemsPerPage);
+        if (!string.IsNullOrWhiteSpace(queryParameter))
+        {
+            getCustomersQuery = new GetCustomersWithQueryParameterQuery(
+                pageIndex,
+                totalItemsPerPage,
+                queryParameter
+            );
+        }
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
-            new GetCustomersQuery(pageIndex, totalItemsPerPage, email),
+            getCustomersQuery,
             cancellationToken
         );
         if (!getAllCustomersResult.IsSuccess)
         {
-            _baseControllerLogger.Log(LogLevel.Error, getAllCustomersResult.ErrorMessage);
+            _baseControllerLogger.LogError(getAllCustomersResult.ErrorMessage);
             return NotFound(getAllCustomersResult.ErrorMessage);
         }
         return Ok(getAllCustomersResult.Value);
@@ -38,7 +47,7 @@ public sealed class CustomerController : BaseController
         );
         if (!getCustomerByIdResult.IsSuccess)
         {
-            _baseControllerLogger.Log(LogLevel.Error, getCustomerByIdResult.ErrorMessage);
+            _baseControllerLogger.LogError(getCustomerByIdResult.ErrorMessage);
             return NotFound(getCustomerByIdResult.ErrorMessage);
         }
         return Ok(getCustomerByIdResult.Value);

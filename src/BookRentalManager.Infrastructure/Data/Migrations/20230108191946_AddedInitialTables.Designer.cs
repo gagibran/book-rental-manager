@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230105223821_AddedInitialtables")]
-    partial class AddedInitialtables
+    [Migration("20230108191946_AddedInitialTables")]
+    partial class AddedInitialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,8 +208,9 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<int>("CustomerType")
-                                .HasColumnType("integer")
+                            b1.Property<string>("CustomerType")
+                                .IsRequired()
+                                .HasColumnType("text")
                                 .HasColumnName("CustomerStatus");
 
                             b1.HasKey("CustomerId");

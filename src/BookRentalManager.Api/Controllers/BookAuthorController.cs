@@ -21,7 +21,7 @@ public sealed class BookAuthorController : BaseController
         );
         if (!getAllBookAuthorsResult.IsSuccess)
         {
-            _baseControllerLogger.Log(LogLevel.Error, getAllBookAuthorsResult.ErrorMessage);
+            _baseControllerLogger.LogError(getAllBookAuthorsResult.ErrorMessage);
             return NotFound(getAllBookAuthorsResult.ErrorMessage);
         }
         return Ok(getAllBookAuthorsResult.Value);

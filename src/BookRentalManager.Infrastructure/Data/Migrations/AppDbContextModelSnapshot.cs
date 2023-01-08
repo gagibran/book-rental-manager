@@ -205,8 +205,9 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<int>("CustomerType")
-                                .HasColumnType("integer")
+                            b1.Property<string>("CustomerType")
+                                .IsRequired()
+                                .HasColumnType("text")
                                 .HasColumnName("CustomerStatus");
 
                             b1.HasKey("CustomerId");

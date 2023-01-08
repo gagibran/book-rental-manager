@@ -1,5 +1,3 @@
-using BookRentalManager.Domain.Specifications;
-
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
 public sealed class CustomerByEmailSpecificationTests

@@ -1,15 +1,15 @@
 namespace BookRentalManager.UnitTests.Application.CustomerCqrs.QueryHandlers;
 
-public sealed class GetCustomersQueryHandlerTests
+public sealed class GetCustomersWithQueryParameterQueryHandlerTests
 {
     private readonly int _pageIndex;
     private readonly int _totalItemsPerPage;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
-    private readonly GetCustomersQueryHandler _getCustomersQueryHandler;
+    private readonly GetCustomersWithQueryParameterQueryHandler _getCustomersQueryHandler;
     private readonly GetCustomerDto _getCustomerDto;
 
-    public GetCustomersQueryHandlerTests()
+    public GetCustomersWithQueryParameterQueryHandlerTests()
     {
         _pageIndex = 1;
         _totalItemsPerPage = 50;
@@ -35,47 +35,59 @@ public sealed class GetCustomersQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithoutAnyCustomers_ReturnsErrorMessage()
+    public async Task HandleAsync_WithAtLeastOneCustomerWithQueryParameter_ReturnsListWithCustomer()
     {
         // Assert:
-        var expectedErrorMessage = "There are currently no customers registered.";
+        var expectedCustomer = TestFixtures.CreateDummyCustomer();
+        var expectedListOfCustomers = new List<Customer> { expectedCustomer };
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                default
-            ))
-            .ReturnsAsync(new List<Customer>());
-
-        // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
-            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default);
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WithAtLeastOneCustomer_ReturnsListWithCustomer()
-    {
-        // Assert:
-        var expectedListOfCustomers = new List<Customer>
-        {
-            TestFixtures.CreateDummyCustomer()
-        };
-        _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetAllAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
+                It.IsAny<Specification<Customer>>(),
                 default
             ))
             .ReturnsAsync(expectedListOfCustomers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
-            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default);
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler.HandleAsync(
+            new GetCustomersWithQueryParameterQuery(
+                _pageIndex,
+                _totalItemsPerPage,
+                expectedCustomer.Email.EmailAddress
+            ),
+            default
+        );
 
         // Assert:
         Assert.Equal(_getCustomerDto, handlerResult.Value.FirstOrDefault());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithoutAnyCustomerWithQueryParameter_ReturnsErrorMessage()
+    {
+        // Assert:
+        var expectedErrorMessage = "There are currently no customers containing the value 'test@email.com' registered.";
+        _customerRepositoryStub
+            .Setup(customerRepository => customerRepository.GetAllAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Specification<Customer>>(),
+                default
+            ))
+            .ReturnsAsync(new List<Customer>());
+
+        // Act:
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler.HandleAsync(
+            new GetCustomersWithQueryParameterQuery(
+                _pageIndex,
+                _totalItemsPerPage,
+                "test@email.com"
+            ),
+            default
+        );
+
+        // Assert:
+        Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
     }
 }

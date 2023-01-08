@@ -7,29 +7,36 @@ namespace BookRentalManager.Application.Extensions;
 
 public static class ApplicationServicesExtension
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection serviceCollection)
     {
-        services.AddScoped<IDispatcher, Dispatcher>();
-        services.AddApplicationQueriesAndCommandsServices();
-        services.AddApplicationMappersServices();
-        return services;
+        serviceCollection.AddScoped<IDispatcher, Dispatcher>();
+        serviceCollection.AddApplicationCommandsServices();
+        serviceCollection.AddApplicationQueriesService();
+        serviceCollection.AddApplicationMappersServices();
+        return serviceCollection;
     }
 
-    private static IServiceCollection AddApplicationQueriesAndCommandsServices(this IServiceCollection services)
+    private static IServiceCollection AddApplicationCommandsServices(this IServiceCollection serviceCollection)
     {
-        services.AddScoped<ICommandHandler<AddNewCustomerCommand>, AddNewCustomerCommandHandler>();
-        services.AddScoped<IQueryHandler<GetCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersQueryHandler>();
-        services.AddScoped<IQueryHandler<GetBookAuthorsQuery, IReadOnlyList<GetBookAuthorDto>>, GetBookAuthorsQueryHandler>();
-        services.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
-        return services;
+        serviceCollection.AddScoped<ICommandHandler<AddNewCustomerCommand>, AddNewCustomerCommandHandler>();
+        return serviceCollection;
     }
 
-    private static IServiceCollection AddApplicationMappersServices(this IServiceCollection services)
+    private static IServiceCollection AddApplicationQueriesService(this IServiceCollection serviceCollection)
     {
-        services.AddTransient<IMapper<Customer, GetCustomerDto>, GetCustomerDtoMapper>();
-        services.AddTransient<IMapper<BookAuthor, GetBookAuthorDto>, GetBookAuthorDtoMapper>();
-        services.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>>, GetCustomerBooksDtoMapper>();
-        services.AddTransient<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>>, GetBookAuthorsForCustomerBooksDtoMapper>();
-        return services;
+        serviceCollection.AddScoped<IQueryHandler<GetCustomersQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetCustomersWithQueryParameterQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersWithQueryParameterQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBookAuthorsQuery, IReadOnlyList<GetBookAuthorDto>>, GetBookAuthorsQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
+        return serviceCollection;
+    }
+
+    private static IServiceCollection AddApplicationMappersServices(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddTransient<IMapper<Customer, GetCustomerDto>, GetCustomerDtoMapper>();
+        serviceCollection.AddTransient<IMapper<BookAuthor, GetBookAuthorDto>, GetBookAuthorDtoMapper>();
+        serviceCollection.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>>, GetCustomerBooksDtoMapper>();
+        serviceCollection.AddTransient<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>>, GetBookAuthorsForCustomerBooksDtoMapper>();
+        return serviceCollection;
     }
 }
