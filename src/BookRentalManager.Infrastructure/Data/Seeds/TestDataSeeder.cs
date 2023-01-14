@@ -4,18 +4,18 @@ namespace BookRentalManager.Infrastructure.Data.Seeds;
 
 public sealed class TestDataSeeder
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
 
-    public TestDataSeeder(AppDbContext appDbContext)
+    public TestDataSeeder(BookRentalManagerDbContext bookRentalManagerDbContext)
     {
-        _appDbContext = appDbContext;
+        _bookRentalManagerDbContext = bookRentalManagerDbContext;
     }
 
     public async Task SeedTestDataAsync()
     {
-        DbSet<Customer> customers = _appDbContext.Set<Customer>();
-        DbSet<Book> books = _appDbContext.Set<Book>();
-        DbSet<BookAuthor> bookAuthors = _appDbContext.Set<BookAuthor>();
+        DbSet<Customer> customers = _bookRentalManagerDbContext.Set<Customer>();
+        DbSet<Book> books = _bookRentalManagerDbContext.Set<Book>();
+        DbSet<BookAuthor> bookAuthors = _bookRentalManagerDbContext.Set<BookAuthor>();
         if (!customers.Any())
         {
             var newCustomers = new List<Customer>
@@ -113,6 +113,6 @@ public sealed class TestDataSeeder
             await bookAuthors.AddRangeAsync(newBookAuthors);
             await books.AddRangeAsync(newBooks);
         }
-        await _appDbContext.SaveChangesAsync();
+        await _bookRentalManagerDbContext.SaveChangesAsync();
     }
 }

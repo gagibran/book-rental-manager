@@ -5,13 +5,13 @@ namespace BookRentalManager.Infrastructure.Common;
 
 public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
     private readonly DbSet<TEntity> _dbSet;
 
-    public Repository(AppDbContext appDbContext)
+    public Repository(BookRentalManagerDbContext bookRentalManagerDbContext)
     {
-        _appDbContext = appDbContext;
-        _dbSet = appDbContext.Set<TEntity>();
+        _bookRentalManagerDbContext = bookRentalManagerDbContext;
+        _dbSet = bookRentalManagerDbContext.Set<TEntity>();
     }
 
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(
@@ -68,6 +68,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
-        await _appDbContext.SaveChangesAsync();
+        await _bookRentalManagerDbContext.SaveChangesAsync();
     }
 }

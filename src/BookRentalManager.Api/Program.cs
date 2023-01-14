@@ -8,10 +8,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container:
 builder.Services.AddControllers();
-builder.Services.AddDbContext<AppDbContext>(dbContextOptionsBuilder =>
+builder.Services.AddDbContext<BookRentalManagerDbContext>(dbContextOptionsBuilder =>
 {
     dbContextOptionsBuilder.UseNpgsql(
-        builder.Configuration.GetConnectionString("DevelopmentConnectionString")
+        builder.Configuration.GetConnectionString("BookRentalManagerConnectionString")
     );
 });
 builder.Services.AddApplicationServices();
@@ -25,8 +25,8 @@ app.UseAuthorization();
 app.MapControllers();
 using IServiceScope serviceScope = app.Services.CreateScope();
 IServiceProvider serviceProvider = serviceScope.ServiceProvider;
-AppDbContext appDbContext = serviceProvider.GetRequiredService<AppDbContext>();
-await appDbContext.Database.MigrateAsync();
+BookRentalManagerDbContext bookRentalManagerDbContext = serviceProvider.GetRequiredService<BookRentalManagerDbContext>();
+await bookRentalManagerDbContext.Database.MigrateAsync();
 if (app.Environment.IsDevelopment())
 {
     TestDataSeeder testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
