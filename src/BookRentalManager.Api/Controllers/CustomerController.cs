@@ -1,4 +1,7 @@
+using BookRentalManager.Application.CustomerCqrs.Commands;
 using BookRentalManager.Application.CustomerCqrs.Queries;
+using BookRentalManager.Domain.Entities;
+using BookRentalManager.Domain.ValueObjects;
 
 namespace BookRentalManager.Api.Controllers;
 
@@ -39,6 +42,7 @@ public sealed class CustomerController : BaseController
     }
 
     [HttpGet("{id}")]
+    [ActionName(nameof(GetCustomerByIdAsync))]
     public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(CancellationToken cancellationToken, Guid id)
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
@@ -51,5 +55,33 @@ public sealed class CustomerController : BaseController
             return NotFound(getCustomerByIdResult.ErrorMessage);
         }
         return Ok(getCustomerByIdResult.Value);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> CreateCustomer(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
+    {
+        Result<FullName> fullNameResult = FullName.Create(createCustomerDto.FirstName, createCustomerDto.LastName);
+        Result<Email> emailResult = Email.Create(createCustomerDto.Email);
+        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(createCustomerDto.AreaCode, createCustomerDto.PhoneNumber);
+        Result combinedResults = Result.Combine(
+            fullNameResult,
+            emailResult,
+            phoneNumberResult
+        );
+        if (!combinedResults.IsSuccess)
+        {
+            return BadRequest(combinedResults.ErrorMessage);
+        }
+        var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
+        Result createCustomerResult = await _dispatcher.DispatchAsync(
+            new AddNewCustomerCommand(newCustomer),
+            cancellationToken
+        );
+        if (!createCustomerResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
+            return BadRequest(createCustomerResult.ErrorMessage);
+        }
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = newCustomer.Id }, newCustomer);
     }
 }

@@ -17,7 +17,7 @@ internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCusto
         IReadOnlyList<Customer> customersWithEmail = await _customerRepository.GetAllAsync(
             1,
             50,
-            new CustomerByEmailSpecification(command.Email.EmailAddress),
+            new CustomerByEmailSpecification(command.Customer.Email.EmailAddress),
             cancellationToken
         );
         Customer? customerWithEmail = customersWithEmail?.FirstOrDefault();
@@ -26,12 +26,7 @@ internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCusto
             return Result
                 .Fail($"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
         }
-        var newCustomer = new Customer(
-            command.FullName,
-            command.Email,
-            command.PhoneNumber
-        );
-        await _customerRepository.CreateAsync(newCustomer, cancellationToken);
+        await _customerRepository.CreateAsync(command.Customer, cancellationToken);
         return Result.Success();
     }
 }

@@ -36,6 +36,20 @@ public class Result
     {
         return new Result<TValue>(false, default(TValue), errorMessage);
     }
+
+    public static Result Combine(params Result[] results)
+    {
+        var finalErrorMessage = string.Empty;
+        foreach (Result result in results)
+        {
+            if (!result.IsSuccess)
+            {
+                finalErrorMessage += result.ErrorMessage + " ";
+            }
+        }
+        var isSuccess = string.IsNullOrWhiteSpace(finalErrorMessage) ? true : false;
+        return new Result(isSuccess, finalErrorMessage.Trim());
+    }
 }
 
 public sealed class Result<TValue> : Result

@@ -58,4 +58,34 @@ public sealed class ResultTests
         // Assert:
         Assert.False(result.IsSuccess);
     }
+
+    [Fact]
+    public void Combine_WithAtLeastTwoFailedResult_ReturnsErrorMessagesCombined()
+    {
+        // Arrange:
+        Result failedResult1 = Result.Fail("This result has failed.");
+        Result failedResult2 = Result.Fail("This result has also failed.");
+        Result successResult = Result.Success();
+
+        // Act:
+        Result combinedResults = Result.Combine(failedResult1, failedResult2, successResult);
+
+        // Assert:
+        Assert.Equal("This result has failed. This result has also failed.", combinedResults.ErrorMessage);
+    }
+
+    [Fact]
+    public void Combine_WithoutFailedResults_ReturnsNullErrorMessage()
+    {
+        // Arrange:
+        Result successResult1 = Result.Success();
+        Result successResult2 = Result.Success();
+        Result successResult3 = Result.Success();
+
+        // Act:
+        Result combinedResults = Result.Combine(successResult1, successResult2, successResult3);
+
+        // Assert:
+        Assert.Empty(combinedResults.ErrorMessage);
+    }
 }

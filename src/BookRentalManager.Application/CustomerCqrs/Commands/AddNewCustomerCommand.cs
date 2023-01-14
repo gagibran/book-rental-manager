@@ -2,18 +2,10 @@ namespace BookRentalManager.Application.CustomerCqrs.Commands;
 
 public sealed class AddNewCustomerCommand : ICommand
 {
-    public FullName FullName { get; }
-    public Email Email { get; }
-    public PhoneNumber PhoneNumber { get; }
+    public Customer Customer { get; }
 
-    public AddNewCustomerCommand(
-        FullName fullName,
-        Email email,
-        PhoneNumber phoneNumber
-    )
+    public AddNewCustomerCommand(Customer customer)
     {
-        FullName = fullName;
-        Email = email;
-        PhoneNumber = phoneNumber;
+        Customer = customer;
     }
 }
