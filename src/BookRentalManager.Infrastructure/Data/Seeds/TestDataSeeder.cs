@@ -42,6 +42,11 @@ public sealed class TestDataSeeder
         {
             var newBookAuthors = new List<BookAuthor>
             {
+                new BookAuthor(FullName.Create("Erich", "Gamma").Value!),
+                new BookAuthor(FullName.Create("John", "Vlissides").Value!),
+                new BookAuthor(FullName.Create("Ralph", "Johnson").Value!),
+                new BookAuthor(FullName.Create("Richard", "Helm").Value!),
+                new BookAuthor(FullName.Create("Bob", "Martin").Value!),
                 new BookAuthor(FullName.Create("Lewis", "Carroll").Value!),
                 new BookAuthor(FullName.Create("Franz", "Kafka").Value!),
                 new BookAuthor(FullName.Create("Howard", "Lovecraft").Value!),
@@ -99,16 +104,16 @@ public sealed class TestDataSeeder
                 Edition.Create(1).Value!,
                 Isbn.Create("0-201-63361-2").Value!
             );
-            designPatterns.AddBookAuthor(newBookAuthors[1]);
-            designPatterns.AddBookAuthor(newBookAuthors[2]);
-            designPatterns.AddBookAuthor(newBookAuthors[3]);
-            designPatterns.AddBookAuthor(newBookAuthors[4]);
+            newBookAuthors[0].AddBook(designPatterns);
+            newBookAuthors[1].AddBook(designPatterns);
+            newBookAuthors[2].AddBook(designPatterns);
+            newBookAuthors[3].AddBook(designPatterns);
             var cleanCode = new Book(
                 "Clean Code: A Handbook of Agile Software Craftsmanship",
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!
             );
-            cleanCode.AddBookAuthor(newBookAuthors[0]);
+            newBookAuthors[4].AddBook(cleanCode);
             var newBooks = new List<Book> { cleanCode, designPatterns };
             await bookAuthors.AddRangeAsync(newBookAuthors);
             await books.AddRangeAsync(newBooks);

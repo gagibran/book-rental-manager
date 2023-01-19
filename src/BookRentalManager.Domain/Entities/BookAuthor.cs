@@ -17,8 +17,16 @@ public sealed class BookAuthor : Entity
         _books = new();
     }
 
-    internal void AddBook(Book book)
+    public Result AddBook(Book book)
     {
+        if (_books.Contains(book))
+        {
+            return Result.Fail(
+                $"The book titled '{book.BookTitle}' has already been added to this author."
+            );
+        }
+        book.AddBookAuthor(this);
         _books.Add(book);
+        return Result.Success();
     }
 }

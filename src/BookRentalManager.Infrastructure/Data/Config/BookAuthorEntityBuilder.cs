@@ -18,7 +18,7 @@ public sealed class BookAuthorEntityBuilder : IEntityTypeConfiguration<BookAutho
             .UsingEntity(bookAuthorBuilder =>
             {
                 bookAuthorBuilder
-                    .ToTable("Book_BookAuthor")
+                    .ToTable("BookAuthor_Book")
                     .Property("BookAuthorsId")
                     .HasColumnName("BookAuthorId");
             });

@@ -17,7 +17,7 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
             .UsingEntity(bookBuilder =>
             {
                 bookBuilder
-                    .ToTable("Book_BookAuthor")
+                    .ToTable("BookAuthor_Book")
                     .Property("BooksId")
                     .HasColumnName("BookId");
             });

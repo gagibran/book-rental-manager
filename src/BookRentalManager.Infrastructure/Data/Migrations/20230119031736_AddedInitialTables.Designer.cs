@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(BookRentalManagerDbContext))]
-    [Migration("20230114230909_AddedInitialEntities")]
-    partial class AddedInitialEntities
+    [Migration("20230119031736_AddedInitialTables")]
+    partial class AddedInitialTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,7 +39,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
 
                     b.HasIndex("BooksId");
 
-                    b.ToTable("Book_BookAuthor", (string)null);
+                    b.ToTable("BookAuthor_Book", (string)null);
                 });
 
             modelBuilder.Entity("BookRentalManager.Domain.Entities.Book", b =>

@@ -36,7 +36,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
 
                     b.HasIndex("BooksId");
 
-                    b.ToTable("Book_BookAuthor", (string)null);
+                    b.ToTable("BookAuthor_Book", (string)null);
                 });
 
             modelBuilder.Entity("BookRentalManager.Domain.Entities.Book", b =>

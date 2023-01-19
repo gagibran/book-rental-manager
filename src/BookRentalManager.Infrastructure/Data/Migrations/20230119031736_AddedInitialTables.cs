@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedInitialEntities : Migration
+    public partial class AddedInitialTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,7 +61,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Book_BookAuthor",
+                name: "BookAuthor_Book",
                 columns: table => new
                 {
                     BookAuthorId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -69,15 +69,15 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Book_BookAuthor", x => new { x.BookAuthorId, x.BookId });
+                    table.PrimaryKey("PK_BookAuthor_Book", x => new { x.BookAuthorId, x.BookId });
                     table.ForeignKey(
-                        name: "FK_Book_BookAuthor_BookAuthor_BookAuthorId",
+                        name: "FK_BookAuthor_Book_BookAuthor_BookAuthorId",
                         column: x => x.BookAuthorId,
                         principalTable: "BookAuthor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Book_BookAuthor_Book_BookId",
+                        name: "FK_BookAuthor_Book_Book_BookId",
                         column: x => x.BookId,
                         principalTable: "Book",
                         principalColumn: "Id",
@@ -90,8 +90,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Book_BookAuthor_BookId",
-                table: "Book_BookAuthor",
+                name: "IX_BookAuthor_Book_BookId",
+                table: "BookAuthor_Book",
                 column: "BookId");
         }
 
@@ -99,7 +99,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Book_BookAuthor");
+                name: "BookAuthor_Book");
 
             migrationBuilder.DropTable(
                 name: "BookAuthor");
