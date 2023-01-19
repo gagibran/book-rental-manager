@@ -31,8 +31,8 @@ internal sealed class GetBookAuthorsQueryHandler
                 "There are currently no book authors registered."
             );
         }
-        IEnumerable<GetBookAuthorDto> getBookAuthorDto = from bookAuthor in bookAuthors
-                                                         select _getBookAuthorDtoMapper.Map(bookAuthor);
-        return Result.Success<IReadOnlyList<GetBookAuthorDto>>(getBookAuthorDto.ToList());
+        IEnumerable<GetBookAuthorDto> getBookAuthorDtos = from bookAuthor in bookAuthors
+                                                          select _getBookAuthorDtoMapper.Map(bookAuthor);
+        return Result.Success<IReadOnlyList<GetBookAuthorDto>>(getBookAuthorDtos.ToList());
     }
 }

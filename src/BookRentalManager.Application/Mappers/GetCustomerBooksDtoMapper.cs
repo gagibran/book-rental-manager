@@ -1,32 +1,23 @@
-using BookRentalManager.Application.Interfaces;
-
 namespace BookRentalManager.Application.Mappers;
 
-internal sealed class GetCustomerBooksDtoMapper : IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>>
+internal sealed class GetCustomerBooksDtoMapper : IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBookDto>>
 {
-    private readonly IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>> _getBookAuthorsForCustomerBooksDtoMapper;
 
-    public GetCustomerBooksDtoMapper(
-        IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookAuthorsForCustomerBooksDto>> getBookAuthorsForCustomerBooksDto
-    )
+    public GetCustomerBooksDtoMapper()
     {
-        _getBookAuthorsForCustomerBooksDtoMapper = getBookAuthorsForCustomerBooksDto;
     }
 
-    public IReadOnlyList<GetCustomerBooksDto> Map(IReadOnlyList<Book> books)
+    public IReadOnlyList<GetCustomerBookDto> Map(IReadOnlyList<Book> books)
     {
         if (books is null)
         {
-            return new List<GetCustomerBooksDto>();
+            return new List<GetCustomerBookDto>();
         }
-        IEnumerable<GetCustomerBooksDto> getCustomerBooksDto = from book in books
-                                                               select new GetCustomerBooksDto(
-                                                                   book.BookTitle,
-                                                                   _getBookAuthorsForCustomerBooksDtoMapper
-                                                                       .Map(book.BookAuthors),
-                                                                   book.Edition,
-                                                                   book.Isbn
-                                                               );
-        return getCustomerBooksDto.ToList();
+        return (from book in books
+                select new GetCustomerBookDto(
+                    book.BookTitle,
+                    book.Edition,
+                    book.Isbn
+                )).ToList();
     }
 }

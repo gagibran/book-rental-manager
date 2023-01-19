@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Dtos;
+namespace BookRentalManager.Application.Dtos.CustomerDtos;
 
 public sealed class GetCustomerDto
 {
@@ -6,7 +6,7 @@ public sealed class GetCustomerDto
     public string FullName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
-    public IReadOnlyList<GetCustomerBooksDto> Books { get; }
+    public IReadOnlyList<GetCustomerBookDto> Books { get; }
     public string CustomerStatus { get; }
     public int CustomerPoints { get; }
 
@@ -15,7 +15,7 @@ public sealed class GetCustomerDto
         FullName fullName,
         Email email,
         PhoneNumber phoneNumber,
-        IReadOnlyList<GetCustomerBooksDto> books,
+        IReadOnlyList<GetCustomerBookDto> books,
         CustomerStatus customerStatus,
         int customerPoints
     )

@@ -12,14 +12,14 @@ public sealed class GetCustomerDtoMapperTests
             customer.FullName,
             customer.Email,
             customer.PhoneNumber,
-            new List<GetCustomerBooksDto>(),
+            new List<GetCustomerBookDto>(),
             customer.CustomerStatus,
             customer.CustomerPoints
         );
-        var getCustomerBooksDtoMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBooksDto>>>();
+        var getCustomerBooksDtoMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetCustomerBookDto>>>();
         getCustomerBooksDtoMapperStub
             .Setup(getCustomerBooksDto => getCustomerBooksDto.Map(It.IsAny<IReadOnlyList<Book>>()))
-            .Returns(new List<GetCustomerBooksDto>());
+            .Returns(new List<GetCustomerBookDto>());
         var getCustomerDtoMapper = new GetCustomerDtoMapper(getCustomerBooksDtoMapperStub.Object);
 
         // Act:

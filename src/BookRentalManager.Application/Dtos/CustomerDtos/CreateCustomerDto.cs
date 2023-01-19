@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Dtos;
+namespace BookRentalManager.Application.Dtos.CustomerDtos;
 
 public sealed class CreateCustomerDto
 {

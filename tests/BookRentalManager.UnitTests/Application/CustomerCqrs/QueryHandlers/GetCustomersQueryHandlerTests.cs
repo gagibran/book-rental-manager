@@ -19,7 +19,7 @@ public sealed class GetCustomersQueryHandlerTests
             customer.FullName,
             customer.Email,
             customer.PhoneNumber,
-            new List<GetCustomerBooksDto>(),
+            new List<GetCustomerBookDto>(),
             customer.CustomerStatus,
             customer.CustomerPoints
         );

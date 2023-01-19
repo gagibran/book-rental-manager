@@ -16,7 +16,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
             _customer.FullName,
             _customer.Email,
             _customer.PhoneNumber,
-            new List<GetCustomerBooksDto>(),
+            new List<GetCustomerBookDto>(),
             _customer.CustomerStatus,
             _customer.CustomerPoints
         );

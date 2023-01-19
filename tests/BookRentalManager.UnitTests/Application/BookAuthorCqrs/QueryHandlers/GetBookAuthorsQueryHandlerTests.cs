@@ -14,10 +14,10 @@ public sealed class GetBookAuthorsQueryHandlerTests
 
     public GetBookAuthorsQueryHandlerTests()
     {
+        BookAuthor bookAuthor = TestFixtures.CreateDummyBookAuthor();
         _pageIndex = 1;
         _totalItemsPerPage = 50;
-        BookAuthor bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _getBookAuthorDto = new(Guid.NewGuid(), bookAuthor.FullName);
+        _getBookAuthorDto = new(Guid.NewGuid(), bookAuthor.FullName, new List<GetBookAuthorBookDto>());
         _getBookAuthorDtoMapperStub = new();
         _bookAuthorRepositoryStub = new();
         _getBookAuthorsQueryHandler = new(
