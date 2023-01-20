@@ -79,15 +79,6 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 
     public IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> queryable, Specification<TEntity> specification)
     {
-        IQueryable<TEntity> currentQueryable = queryable;
-        if (specification.WhereExpression is not null)
-        {
-            currentQueryable = currentQueryable.Where(specification.WhereExpression);
-        }
-        foreach (Expression<Func<TEntity, object>> includeExpression in specification.IncludeExpressions)
-        {
-            currentQueryable = currentQueryable.Include(includeExpression);
-        }
-        return currentQueryable;
+        return SpecificationEvaluator.GetQuery<TEntity>(queryable, specification);
     }
 }
