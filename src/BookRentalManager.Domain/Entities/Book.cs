@@ -2,17 +2,23 @@ namespace BookRentalManager.Domain.Entities;
 
 public sealed class Book : Entity
 {
-    private readonly List<BookAuthor> _bookAuthors = default!;
+    private readonly List<BookAuthor> _bookAuthors;
 
-    public string BookTitle { get; } = default!;
-    public IReadOnlyList<BookAuthor> BookAuthors => _bookAuthors;
-    public Edition Edition { get; } = default!;
-    public Isbn Isbn { get; } = default!;
-    public bool IsAvailable { get; internal set; } = default!;
-    public Customer? Customer { get; } = default!;
+    public string BookTitle { get; }
+    public IReadOnlyList<BookAuthor> BookAuthors => _bookAuthors.AsReadOnly();
+    public Edition Edition { get; }
+    public Isbn Isbn { get; }
+    public bool IsAvailable { get; internal set; }
+    public Customer? Customer { get; }
 
     private Book()
     {
+        _bookAuthors = default!;
+        BookTitle = default!;
+        Edition = default!;
+        Isbn = default!;
+        IsAvailable = default!;
+        Customer = default!;
     }
 
     public Book(

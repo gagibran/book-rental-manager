@@ -23,15 +23,9 @@ internal sealed class GetCustomersWithQueryParameterQueryHandler
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllAsync(
             getCustomersWithQueryParameterQuery.PageIndex,
             getCustomersWithQueryParameterQuery.TotalItemsPerPage,
-            new CustomerWithQueryParameterSpecification(getCustomersWithQueryParameterQuery.QueryParameter),
+            new CustomersWithBooksAndQueryParameterSpecification(getCustomersWithQueryParameterQuery.QueryParameter),
             cancellationToken
         );
-        if (!customers.Any())
-        {
-            return Result.Fail<IReadOnlyList<GetCustomerDto>>(
-                $"There are currently no customers containing the value '{getCustomersWithQueryParameterQuery.QueryParameter}' registered."
-            );
-        }
         IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers
                                                       select _getCustomerDtoMapper.Map(customer);
         return Result.Success<IReadOnlyList<GetCustomerDto>>(getCustomersDto.ToList());

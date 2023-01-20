@@ -30,14 +30,4 @@ public sealed class GetBookAuthorBooksDtoMapperTests
         Assert.Equal(expectedGetBookAuthorBookDto.Edition, getBookAuthorBookDtos.FirstOrDefault().Edition);
         Assert.Equal(expectedGetBookAuthorBookDto.Isbn, getBookAuthorBookDtos.FirstOrDefault().Isbn);
     }
-
-    [Fact]
-    public void Map_WithNullBookCollection_ReturnsEmptyGetBookAuthorBooksDto()
-    {
-        // Act:
-        IReadOnlyList<GetBookAuthorBookDto> getBookAuthorBookDtos = _getBookAuthorBooksDtoMapper.Map(null);
-
-        // Assert:
-        Assert.Empty(getBookAuthorBookDtos);
-    }
 }

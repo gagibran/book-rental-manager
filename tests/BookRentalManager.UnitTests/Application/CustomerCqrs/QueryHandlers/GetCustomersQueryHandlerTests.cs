@@ -21,14 +21,12 @@ public sealed class GetCustomersQueryHandlerTests
             customer.PhoneNumber,
             new List<GetCustomerBookDto>(),
             customer.CustomerStatus,
-            customer.CustomerPoints
-        );
+            customer.CustomerPoints);
         _getCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
         _getCustomersQueryHandler = new(
             _customerRepositoryStub.Object,
-            _getCustomerDtoMapperStub.Object
-        );
+            _getCustomerDtoMapperStub.Object);
         _getCustomerDtoMapperStub
             .Setup(getCustomerDtoMapper => getCustomerDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(_getCustomerDto);
@@ -37,28 +35,28 @@ public sealed class GetCustomersQueryHandlerTests
     [Fact]
     public async Task HandleAsync_WithoutAnyCustomers_ReturnsErrorMessage()
     {
-        // Assert:
-        var expectedErrorMessage = "There are currently no customers registered.";
+        // Arrange:
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                default
-            ))
+                It.IsAny<Specification<Customer>>(),
+                default))
             .ReturnsAsync(new List<Customer>());
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
-            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default);
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler.HandleAsync(
+            new GetCustomersQuery(_pageIndex, _totalItemsPerPage),
+            default);
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
+        Assert.Empty(handlerResult.Value);
     }
 
     [Fact]
     public async Task HandleAsync_WithAtLeastOneCustomer_ReturnsListWithCustomer()
     {
-        // Assert:
+        // Arrange:
         var expectedListOfCustomers = new List<Customer>
         {
             TestFixtures.CreateDummyCustomer()
@@ -67,13 +65,14 @@ public sealed class GetCustomersQueryHandlerTests
             .Setup(customerRepository => customerRepository.GetAllAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                default
-            ))
+                It.IsAny<Specification<Customer>>(),
+                default))
             .ReturnsAsync(expectedListOfCustomers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler
-            .HandleAsync(new GetCustomersQuery(_pageIndex, _totalItemsPerPage), default);
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersQueryHandler.HandleAsync(
+            new GetCustomersQuery(_pageIndex, _totalItemsPerPage),
+            default);
 
         // Assert:
         Assert.Equal(_getCustomerDto, handlerResult.Value.FirstOrDefault());

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using BookRentalManager.Domain.Common;
 using BookRentalManager.Infrastructure.Extensions;
 
@@ -17,35 +18,40 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(
         int pageIndex,
         int totalItemsPerPage,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
-        return await _dbSet.ToReadOnlyPaginatedListAsync(
-            cancellationToken,
-            pageIndex,
-            totalItemsPerPage
-        );
+        return await _dbSet.ToReadOnlyPaginatedListAsync(cancellationToken, pageIndex, totalItemsPerPage);
     }
 
     public async Task<IReadOnlyList<TEntity>> GetAllAsync(
         int pageIndex,
         int totalItemsPerPage,
         Specification<TEntity> specification,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
-        return await _dbSet
-            .Where(specification.ToExpression())
-            .ToReadOnlyPaginatedListAsync(
-                cancellationToken,
-                pageIndex,
-                totalItemsPerPage
-            );
+        IQueryable<TEntity> queryable = ApplySpecification(_dbSet, specification);
+        return await queryable.ToReadOnlyPaginatedListAsync(cancellationToken, pageIndex, totalItemsPerPage);
     }
 
-    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _dbSet.FindAsync(id, cancellationToken);
+        return await _dbSet.FirstOrDefaultAsync(entity => entity.Id == id);
+    }
+
+    public async Task<TEntity?> GetByIdAsync(
+        Guid id,
+        Specification<TEntity> specification,
+        CancellationToken cancellationToken)
+    {
+        return await ApplySpecification(_dbSet, specification)
+            .FirstOrDefaultAsync(entity => entity.Id == id);
+    }
+
+    public async Task<TEntity?> GetFirstOrDefaultBySpecificationAsync(
+        Specification<TEntity> specification,
+        CancellationToken cancellationToken = default)
+    {
+        return await ApplySpecification(_dbSet, specification).FirstOrDefaultAsync();
     }
 
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -69,5 +75,19 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
     public async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         await _bookRentalManagerDbContext.SaveChangesAsync();
+    }
+
+    public IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> queryable, Specification<TEntity> specification)
+    {
+        IQueryable<TEntity> currentQueryable = queryable;
+        if (specification.WhereExpression is not null)
+        {
+            currentQueryable = currentQueryable.Where(specification.WhereExpression);
+        }
+        foreach (Expression<Func<TEntity, object>> includeExpression in specification.IncludeExpressions)
+        {
+            currentQueryable = currentQueryable.Include(includeExpression);
+        }
+        return currentQueryable;
     }
 }

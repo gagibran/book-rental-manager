@@ -33,11 +33,6 @@ public sealed class CustomerController : BaseController
             getCustomersQuery,
             cancellationToken
         );
-        if (!getAllCustomersResult.IsSuccess)
-        {
-            _baseControllerLogger.LogError(getAllCustomersResult.ErrorMessage);
-            return NotFound(getAllCustomersResult.ErrorMessage);
-        }
         return Ok(getAllCustomersResult.Value);
     }
 

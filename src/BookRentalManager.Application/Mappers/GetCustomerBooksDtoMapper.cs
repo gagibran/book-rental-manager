@@ -9,10 +9,6 @@ internal sealed class GetCustomerBooksDtoMapper : IMapper<IReadOnlyList<Book>, I
 
     public IReadOnlyList<GetCustomerBookDto> Map(IReadOnlyList<Book> books)
     {
-        if (books is null)
-        {
-            return new List<GetCustomerBookDto>();
-        }
         return (from book in books
                 select new GetCustomerBookDto(
                     book.BookTitle,

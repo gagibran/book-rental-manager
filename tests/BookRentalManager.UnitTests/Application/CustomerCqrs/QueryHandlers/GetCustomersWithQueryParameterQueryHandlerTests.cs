@@ -67,7 +67,6 @@ public sealed class GetCustomersWithQueryParameterQueryHandlerTests
     public async Task HandleAsync_WithoutAnyCustomerWithQueryParameter_ReturnsErrorMessage()
     {
         // Assert:
-        var expectedErrorMessage = "There are currently no customers containing the value 'test@email.com' registered.";
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllAsync(
                 It.IsAny<int>(),
@@ -88,6 +87,6 @@ public sealed class GetCustomersWithQueryParameterQueryHandlerTests
         );
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
+        Assert.Empty(handlerResult.Value);
     }
 }

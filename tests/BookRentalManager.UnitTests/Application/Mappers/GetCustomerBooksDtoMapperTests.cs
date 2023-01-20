@@ -30,14 +30,4 @@ public sealed class GetCustomerBooksDtoMapperTests
         Assert.Equal(expectedGetCustomerBookDto.Edition, getCustomerBookDtos.FirstOrDefault().Edition);
         Assert.Equal(expectedGetCustomerBookDto.Isbn, getCustomerBookDtos.FirstOrDefault().Isbn);
     }
-
-    [Fact]
-    public void Map_WithNullBookCollection_ReturnsEmptyGetCustomerBooksDto()
-    {
-        // Act:
-        IReadOnlyList<GetCustomerBookDto> getCustomerBookDtos = _getCustomerBooksDtoMapper.Map(null);
-
-        // Assert:
-        Assert.Empty(getCustomerBookDtos);
-    }
 }

@@ -18,14 +18,12 @@ public sealed class GetCustomerByIdQueryHandlerTests
             _customer.PhoneNumber,
             new List<GetCustomerBookDto>(),
             _customer.CustomerStatus,
-            _customer.CustomerPoints
-        );
+            _customer.CustomerPoints);
         _getCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
         _getCustomerByIdQueryHandler = new(
             _customerRepositoryStub.Object,
-            _getCustomerDtoMapperStub.Object
-        );
+            _getCustomerDtoMapperStub.Object);
         _getCustomerDtoMapperStub
             .Setup(getCustomerDtoMapper => getCustomerDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(_getCustomerDto);
@@ -38,15 +36,14 @@ public sealed class GetCustomerByIdQueryHandlerTests
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetByIdAsync(
                 It.IsAny<Guid>(),
-                default
-            ))
+                It.IsAny<Specification<Customer>>(),
+                default))
             .ReturnsAsync(_customer);
 
         // Act:
         Result<GetCustomerDto> handlerResult = await _getCustomerByIdQueryHandler.HandleAsync(
             new GetCustomerByIdQuery(_customer.Id),
-            default
-        );
+            default);
 
         // Assert:
         Assert.Equal(_getCustomerDto.Id, handlerResult.Value.Id);
@@ -60,15 +57,14 @@ public sealed class GetCustomerByIdQueryHandlerTests
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetByIdAsync(
                 It.IsAny<Guid>(),
-                default
-            ))
+                It.IsAny<Specification<Customer>>(),
+                default))
             .ReturnsAsync((Customer)null);
 
         // Act:
         Result<GetCustomerDto> handlerResult = await _getCustomerByIdQueryHandler.HandleAsync(
             new GetCustomerByIdQuery(_customer.Id),
-            default
-        );
+            default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);

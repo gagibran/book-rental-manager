@@ -22,8 +22,7 @@ public sealed class GetBookAuthorsQueryHandlerTests
         _bookAuthorRepositoryStub = new();
         _getBookAuthorsQueryHandler = new(
             _bookAuthorRepositoryStub.Object,
-            _getBookAuthorDtoMapperStub.Object
-        );
+            _getBookAuthorDtoMapperStub.Object);
         _getBookAuthorDtoMapperStub
             .Setup(getBookAuthorDtoMapper => getBookAuthorDtoMapper.Map(It.IsAny<BookAuthor>()))
             .Returns(_getBookAuthorDto);
@@ -33,21 +32,21 @@ public sealed class GetBookAuthorsQueryHandlerTests
     public async Task HandleAsync_WithoutAnyBookAuthors_ReturnsErrorMessage()
     {
         // Assert:
-        var expectedErrorMessage = "There are currently no book authors registered.";
         _bookAuthorRepositoryStub
             .Setup(bookAuthorRepository => bookAuthorRepository.GetAllAsync(
-                _pageIndex,
-                _totalItemsPerPage,
-                default
-            ))
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Specification<BookAuthor>>(),
+                default))
             .ReturnsAsync(new List<BookAuthor>());
 
         // Act:
-        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsQueryHandler
-            .HandleAsync(new GetBookAuthorsQuery(_pageIndex, _totalItemsPerPage), default);
+        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsQueryHandler.HandleAsync(
+            new GetBookAuthorsQuery(_pageIndex, _totalItemsPerPage),
+            default);
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
+        Assert.Empty(handlerResult.Value);
     }
 
     [Fact]
@@ -60,15 +59,16 @@ public sealed class GetBookAuthorsQueryHandlerTests
         };
         _bookAuthorRepositoryStub
             .Setup(bookAuthorRepository => bookAuthorRepository.GetAllAsync(
-                _pageIndex,
-                _totalItemsPerPage,
-                default
-            ))
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Specification<BookAuthor>>(),
+                default))
             .ReturnsAsync(expectedListOfBookAuthors);
 
         // Act:
-        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsQueryHandler
-            .HandleAsync(new GetBookAuthorsQuery(_pageIndex, _totalItemsPerPage), default);
+        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsQueryHandler.HandleAsync(
+            new GetBookAuthorsQuery(_pageIndex, _totalItemsPerPage),
+            default);
 
         // Assert:
         Assert.Equal(_getBookAuthorDto, handlerResult.Value.FirstOrDefault());

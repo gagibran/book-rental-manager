@@ -23,14 +23,9 @@ internal sealed class GetBookAuthorsQueryHandler
         IReadOnlyList<BookAuthor> bookAuthors = await _bookAuthorRepository.GetAllAsync(
             getBookAuthorsQuery.PageIndex,
             getBookAuthorsQuery.TotalItemsPerPage,
+            new BookAuthorsWithBooksSpecification(),
             cancellationToken
         );
-        if (!bookAuthors.Any())
-        {
-            return Result.Fail<IReadOnlyList<GetBookAuthorDto>>(
-                "There are currently no book authors registered."
-            );
-        }
         IEnumerable<GetBookAuthorDto> getBookAuthorDtos = from bookAuthor in bookAuthors
                                                           select _getBookAuthorDtoMapper.Map(bookAuthor);
         return Result.Success<IReadOnlyList<GetBookAuthorDto>>(getBookAuthorDtos.ToList());

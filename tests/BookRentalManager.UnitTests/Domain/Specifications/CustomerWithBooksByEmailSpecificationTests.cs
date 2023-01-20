@@ -1,10 +1,10 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class CustomerByEmailSpecificationTests
+public sealed class CustomerWithBooksByEmailSpecificationTests
 {
     private readonly Customer _customer;
 
-    public CustomerByEmailSpecificationTests()
+    public CustomerWithBooksByEmailSpecificationTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
     }
@@ -13,9 +13,7 @@ public sealed class CustomerByEmailSpecificationTests
     public void IsSatisfiedBy_WithExistingEmail_ReturnsTrue()
     {
         // Arrange:
-        var customerByEmailSpecification = new CustomerByEmailSpecification(
-            "john.doe@email.com"
-        );
+        var customerByEmailSpecification = new CustomerWithBooksByEmailSpecification("john.doe@email.com");
 
         // Act:
         bool isSatisfiedBy = customerByEmailSpecification.IsSatisfiedBy(_customer);
@@ -28,9 +26,7 @@ public sealed class CustomerByEmailSpecificationTests
     public void IsSatisfiedBy_WithNonexistingEmail_ReturnsFalse()
     {
         // Arrange:
-        var customerByEmailSpecification = new CustomerByEmailSpecification(
-            "john.doe2@email.com"
-        );
+        var customerByEmailSpecification = new CustomerWithBooksByEmailSpecification("john.doe2@email.com");
 
         // Act:
         bool isSatisfiedBy = customerByEmailSpecification.IsSatisfiedBy(_customer);

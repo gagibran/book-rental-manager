@@ -14,17 +14,12 @@ internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCusto
         CancellationToken cancellationToken
     )
     {
-        IReadOnlyList<Customer> customersWithEmail = await _customerRepository.GetAllAsync(
-            1,
-            50,
-            new CustomerByEmailSpecification(command.Customer.Email.EmailAddress),
-            cancellationToken
-        );
-        Customer? customerWithEmail = customersWithEmail?.FirstOrDefault();
+        Customer? customerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
+            new CustomerWithBooksByEmailSpecification(command.Customer.Email.EmailAddress));
         if (customerWithEmail is not null)
         {
-            return Result
-                .Fail($"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
+            return Result.Fail(
+                $"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
         }
         await _customerRepository.CreateAsync(command.Customer, cancellationToken);
         return Result.Success();

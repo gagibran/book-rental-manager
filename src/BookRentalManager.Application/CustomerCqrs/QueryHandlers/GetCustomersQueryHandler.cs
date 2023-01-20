@@ -17,20 +17,13 @@ internal sealed class GetCustomersQueryHandler
 
     public async Task<Result<IReadOnlyList<GetCustomerDto>>> HandleAsync(
         GetCustomersQuery getCustomersQuery,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllAsync(
             getCustomersQuery.PageIndex,
             getCustomersQuery.TotalItemsPerPage,
-            cancellationToken
-        );
-        if (!customers.Any())
-        {
-            return Result.Fail<IReadOnlyList<GetCustomerDto>>(
-                $"There are currently no customers registered."
-            );
-        }
+            new CustomersWithBooksSpecification(),
+            cancellationToken);
         IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers
                                                       select _getCustomerDtoMapper.Map(customer);
         return Result.Success<IReadOnlyList<GetCustomerDto>>(getCustomersDto.ToList());

@@ -15,15 +15,11 @@ public sealed class BookAuthorController : BaseController
         int totalItemsPerPage = 50
     )
     {
-        Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
-            new GetBookAuthorsQuery(pageIndex, totalItemsPerPage),
-            default
-        );
-        if (!getAllBookAuthorsResult.IsSuccess)
-        {
-            _baseControllerLogger.LogError(getAllBookAuthorsResult.ErrorMessage);
-            return NotFound(getAllBookAuthorsResult.ErrorMessage);
-        }
+        Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher
+            .DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
+                new GetBookAuthorsQuery(pageIndex, totalItemsPerPage),
+                default
+            );
         return Ok(getAllBookAuthorsResult.Value);
     }
 }

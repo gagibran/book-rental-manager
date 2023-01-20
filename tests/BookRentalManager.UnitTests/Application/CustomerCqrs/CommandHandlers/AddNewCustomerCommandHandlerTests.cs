@@ -30,18 +30,14 @@ public sealed class AddNewCustomerCommandHandlerTests
         var expectedErrorMessage = "A customer with the email 'john.doe@email.com' already exists.";
         _customerRepositoryStub
             .Setup(customerRepository =>
-                customerRepository.GetAllAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
+                customerRepository.GetFirstOrDefaultBySpecificationAsync(
                     It.IsAny<Specification<Customer>>(),
-                    default
-                )
-            )
-            .ReturnsAsync(new List<Customer> { customer });
+                    default))
+            .ReturnsAsync(customer);
 
         // Act:
-        var handleResult = await _addNewCustomerCommandHandler
-            .HandleAsync(_addNewCustomerCommand, default);
+        Result handleResult = await _addNewCustomerCommandHandler.HandleAsync(
+            _addNewCustomerCommand, default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
@@ -55,14 +51,12 @@ public sealed class AddNewCustomerCommandHandlerTests
             .Setup(customerRepository =>
                 customerRepository.CreateAsync(
                     It.IsAny<Customer>(),
-                    default
-                )
-            )
+                    default))
             .Verifiable();
 
         // Act:
-        var handleResult = await _addNewCustomerCommandHandler
-            .HandleAsync(_addNewCustomerCommand, default);
+        Result handleResult = await _addNewCustomerCommandHandler.HandleAsync(
+            _addNewCustomerCommand, default);
 
         // Assert:
         Assert.True(handleResult.IsSuccess);

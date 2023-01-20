@@ -21,12 +21,12 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
     {
         var customer = await _customerRepository.GetByIdAsync(
             getCustomerByIdQuery.Id,
-            cancellationToken
-        );
+            new CustomersWithBooksSpecification(),
+            cancellationToken);
         if (customer is null)
         {
             return Result.Fail<GetCustomerDto>($"No customer with the ID of '{getCustomerByIdQuery.Id} was found.");
         }
-        return Result.Success<GetCustomerDto>(_getCustomerDtoMapper.Map(customer!));
+        return Result.Success<GetCustomerDto>(_getCustomerDtoMapper.Map(customer));
     }
 }

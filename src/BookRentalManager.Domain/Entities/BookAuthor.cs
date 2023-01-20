@@ -2,13 +2,15 @@ namespace BookRentalManager.Domain.Entities;
 
 public sealed class BookAuthor : Entity
 {
-    private readonly List<Book> _books = default!;
+    private readonly List<Book> _books;
 
-    public FullName FullName { get; } = default!;
-    public IReadOnlyList<Book> Books => _books;
+    public FullName FullName { get; }
+    public IReadOnlyList<Book> Books => _books.AsReadOnly();
 
     private BookAuthor()
     {
+        _books = default!;
+        FullName = default!;
     }
 
     public BookAuthor(FullName fullName)
