@@ -2,10 +2,11 @@ namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class Isbn : ValueObject
 {
-    public string IsbnValue { get; } = default!;
+    public string IsbnValue { get; }
 
     private Isbn()
     {
+        IsbnValue = string.Empty;
     }
 
     private Isbn(string isbnValue)

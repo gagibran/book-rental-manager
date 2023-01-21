@@ -9,10 +9,9 @@ public class BaseController : ControllerBase
 
     protected BaseController(
         IDispatcher dispatcher,
-        ILogger<BaseController> customerControllerLogger
-    )
+        ILogger<BaseController> baseControllerLogger)
     {
-        _baseControllerLogger = customerControllerLogger;
+        _baseControllerLogger = baseControllerLogger;
         _dispatcher = dispatcher;
     }
 }

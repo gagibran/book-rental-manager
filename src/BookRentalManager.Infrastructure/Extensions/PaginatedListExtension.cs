@@ -8,19 +8,18 @@ public static class PaginatedListExtension
         this IQueryable<TItem> items,
         CancellationToken cancellationToken,
         int pageIndex,
-        int totalItemsPerPage
-    )
+        int totalItemsPerPage)
     {
         if (!items.Any())
         {
             return new List<TItem>();
         }
-        var actualTotalItemsPerPage = totalItemsPerPage > MaxItemsPerPage ? MaxItemsPerPage : totalItemsPerPage;
-        var totalPages = (int)Math.Ceiling(items.Count() / (double)actualTotalItemsPerPage);
-        var actualPageIndex = pageIndex > totalPages ? totalPages : pageIndex;
+        totalItemsPerPage = totalItemsPerPage > MaxItemsPerPage ? MaxItemsPerPage : totalItemsPerPage;
+        var totalPages = (int)Math.Ceiling(items.Count() / (double)totalItemsPerPage);
+        pageIndex = pageIndex > totalPages ? totalPages : pageIndex;
         var paginatedItems = await items
-            .Skip((actualPageIndex - 1) * actualTotalItemsPerPage)
-            .Take(actualTotalItemsPerPage)
+            .Skip((pageIndex - 1) * totalItemsPerPage)
+            .Take(totalItemsPerPage)
             .ToListAsync(cancellationToken);
         return (paginatedItems).AsReadOnly();
     }

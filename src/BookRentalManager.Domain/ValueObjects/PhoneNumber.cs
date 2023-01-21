@@ -7,10 +7,11 @@ public sealed class PhoneNumber : ValueObject
     private const int MinActualPhoneNumber = 2_000_000;
     private const int MaxActualPhoneNumber = 9_999_999;
 
-    public string CompletePhoneNumber { get; } = default!;
+    public string CompletePhoneNumber { get; }
 
     private PhoneNumber()
     {
+        CompletePhoneNumber = string.Empty;
     }
 
     private PhoneNumber(int areaCode, int actualPhoneNumber)
@@ -24,14 +25,11 @@ public sealed class PhoneNumber : ValueObject
         {
             return Result.Fail<PhoneNumber>("Invalid area code.");
         }
-        if (actualPhoneNumber < MinActualPhoneNumber
-            || actualPhoneNumber > MaxActualPhoneNumber)
+        if (actualPhoneNumber < MinActualPhoneNumber || actualPhoneNumber > MaxActualPhoneNumber)
         {
             return Result.Fail<PhoneNumber>("Invalid phone number.");
         }
-        return Result.Success<PhoneNumber>(
-            new PhoneNumber(areaCode, actualPhoneNumber)
-        );
+        return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, actualPhoneNumber));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

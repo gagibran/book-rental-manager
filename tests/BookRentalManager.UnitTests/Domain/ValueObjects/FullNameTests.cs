@@ -8,8 +8,7 @@ public sealed class FullNameTests
     public void Create_WithInvalidFullName_ReturnsErrorMessage(
         string firstName,
         string lastName,
-        string expectedErrorMessage
-    )
+        string expectedErrorMessage)
     {
         // Act:
         Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
@@ -33,8 +32,7 @@ public sealed class FullNameTests
     [InlineData("John ", "  Doe ")]
     public void Create_WithValidFullName_ReturnsCorrectlyFormattedFullName(
         string firstName,
-        string lastName
-    )
+        string lastName)
     {
         // Arrange:
         var expectedFullName = "John Doe";

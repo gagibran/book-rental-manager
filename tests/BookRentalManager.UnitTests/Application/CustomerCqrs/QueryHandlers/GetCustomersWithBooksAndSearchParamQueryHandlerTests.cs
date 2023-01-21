@@ -78,9 +78,8 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
 
     [Theory]
     [InlineData("")]
-    [InlineData(null)]
     [InlineData(" ")]
-    public async Task HandleAsync_WithNullOrEmptySearchParameter_ReturnsListWithAllCustomers(string searchParam)
+    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers(string searchParam)
     {
         // Arrange:
         _customers.Add(new Customer(

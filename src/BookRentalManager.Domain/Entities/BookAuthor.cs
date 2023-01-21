@@ -9,7 +9,7 @@ public sealed class BookAuthor : Entity
 
     private BookAuthor()
     {
-        _books = default!;
+        _books = new();
         FullName = default!;
     }
 
@@ -23,9 +23,7 @@ public sealed class BookAuthor : Entity
     {
         if (_books.Contains(book))
         {
-            return Result.Fail(
-                $"The book titled '{book.BookTitle}' has already been added to this author."
-            );
+            return Result.Fail($"The book titled '{book.BookTitle}' has already been added to this author.");
         }
         book.AddBookAuthor(this);
         _books.Add(book);

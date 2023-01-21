@@ -24,10 +24,7 @@ public sealed class Dispatcher : IDispatcher
         return await commandHandler.HandleAsync((dynamic)command, cancellationToken);
     }
 
-    public async Task<Result<TResult>> DispatchAsync<TResult>(
-        IQuery<TResult> query,
-        CancellationToken cancellationToken
-    )
+    public async Task<Result<TResult>> DispatchAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
     {
         Type queryHandlerType = typeof(IQueryHandler<,>);
         Type[] queryHandlerArgumentTypes =
@@ -35,8 +32,7 @@ public sealed class Dispatcher : IDispatcher
             query.GetType(),
             typeof(TResult)
         };
-        Type queryHandlerGenericType = queryHandlerType
-            .MakeGenericType(queryHandlerArgumentTypes);
+        Type queryHandlerGenericType = queryHandlerType.MakeGenericType(queryHandlerArgumentTypes);
         dynamic? queryHandler = _serviceProvider.GetService(queryHandlerGenericType);
         if (queryHandler is null)
         {

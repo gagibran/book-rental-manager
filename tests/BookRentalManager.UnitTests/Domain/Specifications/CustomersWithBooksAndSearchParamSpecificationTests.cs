@@ -15,8 +15,7 @@ public sealed class CustomersWithBooksAndSearchParamSpecificationTests
             new Customer(
                 FullName.Create("Sarah", "Smith").Value,
                 Email.Create("sarah.smith@email.com").Value,
-                PhoneNumber.Create(345, 6_453_243).Value
-            )
+                PhoneNumber.Create(345, 6_453_243).Value)
         };
         yield return new object[]
         {
@@ -24,8 +23,7 @@ public sealed class CustomersWithBooksAndSearchParamSpecificationTests
             new Customer(
                 FullName.Create("Peter", "Griffin").Value,
                 Email.Create("peter.grifin@email.com").Value,
-                PhoneNumber.Create(546, 4_056_780).Value
-            )
+                PhoneNumber.Create(546, 4_056_780).Value)
         };
     }
 
@@ -42,8 +40,7 @@ public sealed class CustomersWithBooksAndSearchParamSpecificationTests
             new Customer(
                 FullName.Create("Sarah", "Smith").Value,
                 Email.Create("sarah.smith@email.com").Value,
-                PhoneNumber.Create(345, 6_453_243).Value
-            )
+                PhoneNumber.Create(345, 6_453_243).Value)
         };
         yield return new object[]
         {
@@ -51,8 +48,7 @@ public sealed class CustomersWithBooksAndSearchParamSpecificationTests
             new Customer(
                 FullName.Create("Peter", "Griffin").Value,
                 Email.Create("peter.grifin@email.com").Value,
-                PhoneNumber.Create(546, 4_056_780).Value
-            )
+                PhoneNumber.Create(546, 4_056_780).Value)
         };
     }
 

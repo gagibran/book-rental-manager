@@ -20,7 +20,7 @@ internal sealed class GetCustomersWithBooksAndSearchParamQueryHandler
         CancellationToken cancellationToken)
     {
         var customersWithBooksAndSearchParamSpecification = new CustomersWithBooksAndSearchParamSpecification(
-        getCustomersWithBooksAndSearchParamQuery.SearchParameter);
+            getCustomersWithBooksAndSearchParamQuery.SearchParameter);
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
             getCustomersWithBooksAndSearchParamQuery.PageIndex,
             getCustomersWithBooksAndSearchParamQuery.TotalItemsPerPage,

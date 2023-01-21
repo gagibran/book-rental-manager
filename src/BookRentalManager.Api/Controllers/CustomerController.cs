@@ -21,11 +21,12 @@ public sealed class CustomerController : BaseController
     )
     {
         IQuery<IReadOnlyList<GetCustomerDto>> getCustomersQuery = new GetCustomersWithBooksAndSearchParamQuery(
-            pageIndex, totalItemsPerPage, searchParameter.Trim());
+            pageIndex,
+            totalItemsPerPage,
+            searchParameter);
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
             getCustomersQuery,
-            cancellationToken
-        );
+            cancellationToken);
         return Ok(getAllCustomersResult.Value);
     }
 
@@ -35,8 +36,7 @@ public sealed class CustomerController : BaseController
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
             new GetCustomerByIdQuery(id),
-            cancellationToken
-        );
+            cancellationToken);
         if (!getCustomerByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getCustomerByIdResult.ErrorMessage);
@@ -54,17 +54,13 @@ public sealed class CustomerController : BaseController
         Result combinedResults = Result.Combine(
             fullNameResult,
             emailResult,
-            phoneNumberResult
-        );
+            phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {
             return BadRequest(combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-        Result createCustomerResult = await _dispatcher.DispatchAsync(
-            new AddNewCustomerCommand(newCustomer),
-            cancellationToken
-        );
+        Result createCustomerResult = await _dispatcher.DispatchAsync(new AddNewCustomerCommand(newCustomer), cancellationToken);
         if (!createCustomerResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);

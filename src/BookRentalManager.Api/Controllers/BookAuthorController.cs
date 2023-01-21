@@ -18,8 +18,7 @@ public sealed class BookAuthorController : BaseController
         Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher
             .DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
                 new GetBookAuthorsQuery(pageIndex, totalItemsPerPage),
-                default
-            );
+                default);
         return Ok(getAllBookAuthorsResult.Value);
     }
 }

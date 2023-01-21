@@ -2,10 +2,11 @@ namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class FullName : ValueObject
 {
-    public string CompleteName { get; } = default!;
+    public string CompleteName { get; }
 
     private FullName()
     {
+        CompleteName = string.Empty;
     }
 
     private FullName(string completeName)
@@ -23,9 +24,7 @@ public sealed class FullName : ValueObject
         {
             return Result.Fail<FullName>("Last name cannot be empty.");
         }
-        return Result.Success<FullName>(
-            new FullName(firstName.Trim() + " " + lastName.Trim())
-        );
+        return Result.Success<FullName>(new FullName(firstName.Trim() + " " + lastName.Trim()));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

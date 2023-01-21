@@ -13,19 +13,18 @@ public sealed class Customer : Entity
 
     private Customer()
     {
-        _books = default!;
+        _books = new();
         FullName = default!;
         Email = default!;
         PhoneNumber = default!;
         CustomerStatus = default!;
-        CustomerPoints = default!;
+        CustomerPoints = default;
     }
 
     public Customer(
         FullName fullName,
         Email email,
-        PhoneNumber phoneNumber
-    )
+        PhoneNumber phoneNumber)
     {
         _books = new();
         FullName = fullName;
@@ -55,8 +54,7 @@ public sealed class Customer : Entity
         {
             return Result.Fail($"The book '{book.BookTitle}' is not available.");
         }
-        Result<CustomerStatus> customerStatusResult = CustomerStatus
-            .CheckCustomerTypeBookAvailability(Books.Count());
+        Result<CustomerStatus> customerStatusResult = CustomerStatus.CheckCustomerTypeBookAvailability(Books.Count());
         if (!string.IsNullOrWhiteSpace(customerStatusResult.ErrorMessage))
         {
             return Result.Fail(customerStatusResult.ErrorMessage);

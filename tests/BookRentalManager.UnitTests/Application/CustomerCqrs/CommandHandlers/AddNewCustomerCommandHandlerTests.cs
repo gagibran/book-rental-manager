@@ -36,8 +36,7 @@ public sealed class AddNewCustomerCommandHandlerTests
             .ReturnsAsync(customer);
 
         // Act:
-        Result handleResult = await _addNewCustomerCommandHandler.HandleAsync(
-            _addNewCustomerCommand, default);
+        Result handleResult = await _addNewCustomerCommandHandler.HandleAsync(_addNewCustomerCommand, default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
@@ -55,8 +54,7 @@ public sealed class AddNewCustomerCommandHandlerTests
             .Verifiable();
 
         // Act:
-        Result handleResult = await _addNewCustomerCommandHandler.HandleAsync(
-            _addNewCustomerCommand, default);
+        Result handleResult = await _addNewCustomerCommandHandler.HandleAsync(_addNewCustomerCommand, default);
 
         // Assert:
         Assert.True(handleResult.IsSuccess);

@@ -7,8 +7,7 @@ public static class TestFixtures
         return new Customer(
             FullName.Create("John", "Doe").Value,
             Email.Create("john.doe@email.com").Value,
-            PhoneNumber.Create(200, 2_000_000).Value
-        );
+            PhoneNumber.Create(200, 2_000_000).Value);
     }
 
     public static Book CreateDummyBook()
@@ -16,8 +15,7 @@ public static class TestFixtures
         return new Book(
             "The Pragmatic Programmer: From Journeyman to Master",
             Edition.Create(1).Value,
-            Isbn.Create("0-201-61622-X").Value
-        );
+            Isbn.Create("0-201-61622-X").Value);
     }
 
     public static BookAuthor CreateDummyBookAuthor()

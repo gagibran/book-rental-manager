@@ -8,7 +8,7 @@ internal sealed class GetBookAuthorBooksDtoMapper : IMapper<IReadOnlyList<Book>,
                 select new GetBookAuthorBookDto(
                     book.BookTitle,
                     book.Edition,
-                    book.Isbn
-                )).ToList();
+                    book.Isbn)
+                ).ToList();
     }
 }

@@ -14,7 +14,6 @@ internal sealed class GetBookAuthorDtoMapper : IMapper<BookAuthor, GetBookAuthor
         return new GetBookAuthorDto(
             bookAuthor.Id,
             bookAuthor.FullName,
-            _getBookAuthorBooksDtoMapper.Map(bookAuthor.Books)
-        );
+            _getBookAuthorBooksDtoMapper.Map(bookAuthor.Books));
     }
 }

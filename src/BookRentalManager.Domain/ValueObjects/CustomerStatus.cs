@@ -8,10 +8,11 @@ public sealed class CustomerStatus : ValueObject
     private const int MaximumAmountOfBooksMaster = 7;
     private const string AvailabilityErrorMessage = "You've reached the maximum amount of books per customer category";
 
-    public CustomerType CustomerType { get; } = default!;
+    public CustomerType CustomerType { get; }
 
     private CustomerStatus()
     {
+        CustomerType = default;
     }
 
     public CustomerStatus(CustomerType customerType)
@@ -21,26 +22,17 @@ public sealed class CustomerStatus : ValueObject
 
     public Result<CustomerStatus> CheckCustomerTypeBookAvailability(int customerBookCount)
     {
-        if (customerBookCount >= MaximumAmountOfBooksExplorer
-            && CustomerType is CustomerType.Explorer)
+        if (customerBookCount >= MaximumAmountOfBooksExplorer && CustomerType is CustomerType.Explorer)
         {
-            return Result.Fail<CustomerStatus>(
-                    AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksExplorer})."
-                );
+            return Result.Fail<CustomerStatus>(AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksExplorer}).");
         }
-        if (customerBookCount >= MaximumAmountOfBooksAdventurer
-            && CustomerType is CustomerType.Adventurer)
+        if (customerBookCount >= MaximumAmountOfBooksAdventurer && CustomerType is CustomerType.Adventurer)
         {
-            return Result.Fail<CustomerStatus>(
-                AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksAdventurer})."
-            );
+            return Result.Fail<CustomerStatus>(AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksAdventurer}).");
         }
-        if (customerBookCount >= MaximumAmountOfBooksMaster
-            && CustomerType is CustomerType.Master)
+        if (customerBookCount >= MaximumAmountOfBooksMaster && CustomerType is CustomerType.Master)
         {
-            return Result.Fail<CustomerStatus>(
-                AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksMaster})."
-            );
+            return Result.Fail<CustomerStatus>(AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksMaster}).");
         }
         return Result.Success<CustomerStatus>(new CustomerStatus(CustomerType));
     }

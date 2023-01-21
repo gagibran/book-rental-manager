@@ -13,8 +13,7 @@ public sealed class PhoneNumberTests
     public void Create_WithInvalidPhoneNumber_ReturnErrorMessage(
         int areaCode,
         int actualPhoneNumber,
-        string expectedErrorMessage
-    )
+        string expectedErrorMessage)
     {
         // Act:
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(areaCode, actualPhoneNumber);

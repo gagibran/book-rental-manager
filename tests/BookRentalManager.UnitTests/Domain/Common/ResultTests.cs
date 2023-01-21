@@ -8,9 +8,7 @@ public sealed class ResultTests
     public void Fail_WithEmptyErrorMessage_ThrowsException()
     {
         // Assert:
-        Assert.Throws<UnsuccessfulResultMustHaveErrorMessageException>(
-            () => Result.Fail(" ")
-        );
+        Assert.Throws<UnsuccessfulResultMustHaveErrorMessageException>(() => Result.Fail(" "));
     }
 
     [Fact]

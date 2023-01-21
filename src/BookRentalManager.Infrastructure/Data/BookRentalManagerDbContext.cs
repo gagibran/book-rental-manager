@@ -6,8 +6,7 @@ public sealed class BookRentalManagerDbContext : DbContext
     public DbSet<Book> Books { get; set; } = default!;
     public DbSet<BookAuthor> BookAuthors { get; set; } = default!;
 
-    public BookRentalManagerDbContext(DbContextOptions dbContextOptions)
-        : base(dbContextOptions)
+    public BookRentalManagerDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
     {
     }
 

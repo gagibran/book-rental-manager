@@ -56,8 +56,7 @@ public sealed class Result<TValue> : Result
 {
     public TValue? Value { get; }
 
-    internal Result(bool isSuccess, TValue? value, string errorMessage)
-        : base(isSuccess, errorMessage)
+    internal Result(bool isSuccess, TValue? value, string errorMessage) : base(isSuccess, errorMessage)
     {
         Value = value;
     }

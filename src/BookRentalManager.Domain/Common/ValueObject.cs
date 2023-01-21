@@ -11,8 +11,7 @@ public abstract class ValueObject
             return false;
         }
         var otherValueObject = (ValueObject)obj;
-        return GetEqualityComponents()
-            .SequenceEqual(otherValueObject.GetEqualityComponents());
+        return GetEqualityComponents().SequenceEqual(otherValueObject.GetEqualityComponents());
     }
 
     public override int GetHashCode()

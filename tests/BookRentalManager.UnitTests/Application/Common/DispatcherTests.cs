@@ -1,6 +1,5 @@
 using BookRentalManager.Application.Common;
 using BookRentalManager.Application.Exceptions;
-using BookRentalManager.Application.Interfaces;
 
 namespace BookRentalManager.UnitTests.Application.Common;
 
@@ -32,10 +31,7 @@ public sealed class DispatcherTests
             .Returns(commandHandlerStub.Object);
 
         // Act:
-        Result dispatcherResult = await _dispatcher.DispatchAsync(
-            _commandStub.Object,
-            default
-        );
+        Result dispatcherResult = await _dispatcher.DispatchAsync(_commandStub.Object, default);
 
         // Assert:
         Assert.True(dispatcherResult.IsSuccess);
@@ -51,8 +47,7 @@ public sealed class DispatcherTests
 
         // Assert:
         Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
-            () => _dispatcher.DispatchAsync(It.IsAny<ICommand>(), It.IsAny<CancellationToken>())
-        );
+            () => _dispatcher.DispatchAsync(It.IsAny<ICommand>(), It.IsAny<CancellationToken>()));
     }
 
     [Fact]
@@ -69,19 +64,14 @@ public sealed class DispatcherTests
             .Setup(commandHandler =>
                 commandHandler.HandleAsync(
                     It.IsAny<IQuery<Customer>>(),
-                    It.IsAny<CancellationToken>()
-                )
-            )
+                    It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success<Customer>(customer));
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
             .Returns(queryHandlerStub.Object);
 
         // Act:
-        Result dispatcherResult = await _dispatcher.DispatchAsync<Customer>(
-            _queryStub.Object,
-            default
-        );
+        Result dispatcherResult = await _dispatcher.DispatchAsync<Customer>(_queryStub.Object, default);
 
         // Assert:
         Assert.True(dispatcherResult.IsSuccess);
@@ -99,8 +89,6 @@ public sealed class DispatcherTests
         Assert.ThrowsAsync<QueryHandlerObjectCannotBeNullException>(
             () => _dispatcher.DispatchAsync(
                 It.IsAny<IQuery<Customer>>(),
-                It.IsAny<CancellationToken>()
-            )
-        );
+                It.IsAny<CancellationToken>()));
     }
 }

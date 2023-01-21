@@ -2,28 +2,20 @@ namespace BookRentalManager.UnitTests.Application.Mappers;
 
 public sealed class GetCustomerBooksDtoMapperTests
 {
-    private readonly GetCustomerBooksDtoMapper _getCustomerBooksDtoMapper;
-
-    public GetCustomerBooksDtoMapperTests()
-    {
-        _getCustomerBooksDtoMapper = new();
-    }
-
     [Fact]
     public void Map_WithValidBookCollection_ReturnsValidGetCustomerBooksDto()
     {
         // Arrange:
+        var getCustomerBooksDtoMapper = new GetCustomerBooksDtoMapper();
+
         Book book = TestFixtures.CreateDummyBook();
         var expectedGetCustomerBookDto = new GetCustomerBookDto(
             book.BookTitle,
             book.Edition,
-            book.Isbn
-        );
+            book.Isbn);
 
         // Act:
-        IReadOnlyList<GetCustomerBookDto> getCustomerBookDtos = _getCustomerBooksDtoMapper.Map(
-            new List<Book> { book }
-        );
+        IReadOnlyList<GetCustomerBookDto> getCustomerBookDtos = getCustomerBooksDtoMapper.Map(new List<Book> { book });
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetCustomerBookDto.BookTitle, getCustomerBookDtos.FirstOrDefault().BookTitle);

@@ -9,17 +9,13 @@ internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCusto
         _customerRepository = customerRepository;
     }
 
-    public async Task<Result> HandleAsync(
-        AddNewCustomerCommand command,
-        CancellationToken cancellationToken
-    )
+    public async Task<Result> HandleAsync(AddNewCustomerCommand command, CancellationToken cancellationToken)
     {
         Customer? customerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
             new CustomerWithBooksByEmailSpecification(command.Customer.Email.EmailAddress));
         if (customerWithEmail is not null)
         {
-            return Result.Fail(
-                $"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
+            return Result.Fail($"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
         }
         await _customerRepository.CreateAsync(command.Customer, cancellationToken);
         return Result.Success();

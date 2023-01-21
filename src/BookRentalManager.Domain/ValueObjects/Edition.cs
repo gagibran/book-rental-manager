@@ -2,10 +2,11 @@ namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class Edition : ValueObject
 {
-    public int EditionNumber { get; } = default!;
+    public int EditionNumber { get; }
 
     private Edition()
     {
+        EditionNumber = default;
     }
 
     private Edition(int editionNumber)

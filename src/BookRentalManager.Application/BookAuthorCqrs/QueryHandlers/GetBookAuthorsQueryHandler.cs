@@ -17,15 +17,13 @@ internal sealed class GetBookAuthorsQueryHandler
 
     public async Task<Result<IReadOnlyList<GetBookAuthorDto>>> HandleAsync(
         GetBookAuthorsQuery getBookAuthorsQuery,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         IReadOnlyList<BookAuthor> bookAuthors = await _bookAuthorRepository.GetAllBySpecificationAsync(
             getBookAuthorsQuery.PageIndex,
             getBookAuthorsQuery.TotalItemsPerPage,
             new BookAuthorsWithBooksSpecification(),
-            cancellationToken
-        );
+            cancellationToken);
         IEnumerable<GetBookAuthorDto> getBookAuthorDtos = from bookAuthor in bookAuthors
                                                           select _getBookAuthorDtoMapper.Map(bookAuthor);
         return Result.Success<IReadOnlyList<GetBookAuthorDto>>(getBookAuthorDtos.ToList());

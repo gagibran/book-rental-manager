@@ -13,7 +13,7 @@ internal sealed class GetCustomerBooksDtoMapper : IMapper<IReadOnlyList<Book>, I
                 select new GetCustomerBookDto(
                     book.BookTitle,
                     book.Edition,
-                    book.Isbn
-                )).ToList();
+                    book.Isbn)
+                ).ToList();
     }
 }

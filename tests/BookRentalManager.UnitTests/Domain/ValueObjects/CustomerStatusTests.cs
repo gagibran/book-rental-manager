@@ -11,15 +11,13 @@ public sealed class CustomerStatusTests
     public void CheckCustomerTypeBookAvailability_WithCustomerStatusAndItsMaxAmount_ReturnsErrorMessage(
         CustomerType customerType,
         int customerBookCount,
-        string expectedErrorMessage
-    )
+        string expectedErrorMessage)
     {
         // Arrange:
         var customerStatus = new CustomerStatus(customerType);
 
         // Act:
-        Result customerTypeAvailability = customerStatus
-            .CheckCustomerTypeBookAvailability(customerBookCount);
+        Result customerTypeAvailability = customerStatus.CheckCustomerTypeBookAvailability(customerBookCount);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, customerTypeAvailability.ErrorMessage);
@@ -31,13 +29,10 @@ public sealed class CustomerStatusTests
     [InlineData(50, CustomerType.Master)]
     public void PromoteCustomerStatus_WithCustomerPoints_ReturnsAppropriatedCustomerStatus(
         int customerPoints,
-        CustomerType customerType
-    )
+        CustomerType customerType)
     {
         // Act:
-        CustomerStatus newCustomerStatus = CustomerStatus.PromoteCustomerStatus(
-            customerPoints
-        );
+        CustomerStatus newCustomerStatus = CustomerStatus.PromoteCustomerStatus(customerPoints);
 
         // Assert:
         Assert.Equal(customerType, newCustomerStatus.CustomerType);

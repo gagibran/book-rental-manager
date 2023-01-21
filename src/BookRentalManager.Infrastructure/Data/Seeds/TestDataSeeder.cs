@@ -23,18 +23,15 @@ public sealed class TestDataSeeder
                 new Customer(
                     FullName.Create("John", "Doe").Value!,
                     Email.Create("john.doe@email.com").Value!,
-                    PhoneNumber.Create(200, 2000000).Value!
-                ),
+                    PhoneNumber.Create(200, 2000000).Value!),
                 new Customer(
                     FullName.Create("Sarah", "Smith").Value!,
                     Email.Create("sarah.smith@email.com").Value!,
-                    PhoneNumber.Create(235, 2204063).Value!
-                ),
+                    PhoneNumber.Create(235, 2204063).Value!),
                 new Customer(
                     FullName.Create("Peter", "Griffin").Value!,
                     Email.Create("peter.grifin@email.com").Value!,
-                    PhoneNumber.Create(546, 4056780).Value!
-                )
+                    PhoneNumber.Create(546, 4056780).Value!)
             };
             await customers.AddRangeAsync(newCustomers);
         }
@@ -102,8 +99,7 @@ public sealed class TestDataSeeder
             var designPatterns = new Book(
                 "Design Patterns: Elements of Reusable Object-Oriented Software",
                 Edition.Create(1).Value!,
-                Isbn.Create("0-201-63361-2").Value!
-            );
+                Isbn.Create("0-201-63361-2").Value!);
             newBookAuthors[0].AddBook(designPatterns);
             newBookAuthors[1].AddBook(designPatterns);
             newBookAuthors[2].AddBook(designPatterns);
@@ -111,8 +107,7 @@ public sealed class TestDataSeeder
             var cleanCode = new Book(
                 "Clean Code: A Handbook of Agile Software Craftsmanship",
                 Edition.Create(1).Value!,
-                Isbn.Create("978-0132350884").Value!
-            );
+                Isbn.Create("978-0132350884").Value!);
             newBookAuthors[4].AddBook(cleanCode);
             var newBooks = new List<Book> { cleanCode, designPatterns };
             await bookAuthors.AddRangeAsync(newBookAuthors);

@@ -10,8 +10,7 @@ public sealed class GetBookAuthorDtoMapperTests
         var expectedGetBookAuthorDto = new GetBookAuthorDto(
             bookAuthor.Id,
             bookAuthor.FullName,
-            new List<GetBookAuthorBookDto>()
-        );
+            new List<GetBookAuthorBookDto>());
         var getBookAuthorBooksDtoMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookAuthorBookDto>>>();
         getBookAuthorBooksDtoMapperStub
             .Setup(getBookAuthorBooksDtoMapper => getBookAuthorBooksDtoMapper.Map(It.IsAny<IReadOnlyList<Book>>()))

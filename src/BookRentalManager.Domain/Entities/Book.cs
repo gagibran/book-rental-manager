@@ -13,19 +13,18 @@ public sealed class Book : Entity
 
     private Book()
     {
-        _bookAuthors = default!;
-        BookTitle = default!;
+        _bookAuthors = new();
+        BookTitle = string.Empty!;
         Edition = default!;
         Isbn = default!;
-        IsAvailable = default!;
-        Customer = default!;
+        IsAvailable = default;
+        Customer = default;
     }
 
     public Book(
         string bookTitle,
         Edition edition,
-        Isbn isbn
-    )
+        Isbn isbn)
     {
         _bookAuthors = new();
         BookTitle = bookTitle;

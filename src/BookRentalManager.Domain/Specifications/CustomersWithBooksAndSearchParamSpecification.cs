@@ -4,13 +4,16 @@ public sealed class CustomersWithBooksAndSearchParamSpecification : Specificatio
 {
     public CustomersWithBooksAndSearchParamSpecification(string searchParameter)
     {
-        var foundCustomerType = Enum.TryParse<CustomerType>(searchParameter, true, out CustomerType customerType)
+        var formattedSearchParameter = searchParameter
+            .ToLower()
+            .Trim();
+        var foundCustomerType = Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType)
             ? customerType
             : (CustomerType?)null;
         Where = customer =>
-            customer.FullName.CompleteName.ToLower().Contains(searchParameter.ToLower())
-            || customer.Email.EmailAddress.ToLower().Contains(searchParameter.ToLower())
-            || customer.PhoneNumber.CompletePhoneNumber.ToLower().Contains(searchParameter.ToLower())
+            customer.FullName.CompleteName.ToLower().Contains(formattedSearchParameter)
+            || customer.Email.EmailAddress.ToLower().Contains(formattedSearchParameter)
+            || customer.PhoneNumber.CompletePhoneNumber.ToLower().Contains(formattedSearchParameter)
             || customer.CustomerStatus.CustomerType == foundCustomerType;
         IncludeExpressions.Add(customer => customer.Books);
     }
