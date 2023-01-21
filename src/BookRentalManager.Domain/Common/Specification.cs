@@ -2,31 +2,19 @@ namespace BookRentalManager.Domain.Common;
 
 public abstract class Specification<TEntity> where TEntity : Entity
 {
-    private readonly List<Expression<Func<TEntity, object>>> _includeExpressions;
-
-    public Expression<Func<TEntity, bool>>? WhereExpression { get; private set; }
-    public IReadOnlyList<Expression<Func<TEntity, object>>> IncludeExpressions => _includeExpressions.AsReadOnly();
+    public Expression<Func<TEntity, bool>>? Where { get; protected set; }
+    public List<Expression<Func<TEntity, object>>> IncludeExpressions { get; }
 
     protected Specification()
     {
-        _includeExpressions = new();
-    }
-
-    protected void Include(Expression<Func<TEntity, object>> includeExpression)
-    {
-        _includeExpressions.Add(includeExpression);
-    }
-
-    protected void Where(Expression<Func<TEntity, bool>> whereExpression)
-    {
-        WhereExpression = whereExpression;
+        IncludeExpressions = new();
     }
 
     public bool IsSatisfiedBy(TEntity entity)
     {
-        if (WhereExpression is not null)
+        if (Where is not null)
         {
-            return WhereExpression.Compile().Invoke(entity);
+            return Where.Compile().Invoke(entity);
         }
         return false;
     }

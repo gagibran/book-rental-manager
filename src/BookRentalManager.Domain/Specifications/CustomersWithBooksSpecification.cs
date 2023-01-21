@@ -4,6 +4,6 @@ public sealed class CustomersWithBooksSpecification : Specification<Customer>
 {
     public CustomersWithBooksSpecification()
     {
-        Include(customer => customer.Books);
+        IncludeExpressions.Add(customer => customer.Books);
     }
 }

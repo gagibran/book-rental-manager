@@ -5,7 +5,7 @@ public sealed class CustomerWithBooksByEmailSpecification : Specification<Custom
 
     public CustomerWithBooksByEmailSpecification(string email)
     {
-        Where(customer => customer.Email.EmailAddress == email);
-        Include(customer => customer.Books);
+        Where = customer => customer.Email.EmailAddress == email;
+        IncludeExpressions.Add(customer => customer.Books);
     }
 }

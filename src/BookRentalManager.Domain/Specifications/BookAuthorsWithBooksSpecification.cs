@@ -4,6 +4,6 @@ public sealed class BookAuthorsWithBooksSpecification : Specification<BookAuthor
 {
     public BookAuthorsWithBooksSpecification()
     {
-        Include(bookAuthor => bookAuthor.Books);
+        IncludeExpressions.Add(bookAuthor => bookAuthor.Books);
     }
 }

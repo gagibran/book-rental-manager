@@ -7,12 +7,11 @@ public sealed class CustomersWithBooksAndQueryParameterSpecification : Specifica
         var foundCustomerType = Enum.TryParse<CustomerType>(queryParameter, true, out CustomerType customerType)
             ? customerType
             : (CustomerType?)null;
-        Where(customer =>
+        Where = customer =>
             customer.FullName.CompleteName.ToLower().Contains(queryParameter.ToLower())
             || customer.Email.EmailAddress.ToLower().Contains(queryParameter.ToLower())
             || customer.PhoneNumber.CompletePhoneNumber.ToLower().Contains(queryParameter.ToLower())
-            || customer.CustomerStatus.CustomerType == foundCustomerType
-        );
-        Include(customer => customer.Books);
+            || customer.CustomerStatus.CustomerType == foundCustomerType;
+        IncludeExpressions.Add(customer => customer.Books);
     }
 }

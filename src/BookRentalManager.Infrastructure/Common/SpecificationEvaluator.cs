@@ -9,9 +9,9 @@ public static class SpecificationEvaluator
         where TEntity : Entity
     {
         IQueryable<TEntity> currentQuery = query;
-        if (specification.WhereExpression is not null)
+        if (specification.Where is not null)
         {
-            currentQuery = currentQuery.Where(specification.WhereExpression);
+            currentQuery = currentQuery.Where(specification.Where);
         }
         foreach (Expression<Func<TEntity, object>> includeExpression in specification.IncludeExpressions)
         {
