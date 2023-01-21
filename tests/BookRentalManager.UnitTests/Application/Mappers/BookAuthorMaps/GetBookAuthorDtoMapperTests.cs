@@ -11,11 +11,11 @@ public sealed class GetBookAuthorDtoMapperTests
             bookAuthor.Id,
             bookAuthor.FullName,
             new List<GetBookAuthorBookDto>());
-        var getBookAuthorBooksDtoMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookAuthorBookDto>>>();
-        getBookAuthorBooksDtoMapperStub
-            .Setup(getBookAuthorBooksDtoMapper => getBookAuthorBooksDtoMapper.Map(It.IsAny<IReadOnlyList<Book>>()))
+        var getBookAuthorBookDtosMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookAuthorBookDto>>>();
+        getBookAuthorBookDtosMapperStub
+            .Setup(getBookAuthorBookDtosMapper => getBookAuthorBookDtosMapper.Map(It.IsAny<IReadOnlyList<Book>>()))
             .Returns(new List<GetBookAuthorBookDto>());
-        var getBookAuthorDtoMapper = new GetBookAuthorDtoMapper(getBookAuthorBooksDtoMapperStub.Object);
+        var getBookAuthorDtoMapper = new GetBookAuthorDtoMapper(getBookAuthorBookDtosMapperStub.Object);
 
         // Act:
         GetBookAuthorDto getBookAuthorDto = getBookAuthorDtoMapper.Map(bookAuthor);
