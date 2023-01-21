@@ -19,9 +19,8 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
         CancellationToken cancellationToken
     )
     {
-        var customer = await _customerRepository.GetByIdAsync(
-            getCustomerByIdQuery.Id,
-            new CustomersWithBooksSpecification(),
+        var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
+            new CustomerWithBooksByIdSpecification(getCustomerByIdQuery.Id),
             cancellationToken);
         if (customer is null)
         {

@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using BookRentalManager.Domain.Common;
 using BookRentalManager.Infrastructure.Extensions;
 
@@ -15,36 +14,14 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         _dbSet = bookRentalManagerDbContext.Set<TEntity>();
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetAllAsync(
-        int pageIndex,
-        int totalItemsPerPage,
-        CancellationToken cancellationToken = default)
-    {
-        return await _dbSet.ToReadOnlyPaginatedListAsync(cancellationToken, pageIndex, totalItemsPerPage);
-    }
-
-    public async Task<IReadOnlyList<TEntity>> GetAllAsync(
+    public async Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
         int pageIndex,
         int totalItemsPerPage,
         Specification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> queryable = ApplySpecification(_dbSet, specification);
-        return await queryable.ToReadOnlyPaginatedListAsync(cancellationToken, pageIndex, totalItemsPerPage);
-    }
-
-    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-    {
-        return await _dbSet.FirstOrDefaultAsync(entity => entity.Id == id);
-    }
-
-    public async Task<TEntity?> GetByIdAsync(
-        Guid id,
-        Specification<TEntity> specification,
-        CancellationToken cancellationToken)
-    {
-        return await ApplySpecification(_dbSet, specification)
-            .FirstOrDefaultAsync(entity => entity.Id == id);
+        IQueryable<TEntity> query = ApplySpecification(_dbSet, specification);
+        return await query.ToReadOnlyPaginatedListAsync(cancellationToken, pageIndex, totalItemsPerPage);
     }
 
     public async Task<TEntity?> GetFirstOrDefaultBySpecificationAsync(
@@ -77,8 +54,8 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         await _bookRentalManagerDbContext.SaveChangesAsync();
     }
 
-    public IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> queryable, Specification<TEntity> specification)
+    public IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification)
     {
-        return SpecificationEvaluator.GetQuery<TEntity>(queryable, specification);
+        return SpecificationEvaluator.GetQuery<TEntity>(query, specification);
     }
 }

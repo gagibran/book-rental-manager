@@ -1,9 +1,13 @@
 namespace BookRentalManager.Application.BookAuthorCqrs.Queries;
 
-public sealed class GetBookAuthorsQuery : GetEntitiesQuery, IQuery<IReadOnlyList<GetBookAuthorDto>>
+public sealed class GetBookAuthorsQuery : IQuery<IReadOnlyList<GetBookAuthorDto>>
 {
+    public int PageIndex { get; }
+    public int TotalItemsPerPage { get; }
+
     public GetBookAuthorsQuery(int pageIndex, int totalItemsPerPage)
-        : base(pageIndex, totalItemsPerPage)
     {
+        PageIndex = pageIndex;
+        TotalItemsPerPage = totalItemsPerPage;
     }
 }

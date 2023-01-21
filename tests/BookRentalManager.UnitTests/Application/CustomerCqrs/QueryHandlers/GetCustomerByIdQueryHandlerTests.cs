@@ -34,8 +34,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
     {
         // Assert:
         _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetByIdAsync(
-                It.IsAny<Guid>(),
+            .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Customer>>(),
                 default))
             .ReturnsAsync(_customer);
@@ -55,8 +54,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
         // Assert:
         var expectedErrorMessage = $"No customer with the ID of '{_customer.Id} was found.";
         _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetByIdAsync(
-                It.IsAny<Guid>(),
+            .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Customer>>(),
                 default))
             .ReturnsAsync((Customer)null);

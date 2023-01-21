@@ -17,18 +17,11 @@ public sealed class CustomerController : BaseController
         CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
-        [FromQuery(Name = "search")] string queryParameter = ""
+        [FromQuery(Name = "search")] string searchParameter = ""
     )
     {
-        IQuery<IReadOnlyList<GetCustomerDto>> getCustomersQuery = new GetCustomersQuery(pageIndex, totalItemsPerPage);
-        if (!string.IsNullOrWhiteSpace(queryParameter))
-        {
-            getCustomersQuery = new GetCustomersWithQueryParameterQuery(
-                pageIndex,
-                totalItemsPerPage,
-                queryParameter
-            );
-        }
+        IQuery<IReadOnlyList<GetCustomerDto>> getCustomersQuery = new GetCustomersWithBooksAndSearchParamQuery(
+            pageIndex, totalItemsPerPage, searchParameter.Trim());
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
             getCustomersQuery,
             cancellationToken

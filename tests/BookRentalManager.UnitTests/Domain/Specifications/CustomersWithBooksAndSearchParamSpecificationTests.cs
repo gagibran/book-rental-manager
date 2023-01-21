@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class CustomersWithBooksAndQueryParameterSpecificationTests
+public sealed class CustomersWithBooksAndSearchParamSpecificationTests
 {
     public static IEnumerable<object[]> GetSuccessfulTestParameters()
     {
@@ -58,13 +58,13 @@ public sealed class CustomersWithBooksAndQueryParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithCustomersWithQuery_ReturnsTrue(string queryParameter, Customer customer)
+    public void IsSatisfiedBy_WithCustomersWithQuery_ReturnsTrue(string searchParameter, Customer customer)
     {
         // Arrange:
-        var customersWithQueryParameterSpecification = new CustomersWithBooksAndQueryParameterSpecification(queryParameter);
+        var customersWithSearchParameterSpecification = new CustomersWithBooksAndSearchParamSpecification(searchParameter);
 
         // Act:
-        bool isSatisfiedBy = customersWithQueryParameterSpecification.IsSatisfiedBy(customer);
+        bool isSatisfiedBy = customersWithSearchParameterSpecification.IsSatisfiedBy(customer);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -72,13 +72,13 @@ public sealed class CustomersWithBooksAndQueryParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetFailureTestParameters))]
-    public void IsSatisfiedBy_WithoutCustomersWithQuery_ReturnsFalse(string queryParameter, Customer customer)
+    public void IsSatisfiedBy_WithoutCustomersWithQuery_ReturnsFalse(string searchParameter, Customer customer)
     {
         // Arrange:
-        var customersWithQueryParameterSpecification = new CustomersWithBooksAndQueryParameterSpecification(queryParameter);
+        var customersWithSearchParameterSpecification = new CustomersWithBooksAndSearchParamSpecification(searchParameter);
 
         // Act:
-        bool isSatisfiedBy = customersWithQueryParameterSpecification.IsSatisfiedBy(customer);
+        bool isSatisfiedBy = customersWithSearchParameterSpecification.IsSatisfiedBy(customer);
 
         // Assert:
         Assert.False(isSatisfiedBy);

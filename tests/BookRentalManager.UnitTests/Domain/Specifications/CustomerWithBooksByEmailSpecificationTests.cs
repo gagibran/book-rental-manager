@@ -13,10 +13,10 @@ public sealed class CustomerWithBooksByEmailSpecificationTests
     public void IsSatisfiedBy_WithExistingEmail_ReturnsTrue()
     {
         // Arrange:
-        var customerByEmailSpecification = new CustomerWithBooksByEmailSpecification("john.doe@email.com");
+        var customerWithBooksByEmailSpecification = new CustomerWithBooksByEmailSpecification("john.doe@email.com");
 
         // Act:
-        bool isSatisfiedBy = customerByEmailSpecification.IsSatisfiedBy(_customer);
+        bool isSatisfiedBy = customerWithBooksByEmailSpecification.IsSatisfiedBy(_customer);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -26,10 +26,10 @@ public sealed class CustomerWithBooksByEmailSpecificationTests
     public void IsSatisfiedBy_WithNonexistingEmail_ReturnsFalse()
     {
         // Arrange:
-        var customerByEmailSpecification = new CustomerWithBooksByEmailSpecification("john.doe2@email.com");
+        var customerWithBooksByEmailSpecification = new CustomerWithBooksByEmailSpecification("john.doe2@email.com");
 
         // Act:
-        bool isSatisfiedBy = customerByEmailSpecification.IsSatisfiedBy(_customer);
+        bool isSatisfiedBy = customerWithBooksByEmailSpecification.IsSatisfiedBy(_customer);
 
         // Assert:
         Assert.False(isSatisfiedBy);

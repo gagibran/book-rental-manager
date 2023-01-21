@@ -33,7 +33,7 @@ public sealed class GetBookAuthorsQueryHandlerTests
     {
         // Assert:
         _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllAsync(
+            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<Specification<BookAuthor>>(),
@@ -58,7 +58,7 @@ public sealed class GetBookAuthorsQueryHandlerTests
             TestFixtures.CreateDummyBookAuthor()
         };
         _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllAsync(
+            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<Specification<BookAuthor>>(),
