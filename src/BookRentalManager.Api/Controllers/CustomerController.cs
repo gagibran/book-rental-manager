@@ -35,7 +35,7 @@ public sealed class CustomerController : BaseController
     public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(CancellationToken cancellationToken, Guid id)
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
-            new GetCustomerByIdQuery(id),
+            new GetCustomerWithBooksByIdQuery(id),
             cancellationToken);
         if (!getCustomerByIdResult.IsSuccess)
         {

@@ -1,11 +1,11 @@
 namespace BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
-internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>
+internal sealed class GetCustomerWithBooksByIdQueryHandler : IQueryHandler<GetCustomerWithBooksByIdQuery, GetCustomerDto>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _getCustomerDtoMapper;
 
-    public GetCustomerByIdQueryHandler(
+    public GetCustomerWithBooksByIdQueryHandler(
         IRepository<Customer> customerRepository,
         IMapper<Customer, GetCustomerDto> getCustomerDtoMapper
     )
@@ -15,16 +15,16 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
     }
 
     public async Task<Result<GetCustomerDto>> HandleAsync(
-        GetCustomerByIdQuery getCustomerByIdQuery,
+        GetCustomerWithBooksByIdQuery getCustomerWithBooksByIdQuery,
         CancellationToken cancellationToken
     )
     {
         var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
-            new CustomerWithBooksByIdSpecification(getCustomerByIdQuery.Id),
+            new CustomerWithBooksByIdSpecification(getCustomerWithBooksByIdQuery.Id),
             cancellationToken);
         if (customer is null)
         {
-            return Result.Fail<GetCustomerDto>($"No customer with the ID of '{getCustomerByIdQuery.Id} was found.");
+            return Result.Fail<GetCustomerDto>($"No customer with the ID of '{getCustomerWithBooksByIdQuery.Id} was found.");
         }
         return Result.Success<GetCustomerDto>(_getCustomerDtoMapper.Map(customer));
     }
