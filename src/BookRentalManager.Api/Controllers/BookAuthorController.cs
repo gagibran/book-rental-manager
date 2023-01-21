@@ -12,12 +12,15 @@ public sealed class BookAuthorController : BaseController
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<GetBookAuthorDto>>> GetBookAuthorsAsync(
         int pageIndex = 1,
-        int totalItemsPerPage = 50
-    )
+        int totalItemsPerPage = 50,
+        [FromQuery(Name = "search")] string searchParameter = "")
     {
-        Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher
-            .DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
-                new GetBookAuthorsQuery(pageIndex, totalItemsPerPage),
+        var getBookAuthorsWithBooksAndSearchParamQuery = new GetBookAuthorsWithBooksAndSearchParamQuery(
+            pageIndex,
+            totalItemsPerPage,
+            searchParameter);
+        Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
+                getBookAuthorsWithBooksAndSearchParamQuery,
                 default);
         return Ok(getAllBookAuthorsResult.Value);
     }

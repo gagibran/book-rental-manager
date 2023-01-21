@@ -4,9 +4,7 @@ public sealed class CustomersWithBooksAndSearchParamSpecification : Specificatio
 {
     public CustomersWithBooksAndSearchParamSpecification(string searchParameter)
     {
-        var formattedSearchParameter = searchParameter
-            .ToLower()
-            .Trim();
+        var formattedSearchParameter = searchParameter.ToLower().Trim();
         var foundCustomerType = Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType)
             ? customerType
             : (CustomerType?)null;

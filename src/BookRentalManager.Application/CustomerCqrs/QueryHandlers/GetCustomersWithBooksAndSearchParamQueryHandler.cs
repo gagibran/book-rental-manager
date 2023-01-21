@@ -19,12 +19,10 @@ internal sealed class GetCustomersWithBooksAndSearchParamQueryHandler
         GetCustomersWithBooksAndSearchParamQuery getCustomersWithBooksAndSearchParamQuery,
         CancellationToken cancellationToken)
     {
-        var customersWithBooksAndSearchParamSpecification = new CustomersWithBooksAndSearchParamSpecification(
-            getCustomersWithBooksAndSearchParamQuery.SearchParameter);
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
             getCustomersWithBooksAndSearchParamQuery.PageIndex,
             getCustomersWithBooksAndSearchParamQuery.TotalItemsPerPage,
-            customersWithBooksAndSearchParamSpecification,
+            new CustomersWithBooksAndSearchParamSpecification(getCustomersWithBooksAndSearchParamQuery.SearchParameter),
             cancellationToken);
         IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers
                                                       select _getCustomerDtoMapper.Map(customer);

@@ -3,24 +3,23 @@ using BookRentalManager.Application.BookAuthorCqrs.QueryHandlers;
 
 namespace BookRentalManager.UnitTests.Application.BookAuthorCqrs.QueryHandlers;
 
-public sealed class GetBookAuthorsQueryHandlerTests
+public sealed class GetBookAuthorsWithBooksAndSearchParamQueryHandlerTests
 {
-    private readonly int _pageIndex;
-    private readonly int _totalItemsPerPage;
     private readonly Mock<IRepository<BookAuthor>> _bookAuthorRepositoryStub;
     private readonly Mock<IMapper<BookAuthor, GetBookAuthorDto>> _getBookAuthorDtoMapperStub;
-    private readonly GetBookAuthorsQueryHandler _getBookAuthorsQueryHandler;
+    private readonly GetBookAuthorsWithBooksAndSearchParamQueryHandler _getBookAuthorsWithBooksAndSearchParamQueryHandler;
     private readonly GetBookAuthorDto _getBookAuthorDto;
+    private readonly BookAuthor _bookAuthor;
+    private readonly List<BookAuthor> _bookAuthors;
 
-    public GetBookAuthorsQueryHandlerTests()
+    public GetBookAuthorsWithBooksAndSearchParamQueryHandlerTests()
     {
-        BookAuthor bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _pageIndex = 1;
-        _totalItemsPerPage = 50;
-        _getBookAuthorDto = new(Guid.NewGuid(), bookAuthor.FullName, new List<GetBookAuthorBookDto>());
+        _bookAuthor = TestFixtures.CreateDummyBookAuthor();
+        _bookAuthors = new List<BookAuthor> { _bookAuthor };
+        _getBookAuthorDto = new(Guid.NewGuid(), _bookAuthor.FullName, new List<GetBookAuthorBookDto>());
         _getBookAuthorDtoMapperStub = new();
         _bookAuthorRepositoryStub = new();
-        _getBookAuthorsQueryHandler = new(
+        _getBookAuthorsWithBooksAndSearchParamQueryHandler = new(
             _bookAuthorRepositoryStub.Object,
             _getBookAuthorDtoMapperStub.Object);
         _getBookAuthorDtoMapperStub
@@ -29,9 +28,13 @@ public sealed class GetBookAuthorsQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithoutAnyBookAuthors_ReturnsErrorMessage()
+    public async Task HandleAsync_WithoutAnyBookAuthorsWithSearchParameter_ReturnsEmptyList()
     {
         // Assert:
+        var getBookAuthorsWithBooksAndSearchParamQuery = new GetBookAuthorsWithBooksAndSearchParamQuery(
+            TestFixtures.PageIndex,
+            TestFixtures.TotalItemsPerPage,
+            "Name");
         _bookAuthorRepositoryStub
             .Setup(bookAuthorRepository => bookAuthorRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
@@ -41,8 +44,8 @@ public sealed class GetBookAuthorsQueryHandlerTests
             .ReturnsAsync(new List<BookAuthor>());
 
         // Act:
-        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsQueryHandler.HandleAsync(
-            new GetBookAuthorsQuery(_pageIndex, _totalItemsPerPage),
+        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsWithBooksAndSearchParamQueryHandler.HandleAsync(
+            getBookAuthorsWithBooksAndSearchParamQuery,
             default);
 
         // Assert:
@@ -50,27 +53,55 @@ public sealed class GetBookAuthorsQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithAtLeastOneBookAuthors_ReturnsListWithBookAuthor()
+    public async Task HandleAsync_WithAtLeastOneBookAuthorWithSearchParameter_ReturnsListWithMatchingBookAuthor()
     {
         // Assert:
-        var expectedListOfBookAuthors = new List<BookAuthor>
-        {
-            TestFixtures.CreateDummyBookAuthor()
-        };
+        var getBookAuthorsWithBooksAndSearchParamQuery = new GetBookAuthorsWithBooksAndSearchParamQuery(
+            TestFixtures.PageIndex,
+            TestFixtures.TotalItemsPerPage,
+            _bookAuthor.FullName.CompleteName);
         _bookAuthorRepositoryStub
             .Setup(bookAuthorRepository => bookAuthorRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<Specification<BookAuthor>>(),
                 default))
-            .ReturnsAsync(expectedListOfBookAuthors);
+            .ReturnsAsync(_bookAuthors);
 
         // Act:
-        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsQueryHandler.HandleAsync(
-            new GetBookAuthorsQuery(_pageIndex, _totalItemsPerPage),
+        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsWithBooksAndSearchParamQueryHandler.HandleAsync(
+            getBookAuthorsWithBooksAndSearchParamQuery,
             default);
 
         // Assert:
         Assert.Equal(_getBookAuthorDto, handlerResult.Value.FirstOrDefault());
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllBookAuthors(string searchParam)
+    {
+        // Arrange:
+        var getBookAuthorsWithBooksAndSearchParamQuery = new GetBookAuthorsWithBooksAndSearchParamQuery(
+            TestFixtures.PageIndex,
+            TestFixtures.TotalItemsPerPage,
+            searchParam);
+        _bookAuthors.Add(new BookAuthor(FullName.Create("Sarah", "Smith").Value));
+        _bookAuthorRepositoryStub
+            .Setup(bookAuthorRepository => bookAuthorRepository.GetAllBySpecificationAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Specification<BookAuthor>>(),
+                default))
+            .ReturnsAsync(_bookAuthors);
+
+        // Act:
+        Result<IReadOnlyList<GetBookAuthorDto>> handlerResult = await _getBookAuthorsWithBooksAndSearchParamQueryHandler.HandleAsync(
+            getBookAuthorsWithBooksAndSearchParamQuery,
+            default);
+
+        // Assert:
+        Assert.Equal(2, handlerResult.Value.Count);
     }
 }
