@@ -49,7 +49,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithCustomerWithId_ReturnsErrorMessage()
+    public async Task HandleAsync_WithCustomerWithNonexistingId_ReturnsErrorMessage()
     {
         // Assert:
         var expectedErrorMessage = $"No customer with the ID of '{_customer.Id} was found.";
