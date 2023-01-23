@@ -25,10 +25,10 @@ internal sealed class GetBooksBySearchParameterQueryHandler
         BookAuthor? bookAuthor = await _bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(bookAuthorByIdSpecification);
         if (bookAuthor is null)
         {
-            Result.Fail<IReadOnlyList<GetBookDto>>($"No book author with the ID of '{getBooksBySearchParameterQuery.BookAuthorId} was found.");
+            return Result.Fail<IReadOnlyList<GetBookDto>>($"No book author with the ID of '{getBooksBySearchParameterQuery.BookAuthorId}' was found.");
         }
         var booksByBookAuthorBooksSpecification = new BooksByBookAuthorBooksAndSearchParameterSpecification(
-            bookAuthor!.Books,
+            bookAuthor.Books,
             getBooksBySearchParameterQuery.SearchParameter);
         IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksBySearchParameterQuery.PageIndex,

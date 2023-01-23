@@ -52,7 +52,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
     public async Task HandleAsync_WithCustomerWithNonexistingId_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = $"No customer with the ID of '{_customer.Id} was found.";
+        var expectedErrorMessage = $"No customer with the ID of '{_customer.Id}' was found.";
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Customer>>(),

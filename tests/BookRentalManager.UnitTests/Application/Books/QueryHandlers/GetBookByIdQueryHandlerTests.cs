@@ -63,7 +63,7 @@ public sealed class GetBookByIdQueryHandlerTests
     public async Task HandleAsync_WithBookAuthorAndNonexistingId_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = $"No book with the ID of '{_book.Id} was found for this book author.";
+        var expectedErrorMessage = $"No book with the ID of '{_book.Id}' was found for this book author.";
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Book>>(),
@@ -83,8 +83,7 @@ public sealed class GetBookByIdQueryHandlerTests
     public async Task HandleAsync_WithNonexistingBookAuthor_ReturnsErrorMessage()
     {
         // Arrange:
-        _bookAuthor.AddBook(_book);
-        var expectedErrorMessage = $"No book author with the ID of '{_bookAuthor.Id} was found.";
+        var expectedErrorMessage = $"No book author with the ID of '{_bookAuthor.Id}' was found.";
         _bookAuthorRepositoryStub
             .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<BookAuthor>>(),

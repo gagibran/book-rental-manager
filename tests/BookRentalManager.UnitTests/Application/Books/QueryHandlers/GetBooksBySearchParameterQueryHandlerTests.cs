@@ -133,4 +133,29 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
         // Assert:
         Assert.Equal(2, handlerResult.Value.Count);
     }
+
+    [Fact]
+    public async Task HandleAsync_WithNonexistingBookAuthor_ReturnErrorMessage()
+    {
+        // Arrange:
+        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
+            _bookAuthor.Id,
+            TestFixtures.PageIndex,
+            TestFixtures.TotalItemsPerPage,
+            "Test");
+        var expectedErrorMessage = $"No book author with the ID of '{_bookAuthor.Id}' was found.";
+        _bookAuthorRepositoryStub
+            .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<BookAuthor>>(),
+                default))
+            .ReturnsAsync((BookAuthor)null);
+
+        // Act:
+        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksBySearchParameterQueryHandler.HandleAsync(
+            getBooksBySearchParameterQuery,
+            default);
+
+        // Assert:
+        Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
+    }
 }
