@@ -1,8 +1,6 @@
-using BookRentalManager.Application.Books.Queries;
-
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-public sealed class GetBooksWithSearchParamQueryHandler
+internal sealed class GetBooksWithSearchParamQueryHandler
     : IQueryHandler<GetBooksWithSearchParamQuery, IReadOnlyList<GetBookDto>>
 {
     private readonly IRepository<Book> _bookRepository;

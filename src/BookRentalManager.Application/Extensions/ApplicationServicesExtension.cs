@@ -1,9 +1,10 @@
 using BookRentalManager.Application.BooksAuthors.QueryHandlers;
-using BookRentalManager.Application.Books.Queries;
 using BookRentalManager.Application.Books.QueryHandlers;
 using BookRentalManager.Application.Customers.CommandHandlers;
 using BookRentalManager.Application.Customers.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
+using BookRentalManager.Application.Mappers;
+using BookRentalManager.Application.Common;
 
 namespace BookRentalManager.Application.Extensions;
 

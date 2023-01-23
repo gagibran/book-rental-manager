@@ -1,3 +1,5 @@
+using BookRentalManager.Infrastructure.Data.Config;
+
 namespace BookRentalManager.Infrastructure.Data;
 
 public sealed class BookRentalManagerDbContext : DbContext

@@ -1,4 +1,4 @@
-using BookRentalManager.Domain.Common;
+using BookRentalManager.Infrastructure.Data;
 using BookRentalManager.Infrastructure.Extensions;
 
 namespace BookRentalManager.Infrastructure.Common;
