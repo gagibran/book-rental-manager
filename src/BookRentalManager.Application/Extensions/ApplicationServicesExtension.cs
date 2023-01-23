@@ -5,6 +5,7 @@ using BookRentalManager.Application.Customers.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using BookRentalManager.Application.Mappers;
 using BookRentalManager.Application.Common;
+using BookRentalManager.Application.Books.CommandHandlers;
 
 namespace BookRentalManager.Application.Extensions;
 
@@ -22,6 +23,7 @@ public static class ApplicationServicesExtension
     private static IServiceCollection AddApplicationCommandsServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand>, CreateCustomerCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<CreateBookCommand>, CreateBookCommandHandler>();
         return serviceCollection;
     }
 

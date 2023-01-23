@@ -1,3 +1,4 @@
+using BookRentalManager.Application.Books.Commands;
 using BookRentalManager.Application.Books.Queries;
 
 namespace BookRentalManager.Api.Controllers;
@@ -37,8 +38,39 @@ public sealed class BookController : BaseController
         Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdQuery, cancellationToken);
         if (!getBookByIdResult.IsSuccess)
         {
+            _baseControllerLogger.LogError(getBookByIdResult.ErrorMessage);
             return NotFound(getBookByIdResult.ErrorMessage);
         }
         return Ok(getBookByIdResult.Value);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> CreateBookForBookAuthorAsync(
+        Guid bookAuthorId,
+        CreateBookDto createBookDto,
+        CancellationToken cancellationToken)
+    {
+        Result<Edition> editionResult = Edition.Create(createBookDto.Edition);
+        Result<Isbn> isbnResult = Isbn.Create(createBookDto.Isbn);
+        Result combinedResults = Result.Combine(editionResult, isbnResult);
+        if (!combinedResults.IsSuccess)
+        {
+            _baseControllerLogger.LogError(combinedResults.ErrorMessage);
+            return BadRequest(combinedResults.ErrorMessage);
+        }
+        var newBook = new Book(createBookDto.BookTitle, editionResult.Value!, isbnResult.Value!);
+        Result createBookResult = await _dispatcher.DispatchAsync(new CreateBookCommand(bookAuthorId, newBook), cancellationToken);
+        if (!createBookResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(createBookResult.ErrorMessage);
+            return BadRequest(createBookResult.ErrorMessage);
+        }
+        var bookCreatedDto = new BookCreatedDto(
+            newBook.Id,
+            bookAuthorId,
+            newBook.BookTitle,
+            newBook.Edition.EditionNumber,
+            newBook.Isbn.IsbnValue);
+        return CreatedAtAction(nameof(GetBookByIdFromBookAuthorAsync), new { bookAuthorId, id = newBook.Id }, bookCreatedDto);
     }
 }

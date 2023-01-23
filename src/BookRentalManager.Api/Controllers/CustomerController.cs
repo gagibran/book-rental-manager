@@ -1,7 +1,5 @@
 using BookRentalManager.Application.Customers.Commands;
 using BookRentalManager.Application.Customers.Queries;
-using BookRentalManager.Domain.Entities;
-using BookRentalManager.Domain.ValueObjects;
 
 namespace BookRentalManager.Api.Controllers;
 
@@ -57,6 +55,7 @@ public sealed class CustomerController : BaseController
             phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {
+            _baseControllerLogger.LogError(combinedResults.ErrorMessage);
             return BadRequest(combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
@@ -66,6 +65,13 @@ public sealed class CustomerController : BaseController
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
             return BadRequest(createCustomerResult.ErrorMessage);
         }
-        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = newCustomer.Id }, newCustomer);
+        var customerCreatedDto = new CustomerCreatedDto(
+            newCustomer.Id,
+            newCustomer.FullName.CompleteName,
+            newCustomer.Email.EmailAddress,
+            newCustomer.PhoneNumber.CompletePhoneNumber,
+            newCustomer.CustomerStatus.CustomerType.ToString(),
+            newCustomer.CustomerPoints);
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = newCustomer.Id }, customerCreatedDto);
     }
 }
