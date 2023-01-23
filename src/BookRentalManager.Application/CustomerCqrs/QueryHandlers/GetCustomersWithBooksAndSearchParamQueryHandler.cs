@@ -1,12 +1,12 @@
 namespace BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 
-internal sealed class GetCustomersWithBooksAndSearchParamQueryHandler
-    : IQueryHandler<GetCustomersWithBooksAndSearchParamQuery, IReadOnlyList<GetCustomerDto>>
+internal sealed class GetCustomersWithSearchParamQueryHandler
+    : IQueryHandler<GetCustomersWithSearchParamQuery, IReadOnlyList<GetCustomerDto>>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _getCustomerDtoMapper;
 
-    public GetCustomersWithBooksAndSearchParamQueryHandler(
+    public GetCustomersWithSearchParamQueryHandler(
         IRepository<Customer> customerRepository,
         IMapper<Customer, GetCustomerDto> getCustomerDtoMapper
     )
@@ -16,16 +16,16 @@ internal sealed class GetCustomersWithBooksAndSearchParamQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetCustomerDto>>> HandleAsync(
-        GetCustomersWithBooksAndSearchParamQuery getCustomersWithBooksAndSearchParamQuery,
+        GetCustomersWithSearchParamQuery getCustomersWithSearchParamQuery,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
-            getCustomersWithBooksAndSearchParamQuery.PageIndex,
-            getCustomersWithBooksAndSearchParamQuery.TotalItemsPerPage,
-            new CustomersWithBooksAndSearchParamSpecification(getCustomersWithBooksAndSearchParamQuery.SearchParameter),
+            getCustomersWithSearchParamQuery.PageIndex,
+            getCustomersWithSearchParamQuery.TotalItemsPerPage,
+            new CustomersWithSearchParamSpecification(getCustomersWithSearchParamQuery.SearchParameter),
             cancellationToken);
-        IEnumerable<GetCustomerDto> getCustomersDto = from customer in customers
-                                                      select _getCustomerDtoMapper.Map(customer);
-        return Result.Success<IReadOnlyList<GetCustomerDto>>(getCustomersDto.ToList());
+        IReadOnlyList<GetCustomerDto> getCustomerDtos = (from customer in customers
+                                                         select _getCustomerDtoMapper.Map(customer)).ToList().AsReadOnly();
+        return Result.Success<IReadOnlyList<GetCustomerDto>>(getCustomerDtos);
     }
 }

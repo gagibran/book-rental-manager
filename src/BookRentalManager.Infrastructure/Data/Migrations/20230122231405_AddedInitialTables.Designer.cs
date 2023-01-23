@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(BookRentalManagerDbContext))]
-    [Migration("20230119031736_AddedInitialTables")]
+    [Migration("20230122231405_AddedInitialTables")]
     partial class AddedInitialTables
     {
         /// <inheritdoc />
@@ -138,8 +138,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
 
                             b1.Property<string>("IsbnValue")
                                 .IsRequired()
-                                .HasMaxLength(13)
-                                .HasColumnType("character varying(13)")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
                                 .HasColumnName("Isbn");
 
                             b1.HasKey("BookId");

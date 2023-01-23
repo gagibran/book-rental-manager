@@ -17,6 +17,7 @@ public sealed class GetBookDtoMapperTests
             .Returns(new GetRentedByDto());
         var getBookDtoMapper = new GetBookDtoMapper(getBookBookAuthorDtosMapperStub.Object, getRentedByDtoMapperStub.Object);
         var expectedGetBookDto = new GetBookDto(
+            book.Id,
             book.BookTitle,
             new List<GetBookBookAuthorDto>(),
             book.Edition,

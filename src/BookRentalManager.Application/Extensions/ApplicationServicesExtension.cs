@@ -1,4 +1,6 @@
 using BookRentalManager.Application.BookAuthorCqrs.QueryHandlers;
+using BookRentalManager.Application.BookCqrs.Queries;
+using BookRentalManager.Application.BookCqrs.QueryHandlers;
 using BookRentalManager.Application.CustomerCqrs.CommandHandlers;
 using BookRentalManager.Application.CustomerCqrs.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,9 +26,10 @@ public static class ApplicationServicesExtension
 
     private static IServiceCollection AddApplicationQueriesService(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IQueryHandler<GetCustomersWithBooksAndSearchParamQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersWithBooksAndSearchParamQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBookAuthorsWithBooksAndSearchParamQuery, IReadOnlyList<GetBookAuthorDto>>, GetBookAuthorsWithBooksAndSearchParamQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetCustomersWithSearchParamQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersWithSearchParamQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBookAuthorsWithSearchParamQuery, IReadOnlyList<GetBookAuthorDto>>, GetBookAuthorsWithSearchParamQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetCustomerWithBooksByIdQuery, GetCustomerDto>, GetCustomerWithBooksByIdQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBooksWithSearchParamQuery, IReadOnlyList<GetBookDto>>, GetBooksWithSearchParamQueryHandler>();
         return serviceCollection;
     }
 

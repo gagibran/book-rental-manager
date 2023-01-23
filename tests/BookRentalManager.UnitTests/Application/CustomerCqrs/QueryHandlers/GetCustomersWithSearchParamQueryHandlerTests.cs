@@ -1,15 +1,15 @@
 namespace BookRentalManager.UnitTests.Application.CustomerCqrs.QueryHandlers;
 
-public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
+public sealed class GetCustomersWithSearchParamQueryHandlerTests
 {
     private readonly Customer _customer;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
-    private readonly GetCustomersWithBooksAndSearchParamQueryHandler _getCustomersWithBooksAndSearchParamQueryHandler;
+    private readonly GetCustomersWithSearchParamQueryHandler _getCustomersWithSearchParamQueryHandler;
     private readonly GetCustomerDto _getCustomerDto;
     private readonly List<Customer> _customers;
 
-    public GetCustomersWithBooksAndSearchParamQueryHandlerTests()
+    public GetCustomersWithSearchParamQueryHandlerTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
         _customers = new List<Customer> { _customer };
@@ -23,7 +23,7 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
             _customer.CustomerPoints);
         _getCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
-        _getCustomersWithBooksAndSearchParamQueryHandler = new(
+        _getCustomersWithSearchParamQueryHandler = new(
             _customerRepositoryStub.Object,
             _getCustomerDtoMapperStub.Object);
         _getCustomerDtoMapperStub
@@ -35,7 +35,7 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
     public async Task HandleAsync_WithAtLeastOneCustomerWithSearchParameter_ReturnsListWithMatchingCustomer()
     {
         // Arrange:
-        var getCustomersWithBooksAndSearchParamQuery = new GetCustomersWithBooksAndSearchParamQuery(
+        var getCustomersWithSearchParamQuery = new GetCustomersWithSearchParamQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             _customer.Email.EmailAddress);
@@ -48,8 +48,8 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
             .ReturnsAsync(_customers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersWithBooksAndSearchParamQueryHandler.HandleAsync(
-            getCustomersWithBooksAndSearchParamQuery,
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersWithSearchParamQueryHandler.HandleAsync(
+            getCustomersWithSearchParamQuery,
             default);
 
         // Assert:
@@ -60,7 +60,7 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
     public async Task HandleAsync_WithoutAnyCustomerWithSearchParameter_ReturnsEmptyList()
     {
         // Arrange:
-        var getCustomersWithBooksAndSearchParamQuery = new GetCustomersWithBooksAndSearchParamQuery(
+        var getCustomersWithSearchParamQuery = new GetCustomersWithSearchParamQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             "test@email.com");
@@ -73,8 +73,8 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
             .ReturnsAsync(new List<Customer>());
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersWithBooksAndSearchParamQueryHandler.HandleAsync(
-            getCustomersWithBooksAndSearchParamQuery,
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersWithSearchParamQueryHandler.HandleAsync(
+            getCustomersWithSearchParamQuery,
             default);
 
         // Assert:
@@ -87,7 +87,7 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
     public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers(string searchParam)
     {
         // Arrange:
-        var getCustomersWithBooksAndSearchParamQuery = new GetCustomersWithBooksAndSearchParamQuery(
+        var getCustomersWithSearchParamQuery = new GetCustomersWithSearchParamQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             searchParam);
@@ -104,8 +104,8 @@ public sealed class GetCustomersWithBooksAndSearchParamQueryHandlerTests
             .ReturnsAsync(_customers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersWithBooksAndSearchParamQueryHandler.HandleAsync(
-            getCustomersWithBooksAndSearchParamQuery,
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersWithSearchParamQueryHandler.HandleAsync(
+            getCustomersWithSearchParamQuery,
             default);
 
         // Assert:

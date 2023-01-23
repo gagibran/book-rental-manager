@@ -9,7 +9,7 @@ public sealed class Book : Entity
     public Edition Edition { get; }
     public Isbn Isbn { get; }
     public bool IsAvailable { get; internal set; }
-    public Customer? Customer { get; }
+    public Customer? Customer { get; private set; }
 
     private Book()
     {
@@ -36,5 +36,10 @@ public sealed class Book : Entity
     internal void AddBookAuthor(BookAuthor bookAuthor)
     {
         _bookAuthors.Add(bookAuthor);
+    }
+
+    internal void SetRentedBy(Customer customer)
+    {
+        Customer = customer;
     }
 }

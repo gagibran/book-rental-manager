@@ -96,22 +96,28 @@ public sealed class TestDataSeeder
                 new BookAuthor(FullName.Create("Sidney", "Sheldon").Value!),
                 new BookAuthor(FullName.Create("Barbara", "Catland").Value!)
             };
-            var designPatterns = new Book(
+            var designPatternsBook = new Book(
                 "Design Patterns: Elements of Reusable Object-Oriented Software",
                 Edition.Create(1).Value!,
                 Isbn.Create("0-201-63361-2").Value!);
-            newBookAuthors[0].AddBook(designPatterns);
-            newBookAuthors[1].AddBook(designPatterns);
-            newBookAuthors[2].AddBook(designPatterns);
-            newBookAuthors[3].AddBook(designPatterns);
-            var cleanCode = new Book(
+            newBookAuthors[0].AddBook(designPatternsBook);
+            newBookAuthors[1].AddBook(designPatternsBook);
+            newBookAuthors[2].AddBook(designPatternsBook);
+            newBookAuthors[3].AddBook(designPatternsBook);
+            var cleanCodeBook = new Book(
                 "Clean Code: A Handbook of Agile Software Craftsmanship",
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
-            newBookAuthors[4].AddBook(cleanCode);
-            var newBooks = new List<Book> { cleanCode, designPatterns };
+            newBookAuthors[4].AddBook(cleanCodeBook);
+            var newBooks = new List<Book> { cleanCodeBook, designPatternsBook };
+            var customer = new Customer(
+                FullName.Create("Rosanne", "Johnson").Value!,
+                Email.Create("rosane.johnson@email.com").Value!,
+                PhoneNumber.Create(559, 7852361).Value!);
+            customer.RentBook(cleanCodeBook);
             await bookAuthors.AddRangeAsync(newBookAuthors);
             await books.AddRangeAsync(newBooks);
+            await customers.AddAsync(customer);
         }
         await _bookRentalManagerDbContext.SaveChangesAsync();
     }

@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Application.CustomerCqrs.QueryHandlers;
 
-public sealed class GetCustomerWithBooksByIdQueryHandlerTests
+public sealed class GetCustomerByIdQueryHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
@@ -8,7 +8,7 @@ public sealed class GetCustomerWithBooksByIdQueryHandlerTests
     private readonly Customer _customer;
     private readonly GetCustomerDto _getCustomerDto;
 
-    public GetCustomerWithBooksByIdQueryHandlerTests()
+    public GetCustomerByIdQueryHandlerTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
         _getCustomerDto = new(

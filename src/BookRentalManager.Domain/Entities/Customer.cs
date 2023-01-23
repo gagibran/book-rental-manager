@@ -43,6 +43,7 @@ public sealed class Customer : Entity
         }
         book.IsAvailable = false;
         _books.Add(book);
+        book.SetRentedBy(this);
         CustomerPoints++;
         CustomerStatus = CustomerStatus.PromoteCustomerStatus(CustomerPoints);
         return Result.Success();

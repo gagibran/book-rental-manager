@@ -20,12 +20,12 @@ public sealed class CustomerController : BaseController
         [FromQuery(Name = "search")] string searchParameter = ""
     )
     {
-        var getCustomersWithBooksAndSearchParamQuery = new GetCustomersWithBooksAndSearchParamQuery(
+        var getCustomersWithSearchParamQuery = new GetCustomersWithSearchParamQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
-            getCustomersWithBooksAndSearchParamQuery,
+            getCustomersWithSearchParamQuery,
             cancellationToken);
         return Ok(getAllCustomersResult.Value);
     }

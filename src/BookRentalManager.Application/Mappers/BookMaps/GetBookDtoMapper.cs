@@ -16,6 +16,7 @@ public sealed class GetBookDtoMapper : IMapper<Book, GetBookDto>
     public GetBookDto Map(Book book)
     {
         return new GetBookDto(
+            book.Id,
             book.BookTitle,
             _getBookBookAuthorDtosMapper.Map(book.BookAuthors),
             book.Edition,

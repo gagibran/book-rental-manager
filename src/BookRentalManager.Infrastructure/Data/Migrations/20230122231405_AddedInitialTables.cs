@@ -46,7 +46,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     BookTitle = table.Column<string>(type: "text", nullable: false),
                     Edition = table.Column<int>(type: "integer", nullable: false),
-                    Isbn = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
+                    Isbn = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: true)
                 },

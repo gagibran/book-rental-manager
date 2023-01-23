@@ -70,8 +70,9 @@ public sealed class CustomerTests
         // Act:
         Result availabilityResult = _customer.RentBook(_book);
 
-        // Then
+        // Assert:
         Assert.Equal(expectedCustomerPoints, _customer.CustomerPoints);
+        Assert.Equal(_customer, _book.Customer);
     }
 
     [Fact]

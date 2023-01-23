@@ -2,6 +2,7 @@ namespace BookRentalManager.Application.Dtos.BookDtos;
 
 public sealed class GetBookDto
 {
+    public Guid Id { get; }
     public string BookTitle { get; }
     public IReadOnlyList<GetBookBookAuthorDto> BookAuthors { get; }
     public int Edition { get; }
@@ -10,6 +11,7 @@ public sealed class GetBookDto
     public GetRentedByDto RentedBy { get; }
 
     public GetBookDto(
+        Guid id,
         string bookTitle,
         IReadOnlyList<GetBookBookAuthorDto> bookAuthors,
         Edition edition,
@@ -17,10 +19,12 @@ public sealed class GetBookDto
         bool isAvailable,
         GetRentedByDto rentedBy)
     {
+        Id = id;
         BookTitle = bookTitle;
         BookAuthors = bookAuthors;
         Edition = edition.EditionNumber;
         Isbn = isbn.IsbnValue;
+        IsAvailable = isAvailable;
         RentedBy = rentedBy;
     }
 }

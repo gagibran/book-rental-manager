@@ -20,7 +20,7 @@ internal sealed class GetCustomerWithBooksByIdQueryHandler : IQueryHandler<GetCu
     )
     {
         var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
-            new CustomerWithBooksByIdSpecification(getCustomerWithBooksByIdQuery.Id),
+            new CustomerByIdSpecification(getCustomerWithBooksByIdQuery.Id),
             cancellationToken);
         if (customer is null)
         {

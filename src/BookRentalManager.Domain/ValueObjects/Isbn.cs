@@ -21,7 +21,7 @@ public sealed class Isbn : ValueObject
         {
             return Result.Fail<Isbn>("Invalid ISBN format.");
         }
-        var isbn = new Isbn(formattedIsbn);
+        var isbn = new Isbn(isbnValue);
         return Result.Success<Isbn>(isbn);
     }
 

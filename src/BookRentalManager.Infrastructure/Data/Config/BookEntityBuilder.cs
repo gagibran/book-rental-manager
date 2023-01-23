@@ -30,7 +30,7 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
             .OwnsOne(book => book.Isbn)
             .Property(isbn => isbn.IsbnValue)
             .HasColumnName("Isbn")
-            .HasMaxLength(13)
+            .HasMaxLength(20)
             .IsRequired();
         bookBuilder
             .Property(book => book.IsAvailable)

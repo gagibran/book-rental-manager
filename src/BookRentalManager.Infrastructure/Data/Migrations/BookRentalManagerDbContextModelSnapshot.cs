@@ -135,8 +135,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
 
                             b1.Property<string>("IsbnValue")
                                 .IsRequired()
-                                .HasMaxLength(13)
-                                .HasColumnType("character varying(13)")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
                                 .HasColumnName("Isbn");
 
                             b1.HasKey("BookId");
