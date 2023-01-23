@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Mappers.BookAuthorMaps;
+namespace BookRentalManager.Application.Mappers;
 
 internal sealed class GetBookAuthorDtoMapper : IMapper<BookAuthor, GetBookAuthorDto>
 {

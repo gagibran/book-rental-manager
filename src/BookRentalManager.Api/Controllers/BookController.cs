@@ -1,5 +1,5 @@
 using BookRentalManager.Application.Books.Queries;
-using BookRentalManager.Application.Dtos.BookDtos;
+using BookRentalManager.Application.Dtos;
 
 namespace BookRentalManager.Api.Controllers;
 

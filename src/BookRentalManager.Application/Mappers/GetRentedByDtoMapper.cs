@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Mappers.BookMaps;
+namespace BookRentalManager.Application.Mappers;
 
 public sealed class GetRentedByDtoMapper : IMapper<Customer?, GetRentedByDto>
 {

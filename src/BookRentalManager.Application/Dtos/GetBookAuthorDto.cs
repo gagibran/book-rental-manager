@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Dtos.BookAuthorDtos;
+namespace BookRentalManager.Application.Dtos;
 
 public sealed class GetBookAuthorDto
 {

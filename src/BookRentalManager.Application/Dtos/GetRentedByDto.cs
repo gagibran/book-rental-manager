@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Dtos.BookDtos;
+namespace BookRentalManager.Application.Dtos;
 
 public sealed class GetRentedByDto
 {

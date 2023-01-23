@@ -1,4 +1,4 @@
-namespace BookRentalManager.UnitTests.Application.Mappers.BookMaps;
+namespace BookRentalManager.UnitTests.Application.Mappers;
 
 public sealed class GetRentedByDtoMapperTests
 {
