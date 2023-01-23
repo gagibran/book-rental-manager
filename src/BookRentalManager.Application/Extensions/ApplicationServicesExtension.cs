@@ -21,7 +21,7 @@ public static class ApplicationServicesExtension
 
     private static IServiceCollection AddApplicationCommandsServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<ICommandHandler<CreateNewCustomerCommand>, CreateNewCustomerCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand>, CreateCustomerCommandHandler>();
         return serviceCollection;
     }
 

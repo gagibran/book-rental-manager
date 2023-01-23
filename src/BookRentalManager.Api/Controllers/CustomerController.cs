@@ -60,7 +60,7 @@ public sealed class CustomerController : BaseController
             return BadRequest(combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-        Result createCustomerResult = await _dispatcher.DispatchAsync(new CreateNewCustomerCommand(newCustomer), cancellationToken);
+        Result createCustomerResult = await _dispatcher.DispatchAsync(new CreateCustomerCommand(newCustomer), cancellationToken);
         if (!createCustomerResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);

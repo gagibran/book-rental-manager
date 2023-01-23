@@ -3,23 +3,23 @@ using BookRentalManager.Application.Customers.CommandHandlers;
 
 namespace BookRentalManager.UnitTests.Application.Customers.CommandHandlers;
 
-public sealed class CreateNewCustomerCommandHandlerTests
+public sealed class CreateCustomerCommandHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly FullName _fullName;
     private readonly Email _email;
     private readonly PhoneNumber _phoneNumber;
-    private readonly CreateNewCustomerCommand _createNewCustomerCommand;
-    private readonly CreateNewCustomerCommandHandler _createNewCustomerCommandHandler;
+    private readonly CreateCustomerCommand _createCustomerCommand;
+    private readonly CreateCustomerCommandHandler _createCustomerCommandHandler;
 
-    public CreateNewCustomerCommandHandlerTests()
+    public CreateCustomerCommandHandlerTests()
     {
         _customerRepositoryStub = new();
         _fullName = FullName.Create("John", "Doe").Value;
         _email = Email.Create("john.doe@email.com").Value;
         _phoneNumber = PhoneNumber.Create(200, 2_000_000).Value;
-        _createNewCustomerCommand = new(new Customer(_fullName, _email, _phoneNumber));
-        _createNewCustomerCommandHandler = new(_customerRepositoryStub.Object);
+        _createCustomerCommand = new(new Customer(_fullName, _email, _phoneNumber));
+        _createCustomerCommandHandler = new(_customerRepositoryStub.Object);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public sealed class CreateNewCustomerCommandHandlerTests
             .ReturnsAsync(customer);
 
         // Act:
-        Result handleResult = await _createNewCustomerCommandHandler.HandleAsync(_createNewCustomerCommand, default);
+        Result handleResult = await _createCustomerCommandHandler.HandleAsync(_createCustomerCommand, default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
@@ -54,7 +54,7 @@ public sealed class CreateNewCustomerCommandHandlerTests
             .Verifiable();
 
         // Act:
-        Result handleResult = await _createNewCustomerCommandHandler.HandleAsync(_createNewCustomerCommand, default);
+        Result handleResult = await _createCustomerCommandHandler.HandleAsync(_createCustomerCommand, default);
 
         // Assert:
         Assert.True(handleResult.IsSuccess);
