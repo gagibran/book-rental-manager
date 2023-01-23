@@ -11,6 +11,7 @@ public sealed class BookAuthorController : BaseController
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<GetBookAuthorDto>>> GetBookAuthorsAsync(
+        CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
@@ -21,7 +22,7 @@ public sealed class BookAuthorController : BaseController
             searchParameter);
         Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
                 getBookAuthorsBySearchParameterQuery,
-                default);
+                cancellationToken);
         return Ok(getAllBookAuthorsResult.Value);
     }
 }

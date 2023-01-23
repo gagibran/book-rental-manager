@@ -46,7 +46,7 @@ public sealed class CustomerController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateCustomerAsync(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateCustomerAsync(CancellationToken cancellationToken, CreateCustomerDto createCustomerDto)
     {
         Result<FullName> fullNameResult = FullName.Create(createCustomerDto.FirstName, createCustomerDto.LastName);
         Result<Email> emailResult = Email.Create(createCustomerDto.Email);
