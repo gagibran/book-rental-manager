@@ -30,7 +30,7 @@ public sealed class GetBookAuthorsBySearchParameterQueryHandlerTests
     [Fact]
     public async Task HandleAsync_WithoutAnyBookAuthorsWithSearchParameter_ReturnsEmptyList()
     {
-        // Assert:
+        // Arrange:
         var getBookAuthorsBySearchParameterQuery = new GetBookAuthorsBySearchParameterQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
@@ -55,7 +55,7 @@ public sealed class GetBookAuthorsBySearchParameterQueryHandlerTests
     [Fact]
     public async Task HandleAsync_WithAtLeastOneBookAuthorWithSearchParameter_ReturnsListWithMatchingBookAuthor()
     {
-        // Assert:
+        // Arrange:
         var getBookAuthorsBySearchParameterQuery = new GetBookAuthorsBySearchParameterQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,

@@ -32,7 +32,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
     [Fact]
     public async Task HandleAsync_WithCustomerWithId_ReturnsCustomer()
     {
-        // Assert:
+        // Arrange:
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Customer>>(),
@@ -51,7 +51,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
     [Fact]
     public async Task HandleAsync_WithCustomerWithNonexistingId_ReturnsErrorMessage()
     {
-        // Assert:
+        // Arrange:
         var expectedErrorMessage = $"No customer with the ID of '{_customer.Id} was found.";
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(

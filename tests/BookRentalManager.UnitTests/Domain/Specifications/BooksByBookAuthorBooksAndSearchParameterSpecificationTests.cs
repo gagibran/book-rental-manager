@@ -1,28 +1,28 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class BooksBySearchParameterSpecificationTests
+public sealed class BooksByBookAuthorBooksAndSearchParameterSpecificationTests
 {
     public static IEnumerable<object[]> GetSuccessfulTestParameters()
     {
         yield return new object[]
         {
             "pragmatic Progr",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
         yield return new object[]
         {
             "1",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
         yield return new object[]
         {
             "0-201-616",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
         yield return new object[]
         {
             "false",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
     }
 
@@ -32,33 +32,37 @@ public sealed class BooksBySearchParameterSpecificationTests
         yield return new object[]
         {
             "1984",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
         yield return new object[]
         {
             "5",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
         yield return new object[]
         {
             "345-6",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
         yield return new object[]
         {
             "true",
-            TestFixtures.CreateDummyBook()
+            TestFixtures.CreateDummyBookAuthor()
         };
     }
 
     [Theory]
     [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter, Book book)
+    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter, BookAuthor bookAuthor)
     {
         // Arrange:
+        var book = TestFixtures.CreateDummyBook();
         var customer = TestFixtures.CreateDummyCustomer();
+        bookAuthor.AddBook(book);
         customer.RentBook(book);
-        var booksWithSearchParameterSpecification = new BooksBySearchParameterSpecification(searchParameter);
+        var booksWithSearchParameterSpecification = new BooksByBookAuthorBooksAndSearchParameterSpecification(
+            bookAuthor.Books,
+            searchParameter);
 
         // Act:
         bool isSatisfiedBy = booksWithSearchParameterSpecification.IsSatisfiedBy(book);
@@ -69,12 +73,16 @@ public sealed class BooksBySearchParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetFailureTestParameters))]
-    public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter, Book book)
+    public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter, BookAuthor bookAuthor)
     {
         // Arrange:
+        var book = TestFixtures.CreateDummyBook();
         var customer = TestFixtures.CreateDummyCustomer();
+        bookAuthor.AddBook(book);
         customer.RentBook(book);
-        var booksWithSearchParameterSpecification = new BooksBySearchParameterSpecification(searchParameter);
+        var booksWithSearchParameterSpecification = new BooksByBookAuthorBooksAndSearchParameterSpecification(
+            bookAuthor.Books,
+            searchParameter);
 
         // Act:
         bool isSatisfiedBy = booksWithSearchParameterSpecification.IsSatisfiedBy(book);

@@ -5,6 +5,7 @@ using BookRentalManager.Domain.ValueObjects;
 
 namespace BookRentalManager.Api.Controllers;
 
+[Route("api/[controller]")]
 public sealed class CustomerController : BaseController
 {
     public CustomerController(IDispatcher dispatcher, ILogger<CustomerController> customerControllerLogger)
@@ -17,8 +18,7 @@ public sealed class CustomerController : BaseController
         CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
-        [FromQuery(Name = "search")] string searchParameter = ""
-    )
+        [FromQuery(Name = "search")] string searchParameter = "")
     {
         var getCustomersBySearchParameterQuery = new GetCustomersBySearchParameterQuery(
             pageIndex,
@@ -32,7 +32,7 @@ public sealed class CustomerController : BaseController
 
     [HttpGet("{id}")]
     [ActionName(nameof(GetCustomerByIdAsync))]
-    public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(CancellationToken cancellationToken, Guid id)
+    public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
             new GetCustomerByIdQuery(id),
@@ -46,7 +46,7 @@ public sealed class CustomerController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateCustomerAsync(CancellationToken cancellationToken, CreateCustomerDto createCustomerDto)
+    public async Task<ActionResult> CreateCustomerAsync(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
     {
         Result<FullName> fullNameResult = FullName.Create(createCustomerDto.FirstName, createCustomerDto.LastName);
         Result<Email> emailResult = Email.Create(createCustomerDto.Email);
