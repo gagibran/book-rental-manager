@@ -1,15 +1,15 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class AddNewCustomerCommandHandler : ICommandHandler<AddNewCustomerCommand>
+internal sealed class CreateNewCustomerCommandHandler : ICommandHandler<CreateNewCustomerCommand>
 {
     private readonly IRepository<Customer> _customerRepository;
 
-    public AddNewCustomerCommandHandler(IRepository<Customer> customerRepository)
+    public CreateNewCustomerCommandHandler(IRepository<Customer> customerRepository)
     {
         _customerRepository = customerRepository;
     }
 
-    public async Task<Result> HandleAsync(AddNewCustomerCommand command, CancellationToken cancellationToken)
+    public async Task<Result> HandleAsync(CreateNewCustomerCommand command, CancellationToken cancellationToken)
     {
         Customer? customerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
             new CustomerByEmailSpecification(command.Customer.Email.EmailAddress));

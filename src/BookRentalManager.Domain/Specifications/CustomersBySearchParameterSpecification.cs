@@ -1,8 +1,8 @@
 namespace BookRentalManager.Domain.Specifications;
 
-public sealed class CustomersWithSearchParamSpecification : Specification<Customer>
+public sealed class CustomersBySearchParameterSpecification : Specification<Customer>
 {
-    public CustomersWithSearchParamSpecification(string searchParameter)
+    public CustomersBySearchParameterSpecification(string searchParameter)
     {
         var formattedSearchParameter = searchParameter.ToLower().Trim();
         var foundCustomerType = Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType)

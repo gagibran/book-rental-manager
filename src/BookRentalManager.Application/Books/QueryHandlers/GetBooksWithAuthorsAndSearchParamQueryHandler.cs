@@ -1,12 +1,12 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBooksWithSearchParamQueryHandler
-    : IQueryHandler<GetBooksWithSearchParamQuery, IReadOnlyList<GetBookDto>>
+internal sealed class GetBooksBySearchParameterQueryHandler
+    : IQueryHandler<GetBooksBySearchParameterQuery, IReadOnlyList<GetBookDto>>
 {
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _getBookDtoMapper;
 
-    public GetBooksWithSearchParamQueryHandler(
+    public GetBooksBySearchParameterQueryHandler(
         IRepository<Book> bookRepository,
         IMapper<Book, GetBookDto> getBookDtoMapper)
     {
@@ -15,13 +15,13 @@ internal sealed class GetBooksWithSearchParamQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetBookDto>>> HandleAsync(
-        GetBooksWithSearchParamQuery getBooksWithSearchParamQuery,
+        GetBooksBySearchParameterQuery getBooksBySearchParameterQuery,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
-            getBooksWithSearchParamQuery.PageIndex,
-            getBooksWithSearchParamQuery.TotalItemsPerPage,
-            new BooksWithSearchParamSpecification(getBooksWithSearchParamQuery.SearchParameter),
+            getBooksBySearchParameterQuery.PageIndex,
+            getBooksBySearchParameterQuery.TotalItemsPerPage,
+            new BooksBySearchParameterSpecification(getBooksBySearchParameterQuery.SearchParameter),
             cancellationToken);
         IReadOnlyList<GetBookDto> getBookDtos = (from book in books
                                                  select _getBookDtoMapper.Map(book)).ToList().AsReadOnly();

@@ -15,7 +15,7 @@ public sealed class BookController : BaseController
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getBooksWithBooksAndSearchParamQuery = new GetBooksWithSearchParamQuery(
+        var getBooksWithBooksAndSearchParamQuery = new GetBooksBySearchParameterQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);

@@ -20,12 +20,12 @@ public sealed class CustomerController : BaseController
         [FromQuery(Name = "search")] string searchParameter = ""
     )
     {
-        var getCustomersWithSearchParamQuery = new GetCustomersWithSearchParamQuery(
+        var getCustomersBySearchParameterQuery = new GetCustomersBySearchParameterQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
-            getCustomersWithSearchParamQuery,
+            getCustomersBySearchParameterQuery,
             cancellationToken);
         return Ok(getAllCustomersResult.Value);
     }
@@ -35,7 +35,7 @@ public sealed class CustomerController : BaseController
     public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(CancellationToken cancellationToken, Guid id)
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
-            new GetCustomerWithBooksByIdQuery(id),
+            new GetCustomerByIdQuery(id),
             cancellationToken);
         if (!getCustomerByIdResult.IsSuccess)
         {
@@ -46,7 +46,7 @@ public sealed class CustomerController : BaseController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateCustomer(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateCustomerAsync(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
     {
         Result<FullName> fullNameResult = FullName.Create(createCustomerDto.FirstName, createCustomerDto.LastName);
         Result<Email> emailResult = Email.Create(createCustomerDto.Email);
@@ -60,7 +60,7 @@ public sealed class CustomerController : BaseController
             return BadRequest(combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-        Result createCustomerResult = await _dispatcher.DispatchAsync(new AddNewCustomerCommand(newCustomer), cancellationToken);
+        Result createCustomerResult = await _dispatcher.DispatchAsync(new CreateNewCustomerCommand(newCustomer), cancellationToken);
         if (!createCustomerResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);

@@ -4,7 +4,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
-    private readonly GetCustomerWithBooksByIdQueryHandler _getCustomerWithBooksByIdQueryHandler;
+    private readonly GetCustomerByIdQueryHandler _getCustomerByIdQueryHandler;
     private readonly Customer _customer;
     private readonly GetCustomerDto _getCustomerDto;
 
@@ -21,7 +21,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
             _customer.CustomerPoints);
         _getCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
-        _getCustomerWithBooksByIdQueryHandler = new(
+        _getCustomerByIdQueryHandler = new(
             _customerRepositoryStub.Object,
             _getCustomerDtoMapperStub.Object);
         _getCustomerDtoMapperStub
@@ -40,8 +40,8 @@ public sealed class GetCustomerByIdQueryHandlerTests
             .ReturnsAsync(_customer);
 
         // Act:
-        Result<GetCustomerDto> handlerResult = await _getCustomerWithBooksByIdQueryHandler.HandleAsync(
-            new GetCustomerWithBooksByIdQuery(_customer.Id),
+        Result<GetCustomerDto> handlerResult = await _getCustomerByIdQueryHandler.HandleAsync(
+            new GetCustomerByIdQuery(_customer.Id),
             default);
 
         // Assert:
@@ -60,8 +60,8 @@ public sealed class GetCustomerByIdQueryHandlerTests
             .ReturnsAsync((Customer)null);
 
         // Act:
-        Result<GetCustomerDto> handlerResult = await _getCustomerWithBooksByIdQueryHandler.HandleAsync(
-            new GetCustomerWithBooksByIdQuery(_customer.Id),
+        Result<GetCustomerDto> handlerResult = await _getCustomerByIdQueryHandler.HandleAsync(
+            new GetCustomerByIdQuery(_customer.Id),
             default);
 
         // Assert:

@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class BooksWithSearchParamSpecificationTests
+public sealed class BooksBySearchParameterSpecificationTests
 {
     public static IEnumerable<object[]> GetSuccessfulTestParameters()
     {
@@ -58,7 +58,7 @@ public sealed class BooksWithSearchParamSpecificationTests
         // Arrange:
         var customer = TestFixtures.CreateDummyCustomer();
         customer.RentBook(book);
-        var booksWithSearchParameterSpecification = new BooksWithSearchParamSpecification(searchParameter);
+        var booksWithSearchParameterSpecification = new BooksBySearchParameterSpecification(searchParameter);
 
         // Act:
         bool isSatisfiedBy = booksWithSearchParameterSpecification.IsSatisfiedBy(book);
@@ -74,7 +74,7 @@ public sealed class BooksWithSearchParamSpecificationTests
         // Arrange:
         var customer = TestFixtures.CreateDummyCustomer();
         customer.RentBook(book);
-        var booksWithSearchParameterSpecification = new BooksWithSearchParamSpecification(searchParameter);
+        var booksWithSearchParameterSpecification = new BooksBySearchParameterSpecification(searchParameter);
 
         // Act:
         bool isSatisfiedBy = booksWithSearchParameterSpecification.IsSatisfiedBy(book);

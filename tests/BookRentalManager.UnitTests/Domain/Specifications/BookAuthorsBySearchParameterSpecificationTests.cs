@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class BookAuthorsWithSearchParamSpecificationTests
+public sealed class BookAuthorsBySearchParameterSpecificationTests
 {
     public static IEnumerable<object[]> GetSuccessfulTestParameters()
     {
@@ -45,7 +45,7 @@ public sealed class BookAuthorsWithSearchParamSpecificationTests
     public void IsSatisfiedBy_WithBookAuthorsWithQuery_ReturnsTrue(string searchParameter, BookAuthor bookAuthor)
     {
         // Arrange:
-        var bookAuthorsWithSearchParameterSpecification = new BookAuthorsWithSearchParamSpecification(searchParameter);
+        var bookAuthorsWithSearchParameterSpecification = new BookAuthorsBySearchParameterSpecification(searchParameter);
 
         // Act:
         bool isSatisfiedBy = bookAuthorsWithSearchParameterSpecification.IsSatisfiedBy(bookAuthor);
@@ -59,7 +59,7 @@ public sealed class BookAuthorsWithSearchParamSpecificationTests
     public void IsSatisfiedBy_WithoutBookAuthorsWithQuery_ReturnsFalse(string searchParameter, BookAuthor bookAuthor)
     {
         // Arrange:
-        var bookAuthorsWithSearchParameterSpecification = new BookAuthorsWithSearchParamSpecification(searchParameter);
+        var bookAuthorsWithSearchParameterSpecification = new BookAuthorsBySearchParameterSpecification(searchParameter);
 
         // Act:
         bool isSatisfiedBy = bookAuthorsWithSearchParameterSpecification.IsSatisfiedBy(bookAuthor);

@@ -1,12 +1,12 @@
 namespace BookRentalManager.Application.Customers.QueryHandlers;
 
-internal sealed class GetCustomersWithSearchParamQueryHandler
-    : IQueryHandler<GetCustomersWithSearchParamQuery, IReadOnlyList<GetCustomerDto>>
+internal sealed class GetCustomersBySearchParameterQueryHandler
+    : IQueryHandler<GetCustomersBySearchParameterQuery, IReadOnlyList<GetCustomerDto>>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _getCustomerDtoMapper;
 
-    public GetCustomersWithSearchParamQueryHandler(
+    public GetCustomersBySearchParameterQueryHandler(
         IRepository<Customer> customerRepository,
         IMapper<Customer, GetCustomerDto> getCustomerDtoMapper
     )
@@ -16,13 +16,13 @@ internal sealed class GetCustomersWithSearchParamQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetCustomerDto>>> HandleAsync(
-        GetCustomersWithSearchParamQuery getCustomersWithSearchParamQuery,
+        GetCustomersBySearchParameterQuery getCustomersBySearchParameterQuery,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
-            getCustomersWithSearchParamQuery.PageIndex,
-            getCustomersWithSearchParamQuery.TotalItemsPerPage,
-            new CustomersWithSearchParamSpecification(getCustomersWithSearchParamQuery.SearchParameter),
+            getCustomersBySearchParameterQuery.PageIndex,
+            getCustomersBySearchParameterQuery.TotalItemsPerPage,
+            new CustomersBySearchParameterSpecification(getCustomersBySearchParameterQuery.SearchParameter),
             cancellationToken);
         IReadOnlyList<GetCustomerDto> getCustomerDtos = (from customer in customers
                                                          select _getCustomerDtoMapper.Map(customer)).ToList().AsReadOnly();

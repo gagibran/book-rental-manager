@@ -15,12 +15,12 @@ public sealed class BookAuthorController : BaseController
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getBookAuthorsWithSearchParamQuery = new GetBookAuthorsWithSearchParamQuery(
+        var getBookAuthorsBySearchParameterQuery = new GetBookAuthorsBySearchParameterQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetBookAuthorDto>> getAllBookAuthorsResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookAuthorDto>>(
-                getBookAuthorsWithSearchParamQuery,
+                getBookAuthorsBySearchParameterQuery,
                 default);
         return Ok(getAllBookAuthorsResult.Value);
     }
