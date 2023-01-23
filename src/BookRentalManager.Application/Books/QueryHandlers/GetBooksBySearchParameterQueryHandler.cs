@@ -27,13 +27,13 @@ internal sealed class GetBooksBySearchParameterQueryHandler
         {
             return Result.Fail<IReadOnlyList<GetBookDto>>($"No book author with the ID of '{getBooksBySearchParameterQuery.BookAuthorId}' was found.");
         }
-        var booksByBookAuthorBooksSpecification = new BooksByBookAuthorBooksAndSearchParameterSpecification(
+        var booksInBookAuthorBooksAndSearchParameterSpecification = new BooksInBookAuthorBooksAndSearchParameterSpecification(
             bookAuthor.Books,
             getBooksBySearchParameterQuery.SearchParameter);
         IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksBySearchParameterQuery.PageIndex,
             getBooksBySearchParameterQuery.TotalItemsPerPage,
-            booksByBookAuthorBooksSpecification,
+            booksInBookAuthorBooksAndSearchParameterSpecification,
             cancellationToken);
         IReadOnlyList<GetBookDto> getBookDtos = (from book in books
                                                  select _getBookDtoMapper.Map(book)).ToList().AsReadOnly();
