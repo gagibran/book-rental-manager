@@ -5,7 +5,7 @@ internal sealed class GetBookDtoMapper : IMapper<Book, GetBookDto>
     private IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookBookAuthorDto>> _getBookBookAuthorDtosMapper;
     private IMapper<Customer?, GetRentedByDto> _getRentedByDtoMapper;
 
-    internal GetBookDtoMapper(
+    public GetBookDtoMapper(
         IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookBookAuthorDto>> getBookBookAuthorDtosMapper,
         IMapper<Customer?, GetRentedByDto> getRentedByDtoMapper)
     {
