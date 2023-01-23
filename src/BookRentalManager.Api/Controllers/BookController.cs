@@ -1,4 +1,4 @@
-using BookRentalManager.Application.BookCqrs.Queries;
+using BookRentalManager.Application.Books.Queries;
 using BookRentalManager.Application.Dtos.BookDtos;
 
 namespace BookRentalManager.Api.Controllers;

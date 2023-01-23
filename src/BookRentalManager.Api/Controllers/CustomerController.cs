@@ -1,5 +1,5 @@
-using BookRentalManager.Application.CustomerCqrs.Commands;
-using BookRentalManager.Application.CustomerCqrs.Queries;
+using BookRentalManager.Application.Customers.Commands;
+using BookRentalManager.Application.Customers.Queries;
 using BookRentalManager.Domain.Entities;
 using BookRentalManager.Domain.ValueObjects;
 

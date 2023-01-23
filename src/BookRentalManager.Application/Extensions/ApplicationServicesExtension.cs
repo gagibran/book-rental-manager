@@ -1,8 +1,8 @@
-using BookRentalManager.Application.BookAuthorCqrs.QueryHandlers;
-using BookRentalManager.Application.BookCqrs.Queries;
-using BookRentalManager.Application.BookCqrs.QueryHandlers;
-using BookRentalManager.Application.CustomerCqrs.CommandHandlers;
-using BookRentalManager.Application.CustomerCqrs.QueryHandlers;
+using BookRentalManager.Application.BooksAuthors.QueryHandlers;
+using BookRentalManager.Application.Books.Queries;
+using BookRentalManager.Application.Books.QueryHandlers;
+using BookRentalManager.Application.Customers.CommandHandlers;
+using BookRentalManager.Application.Customers.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BookRentalManager.Application.Extensions;

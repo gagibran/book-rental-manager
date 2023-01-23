@@ -1,4 +1,4 @@
-using BookRentalManager.Application.BookAuthorCqrs.Queries;
+using BookRentalManager.Application.BooksAuthors.Queries;
 
 namespace BookRentalManager.Api.Controllers;
 
