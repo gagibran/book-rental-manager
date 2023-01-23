@@ -14,10 +14,7 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
         _getCustomerDtoMapper = getCustomerDtoMapper;
     }
 
-    public async Task<Result<GetCustomerDto>> HandleAsync(
-        GetCustomerByIdQuery getCustomerByIdQuery,
-        CancellationToken cancellationToken
-    )
+    public async Task<Result<GetCustomerDto>> HandleAsync(GetCustomerByIdQuery getCustomerByIdQuery, CancellationToken cancellationToken)
     {
         var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
             new CustomerByIdSpecification(getCustomerByIdQuery.Id),
