@@ -12,3 +12,5 @@ global using BookRentalManager.Application.Mappers;
 global using BookRentalManager.Application.Customers.Queries;
 global using BookRentalManager.Application.Customers.QueryHandlers;
 global using BookRentalManager.Domain.Specifications;
+global using BookRentalManager.Application.Books.QueryHandlers;
+global using BookRentalManager.Application.Books.Queries;

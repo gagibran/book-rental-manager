@@ -1,6 +1,3 @@
-using BookRentalManager.Application.Books.Queries;
-using BookRentalManager.Application.Books.QueryHandlers;
-
 namespace BookRentalManager.UnitTests.Application.Books.QueryHandlers;
 
 public sealed class GetBooksBySearchParameterQueryHandlerTests

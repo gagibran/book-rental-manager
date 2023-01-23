@@ -11,17 +11,31 @@ public sealed class BookController : BaseController
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<GetBookDto>>> GetBooksAsync(
+        CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getBooksWithBooksAndSearchParamQuery = new GetBooksBySearchParameterQuery(
+        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookDto>>(
-                getBooksWithBooksAndSearchParamQuery,
-                default);
+                getBooksBySearchParameterQuery,
+                cancellationToken);
         return Ok(getAllBooksResult.Value);
+    }
+
+    [HttpGet("{id}")]
+    [ActionName(nameof(GetBookByIdAsync))]
+    public async Task<ActionResult<GetBookDto>> GetBookByIdAsync(CancellationToken cancellationToken, Guid id)
+    {
+        var getBookByIdQuery = new GetBookByIdQuery(id);
+        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdQuery, cancellationToken);
+        if (!getBookByIdResult.IsSuccess)
+        {
+            return NotFound(getBookByIdResult.ErrorMessage);
+        }
+        return Ok(getBookByIdResult.Value);
     }
 }
