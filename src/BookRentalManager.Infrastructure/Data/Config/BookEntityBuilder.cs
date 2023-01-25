@@ -39,5 +39,9 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
         bookBuilder
             .HasOne(book => book.Customer)
             .WithMany(customer => customer.Books);
+        bookBuilder
+            .Property(books => books.CreatedAt)
+            .HasColumnName("CreatedAt")
+            .IsRequired();
     }
 }

@@ -50,6 +50,10 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("BookTitle");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedAt");
+
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
@@ -70,6 +74,10 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedAt");
+
                     b.HasKey("Id");
 
                     b.ToTable("BookAuthor", (string)null);
@@ -80,6 +88,10 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedAt");
 
                     b.Property<int>("CustomerPoints")
                         .HasColumnType("integer")

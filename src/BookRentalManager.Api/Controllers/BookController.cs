@@ -27,6 +27,11 @@ public sealed class BookController : BaseController
         Result<IReadOnlyList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookDto>>(
                 getBooksBySearchParameterQuery,
                 cancellationToken);
+        if (!getAllBooksResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
+            return NotFound(getAllBooksResult.ErrorMessage);
+        }
         return Ok(getAllBooksResult.Value);
     }
 

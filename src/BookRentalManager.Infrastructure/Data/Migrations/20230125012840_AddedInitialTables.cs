@@ -16,7 +16,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FullName = table.Column<string>(type: "text", nullable: false)
+                    FullName = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,7 +33,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     Email = table.Column<string>(type: "text", nullable: false),
                     PhoneNumber = table.Column<string>(type: "character(12)", fixedLength: true, maxLength: 12, nullable: false),
                     CustomerStatus = table.Column<string>(type: "text", nullable: false),
-                    CustomerPoints = table.Column<int>(type: "integer", nullable: false)
+                    CustomerPoints = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -48,7 +50,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     Edition = table.Column<int>(type: "integer", nullable: false),
                     Isbn = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uuid", nullable: true)
+                    CustomerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

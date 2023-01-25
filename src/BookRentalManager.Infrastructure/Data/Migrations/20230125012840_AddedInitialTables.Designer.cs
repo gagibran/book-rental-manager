@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(BookRentalManagerDbContext))]
-    [Migration("20230122231405_AddedInitialTables")]
+    [Migration("20230125012840_AddedInitialTables")]
     partial class AddedInitialTables
     {
         /// <inheritdoc />
@@ -53,6 +53,10 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("BookTitle");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedAt");
+
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
@@ -73,6 +77,10 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedAt");
+
                     b.HasKey("Id");
 
                     b.ToTable("BookAuthor", (string)null);
@@ -83,6 +91,10 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CreatedAt");
 
                     b.Property<int>("CustomerPoints")
                         .HasColumnType("integer")

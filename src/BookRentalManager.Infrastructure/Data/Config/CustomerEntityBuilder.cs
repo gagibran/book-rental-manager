@@ -42,5 +42,9 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .Property(customer => customer.CustomerPoints)
             .HasColumnName("CustomerPoints")
             .IsRequired();
+        customerBuilder
+            .Property(customer => customer.CreatedAt)
+            .HasColumnName("CreatedAt")
+            .IsRequired();
     }
 }

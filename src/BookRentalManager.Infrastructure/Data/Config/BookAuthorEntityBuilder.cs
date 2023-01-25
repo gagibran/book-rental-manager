@@ -22,5 +22,9 @@ public sealed class BookAuthorEntityBuilder : IEntityTypeConfiguration<BookAutho
                     .Property("BookAuthorsId")
                     .HasColumnName("BookAuthorId");
             });
+        bookAuthorBuilder
+            .Property(bookAuthor => bookAuthor.CreatedAt)
+            .HasColumnName("CreatedAt")
+            .IsRequired();
     }
 }
