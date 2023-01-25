@@ -19,13 +19,13 @@ public sealed class CreateBookCommandHandler : ICommandHandler<CreateBookCommand
         {
             return Result.Fail($"No book author with the ID of '{createBookCommand.BookAuthorId}' was found.");
         }
-        var bookInBookAuthorBooksByTitleSpecification = new BookInBookAuthorBooksByTitleSpecification(
+        var bookInBookAuthorBooksByIsbnSpecification = new BookInBookAuthorBooksByIsbnSpecification(
             bookAuthor.Books,
-            createBookCommand.Book.BookTitle);
-        Book? book = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookInBookAuthorBooksByTitleSpecification);
+            createBookCommand.Book.Isbn.IsbnValue);
+        Book? book = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookInBookAuthorBooksByIsbnSpecification);
         if (book is not null)
         {
-            return Result.Fail($"A book with the title '{createBookCommand.Book.BookTitle}' already exists for this book author.");
+            return Result.Fail($"A book with the ISBN '{createBookCommand.Book.Isbn.IsbnValue}' already exists for this book author.");
         }
         bookAuthor.AddBook(createBookCommand.Book);
         await _bookRepository.CreateAsync(createBookCommand.Book, cancellationToken);

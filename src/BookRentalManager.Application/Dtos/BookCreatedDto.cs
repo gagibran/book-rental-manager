@@ -11,6 +11,7 @@ public sealed class BookCreatedDto
     public BookCreatedDto(Guid id, Guid bookAuthorId, string bookTitle, int edition, string isbn)
     {
         Id = id;
+        BookAuthorId = bookAuthorId;
         BookTitle = bookTitle;
         Edition = edition;
         Isbn = isbn;

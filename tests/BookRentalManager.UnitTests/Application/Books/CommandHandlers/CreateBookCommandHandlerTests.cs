@@ -54,7 +54,7 @@ public sealed class CreateBookCommandHandlerTests
                 It.IsAny<Specification<Book>>(),
                 default))
             .ReturnsAsync(_book);
-        var expectedErrorMessage = "A book with the title 'The Pragmatic Programmer: From Journeyman to Master' already exists for this book author.";
+        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' already exists for this book author.";
         _bookRepositoryStub
             .Setup(bookRepository =>
                 bookRepository.GetFirstOrDefaultBySpecificationAsync(
