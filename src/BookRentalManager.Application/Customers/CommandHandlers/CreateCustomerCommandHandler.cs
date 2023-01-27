@@ -1,23 +1,44 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerCommand>
+internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>
 {
     private readonly IRepository<Customer> _customerRepository;
+    private readonly IMapper<Customer, CustomerCreatedDto> _customerCreatedDtoMapper;
 
-    public CreateCustomerCommandHandler(IRepository<Customer> customerRepository)
+    public CreateCustomerCommandHandler(
+        IRepository<Customer> customerRepository,
+        IMapper<Customer, CustomerCreatedDto> customerCreatedDtoMapper)
     {
         _customerRepository = customerRepository;
+        _customerCreatedDtoMapper = customerCreatedDtoMapper;
     }
 
-    public async Task<Result> HandleAsync(CreateCustomerCommand command, CancellationToken cancellationToken)
+    public async Task<Result<CustomerCreatedDto>> HandleAsync(
+        CreateCustomerCommand createCustomerCommand,
+        CancellationToken cancellationToken)
     {
         Customer? customerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
-            new CustomerByEmailSpecification(command.Customer.Email.EmailAddress));
+            new CustomerByEmailSpecification(createCustomerCommand.CreateCustomerDto.Email));
         if (customerWithEmail is not null)
         {
-            return Result.Fail($"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
+            return Result.Fail<CustomerCreatedDto>(
+                $"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
         }
-        await _customerRepository.CreateAsync(command.Customer, cancellationToken);
-        return Result.Success();
+        Result<FullName> fullNameResult = FullName.Create(
+            createCustomerCommand.CreateCustomerDto.FirstName,
+            createCustomerCommand.CreateCustomerDto.LastName);
+        Result<Email> emailResult = Email.Create(createCustomerCommand.CreateCustomerDto.Email);
+        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
+            createCustomerCommand.CreateCustomerDto.AreaCode,
+            createCustomerCommand.CreateCustomerDto.PhoneNumber);
+        Result combinedResults = Result.Combine(fullNameResult, emailResult, phoneNumberResult);
+        if (!combinedResults.IsSuccess)
+        {
+            return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorMessage);
+        }
+        var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
+
+        await _customerRepository.CreateAsync(newCustomer, cancellationToken);
+        return Result.Success(_customerCreatedDtoMapper.Map(newCustomer));
     }
 }

@@ -46,32 +46,15 @@ public sealed class CustomerController : BaseController
     [HttpPost]
     public async Task<ActionResult> CreateCustomerAsync(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
     {
-        Result<FullName> fullNameResult = FullName.Create(createCustomerDto.FirstName, createCustomerDto.LastName);
-        Result<Email> emailResult = Email.Create(createCustomerDto.Email);
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(createCustomerDto.AreaCode, createCustomerDto.PhoneNumber);
-        Result combinedResults = Result.Combine(
-            fullNameResult,
-            emailResult,
-            phoneNumberResult);
-        if (!combinedResults.IsSuccess)
-        {
-            _baseControllerLogger.LogError(combinedResults.ErrorMessage);
-            return BadRequest(combinedResults.ErrorMessage);
-        }
-        var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-        Result createCustomerResult = await _dispatcher.DispatchAsync(new CreateCustomerCommand(newCustomer), cancellationToken);
+        Result<CustomerCreatedDto> createCustomerResult = await _dispatcher.DispatchAsync<CustomerCreatedDto>(
+            new CreateCustomerCommand(createCustomerDto),
+            cancellationToken);
         if (!createCustomerResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
             return BadRequest(createCustomerResult.ErrorMessage);
         }
-        var customerCreatedDto = new CustomerCreatedDto(
-            newCustomer.Id,
-            newCustomer.FullName.CompleteName,
-            newCustomer.Email.EmailAddress,
-            newCustomer.PhoneNumber.CompletePhoneNumber,
-            newCustomer.CustomerStatus.CustomerType.ToString(),
-            newCustomer.CustomerPoints);
-        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = newCustomer.Id }, customerCreatedDto);
+
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 }

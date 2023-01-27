@@ -22,7 +22,7 @@ public static class ApplicationServicesExtension
 
     private static IServiceCollection AddApplicationCommandsServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand>, CreateCustomerCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>, CreateCustomerCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<CreateBookCommand, BookCreatedDto>, CreateBookCommandHandler>();
         return serviceCollection;
     }
@@ -47,6 +47,7 @@ public static class ApplicationServicesExtension
         serviceCollection.AddTransient<IMapper<Book, BookCreatedDto>, BookCreatedDtoMapper>();
         serviceCollection.AddTransient<IMapper<Customer?, GetRentedByDto>, GetRentedByDtoMapper>();
         serviceCollection.AddTransient<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookBookAuthorDto>>, GetBookBookAuthorDtosMapper>();
+        serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerCreatedDtoMapper>();
         return serviceCollection;
     }
 }
