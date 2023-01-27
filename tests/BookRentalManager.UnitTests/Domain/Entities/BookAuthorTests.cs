@@ -15,10 +15,11 @@ public sealed class BookAuthorTests
     }
 
     [Fact]
-    public void AddBook_WithExistingBook_ReturnsErrorMessage()
+    public void AddBook_WithExistingBookWithIsbn_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = "The book titled 'Domain-Driven Design: Tackling Complexity in the Heart of Software' has already been added to this author.";
+        var expectedErrorMessage = "A book with the ISBN '978-0321125217' has already been added to this book author.";
+
         _bookAuthor.AddBook(_book);
 
         // Act:

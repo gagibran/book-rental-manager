@@ -9,6 +9,7 @@ public sealed class DispatcherTests
     private readonly Mock<ICommand> _commandStub;
     private readonly Mock<IQuery<Customer>> _queryStub;
     private readonly Dispatcher _dispatcher;
+    private readonly Customer _customer;
 
     public DispatcherTests()
     {
@@ -16,6 +17,7 @@ public sealed class DispatcherTests
         _commandStub = new();
         _queryStub = new();
         _dispatcher = new(_serviceProviderStub.Object);
+        _customer = TestFixtures.CreateDummyCustomer();
     }
 
     [Fact]
@@ -51,21 +53,49 @@ public sealed class DispatcherTests
     }
 
     [Fact]
+    public async Task DispatchAsync_WithValidCommandHandlerReturningResult_ReturnsSuccess()
+    {
+        // Arrange:
+        var commandHandlerStub = new Mock<ICommandHandler<ICommand, Customer>>();
+        commandHandlerStub
+            .Setup(commandHandler => commandHandler.HandleAsync(It.IsAny<ICommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success<Customer>(_customer));
+        _serviceProviderStub
+            .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
+            .Returns(commandHandlerStub.Object);
+
+        // Act:
+        Result<Customer> dispatcherResult = await _dispatcher.DispatchAsync<Customer>(_commandStub.Object, default);
+
+        // Assert:
+        Assert.True(dispatcherResult.IsSuccess);
+        Assert.Equal(_customer, dispatcherResult.Value);
+    }
+
+    [Fact]
+    public void DispatchAsync_WithNullCommandHandlerReturningResult_ThrowsException()
+    {
+        // Arrange:
+        _serviceProviderStub
+            .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
+            .Returns(null);
+
+        // Assert:
+        Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
+            () => _dispatcher.DispatchAsync<Customer>(It.IsAny<ICommand>(), It.IsAny<CancellationToken>()));
+    }
+
+    [Fact]
     public async Task DispatchAsync_WithValidQueryHandler_ReturnsSuccess()
     {
         // Arrange:
-        var customer = new Customer(
-            FullName.Create("John", "Doe").Value,
-            Email.Create("john.doe@email.com").Value,
-            PhoneNumber.Create(200, 2_000_000).Value
-        );
         var queryHandlerStub = new Mock<IQueryHandler<IQuery<Customer>, Customer>>();
         queryHandlerStub
-            .Setup(commandHandler =>
-                commandHandler.HandleAsync(
+            .Setup(queryHandler =>
+                queryHandler.HandleAsync(
                     It.IsAny<IQuery<Customer>>(),
                     It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success<Customer>(customer));
+            .ReturnsAsync(Result.Success<Customer>(_customer));
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
             .Returns(queryHandlerStub.Object);

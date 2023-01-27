@@ -7,24 +7,40 @@ public sealed class CreateBookCommandHandlerTests
 {
     private readonly Mock<IRepository<BookAuthor>> _bookAuthorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Book _book;
+    private readonly Mock<IMapper<Book, BookCreatedDto>> _bookCreatedDtoMapperStub;
+    private readonly CreateBookDto _createBookDto;
+    private readonly BookCreatedDto _bookCreatedDto;
     private readonly BookAuthor _bookAuthor;
     private readonly CreateBookCommand _createBookCommand;
     private readonly CreateBookCommandHandler _createBookCommandHandler;
 
     public CreateBookCommandHandlerTests()
     {
+        Book book = TestFixtures.CreateDummyBook();
         _bookAuthorRepositoryStub = new();
         _bookRepositoryStub = new();
-        _book = TestFixtures.CreateDummyBook();
+        _bookCreatedDtoMapperStub = new();
+        _createBookDto = new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
+        _bookCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _createBookCommand = new(_bookAuthor.Id, _book);
-        _createBookCommandHandler = new(_bookRepositoryStub.Object, _bookAuthorRepositoryStub.Object);
+        _createBookCommand = new(_bookAuthor.Id, _createBookDto);
+        _createBookCommandHandler = new(
+            _bookRepositoryStub.Object,
+            _bookAuthorRepositoryStub.Object,
+            _bookCreatedDtoMapperStub.Object);
         _bookAuthorRepositoryStub
             .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<BookAuthor>>(),
                 default))
             .ReturnsAsync(_bookAuthor);
+        _bookRepositoryStub
+            .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<Book>>(),
+                default))
+            .ReturnsAsync(book);
+        _bookCreatedDtoMapperStub
+            .Setup(bookCreatedDtoMapper => bookCreatedDtoMapper.Map(It.IsAny<Book>()))
+            .Returns(_bookCreatedDto);
     }
 
     [Fact]
@@ -49,18 +65,8 @@ public sealed class CreateBookCommandHandlerTests
     public async Task HandleAsync_WithExistingBookTitle_ReturnsErrorMessage()
     {
         // Arrange:
-        _bookRepositoryStub
-            .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<Book>>(),
-                default))
-            .ReturnsAsync(_book);
-        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' already exists for this book author.";
-        _bookRepositoryStub
-            .Setup(bookRepository =>
-                bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                    It.IsAny<Specification<Book>>(),
-                    default))
-            .ReturnsAsync(_book);
+        _bookAuthor.AddBook(TestFixtures.CreateDummyBook());
+        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' has already been added to this book author.";
 
         // Act:
         Result handleResult = await _createBookCommandHandler.HandleAsync(_createBookCommand, default);

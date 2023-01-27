@@ -37,7 +37,10 @@ public sealed class BookController : BaseController
 
     [HttpGet("{id}")]
     [ActionName(nameof(GetBookByIdFromBookAuthorAsync))]
-    public async Task<ActionResult<GetBookDto>> GetBookByIdFromBookAuthorAsync(Guid bookAuthorId, Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetBookDto>> GetBookByIdFromBookAuthorAsync(
+        Guid bookAuthorId,
+        Guid id,
+        CancellationToken cancellationToken)
     {
         var getBookByIdQuery = new GetBookByIdQuery(bookAuthorId, id);
         Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdQuery, cancellationToken);
@@ -55,27 +58,17 @@ public sealed class BookController : BaseController
         CreateBookDto createBookDto,
         CancellationToken cancellationToken)
     {
-        Result<Edition> editionResult = Edition.Create(createBookDto.Edition);
-        Result<Isbn> isbnResult = Isbn.Create(createBookDto.Isbn);
-        Result combinedResults = Result.Combine(editionResult, isbnResult);
-        if (!combinedResults.IsSuccess)
-        {
-            _baseControllerLogger.LogError(combinedResults.ErrorMessage);
-            return BadRequest(combinedResults.ErrorMessage);
-        }
-        var newBook = new Book(createBookDto.BookTitle, editionResult.Value!, isbnResult.Value!);
-        Result createBookResult = await _dispatcher.DispatchAsync(new CreateBookCommand(bookAuthorId, newBook), cancellationToken);
+        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(
+            new CreateBookCommand(bookAuthorId, createBookDto),
+            cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);
             return BadRequest(createBookResult.ErrorMessage);
         }
-        var bookCreatedDto = new BookCreatedDto(
-            newBook.Id,
-            bookAuthorId,
-            newBook.BookTitle,
-            newBook.Edition.EditionNumber,
-            newBook.Isbn.IsbnValue);
-        return CreatedAtAction(nameof(GetBookByIdFromBookAuthorAsync), new { bookAuthorId, id = newBook.Id }, bookCreatedDto);
+        return CreatedAtAction(
+            nameof(GetBookByIdFromBookAuthorAsync),
+            new { bookAuthorId, id = createBookResult.Value!.Id },
+            createBookResult.Value);
     }
 }

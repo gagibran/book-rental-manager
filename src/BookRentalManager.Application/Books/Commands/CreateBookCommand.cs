@@ -3,11 +3,11 @@ namespace BookRentalManager.Application.Books.Commands;
 public sealed class CreateBookCommand : ICommand
 {
     public Guid BookAuthorId { get; }
-    public Book Book { get; }
+    public CreateBookDto CreateBookDto { get; }
 
-    public CreateBookCommand(Guid bookAuthorId, Book book)
+    public CreateBookCommand(Guid bookAuthorId, CreateBookDto createBookDto)
     {
         BookAuthorId = bookAuthorId;
-        Book = book;
+        CreateBookDto = createBookDto;
     }
 }
