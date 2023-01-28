@@ -8,9 +8,7 @@ public static class InfrastructureServicesExtension
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        services.AddScoped<IRepository<Customer>, Repository<Customer>>();
-        services.AddScoped<IRepository<Book>, Repository<Book>>();
-        services.AddScoped<IRepository<BookAuthor>, Repository<BookAuthor>>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<TestDataSeeder>();
         return services;
     }
