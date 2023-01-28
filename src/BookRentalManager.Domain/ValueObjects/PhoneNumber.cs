@@ -4,8 +4,8 @@ public sealed class PhoneNumber : ValueObject
 {
     private const int MinAreaCode = 200;
     private const int MaxAreaCode = 999;
-    private const int MinActualPhoneNumber = 2_000_000;
-    private const int MaxActualPhoneNumber = 9_999_999;
+    private const int MinPrefixAndLineNumber = 2_000_000;
+    private const int MaxPrefixAndLineNumber = 9_999_999;
 
     public string CompletePhoneNumber { get; }
 
@@ -14,22 +14,22 @@ public sealed class PhoneNumber : ValueObject
         CompletePhoneNumber = string.Empty;
     }
 
-    private PhoneNumber(int areaCode, int actualPhoneNumber)
+    private PhoneNumber(int areaCode, int prefixAndLineNumber)
     {
-        CompletePhoneNumber = $"+1{areaCode}{actualPhoneNumber}";
+        CompletePhoneNumber = $"+1{areaCode}{prefixAndLineNumber}";
     }
 
-    public static Result<PhoneNumber> Create(int areaCode, int actualPhoneNumber)
+    public static Result<PhoneNumber> Create(int areaCode, int prefixAndLineNumber)
     {
         if (areaCode < MinAreaCode || areaCode > MaxAreaCode)
         {
             return Result.Fail<PhoneNumber>("Invalid area code.");
         }
-        if (actualPhoneNumber < MinActualPhoneNumber || actualPhoneNumber > MaxActualPhoneNumber)
+        if (prefixAndLineNumber < MinPrefixAndLineNumber || prefixAndLineNumber > MaxPrefixAndLineNumber)
         {
             return Result.Fail<PhoneNumber>("Invalid phone number.");
         }
-        return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, actualPhoneNumber));
+        return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, prefixAndLineNumber));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

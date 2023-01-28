@@ -29,15 +29,14 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
             createCustomerCommand.CreateCustomerDto.LastName);
         Result<Email> emailResult = Email.Create(createCustomerCommand.CreateCustomerDto.Email);
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
-            createCustomerCommand.CreateCustomerDto.AreaCode,
-            createCustomerCommand.CreateCustomerDto.PhoneNumber);
+            createCustomerCommand.CreateCustomerDto.PhoneNumber.AreaCode,
+            createCustomerCommand.CreateCustomerDto.PhoneNumber.PrefixAndLineNumber);
         Result combinedResults = Result.Combine(fullNameResult, emailResult, phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {
             return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-
         await _customerRepository.CreateAsync(newCustomer, cancellationToken);
         return Result.Success(_customerCreatedDtoMapper.Map(newCustomer));
     }

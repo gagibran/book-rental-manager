@@ -17,7 +17,7 @@ public sealed class CreateCustomerCommandHandlerTests
         Customer customer = TestFixtures.CreateDummyCustomer();
         _customerRepositoryStub = new();
         _customerCreatedDtoMapperStub = new();
-        _createCustomerDto = new("John", "Doe", "john.doe@email.com", 200, 2_000_000);
+        _createCustomerDto = new("John", "Doe", "john.doe@email.com", new PhoneNumberDto(200, 2_000_000));
         _customerCreatedDto = new(
             customer.Id,
             customer.FullName.CompleteName,

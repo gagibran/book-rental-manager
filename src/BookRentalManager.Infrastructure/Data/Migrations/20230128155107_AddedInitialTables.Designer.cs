@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(BookRentalManagerDbContext))]
-    [Migration("20230125012840_AddedInitialTables")]
+    [Migration("20230128155107_AddedInitialTables")]
     partial class AddedInitialTables
     {
         /// <inheritdoc />
