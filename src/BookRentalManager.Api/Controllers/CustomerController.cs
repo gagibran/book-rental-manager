@@ -4,7 +4,7 @@ using BookRentalManager.Application.Customers.Queries;
 namespace BookRentalManager.Api.Controllers;
 
 [Route("api/[controller]")]
-public sealed class CustomerController : BaseController
+public sealed class CustomerController : ApiController
 {
     public CustomerController(IDispatcher dispatcher, ILogger<CustomerController> customerControllerLogger)
         : base(dispatcher, customerControllerLogger)

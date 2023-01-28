@@ -1,14 +1,14 @@
 namespace BookRentalManager.Api.Common;
 
 [ApiController]
-public class BaseController : ControllerBase
+public class ApiController : ControllerBase
 {
     protected readonly IDispatcher _dispatcher;
-    protected readonly ILogger<BaseController> _baseControllerLogger;
+    protected readonly ILogger<ApiController> _baseControllerLogger;
 
-    protected BaseController(
+    protected ApiController(
         IDispatcher dispatcher,
-        ILogger<BaseController> baseControllerLogger)
+        ILogger<ApiController> baseControllerLogger)
     {
         _baseControllerLogger = baseControllerLogger;
         _dispatcher = dispatcher;
