@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Interfaces;
 
-public interface IMapper<TEntity, TDto>
+public interface IMapper<TInput, TOutput>
 {
-    public TDto Map(TEntity entity);
+    public TOutput Map(TInput input);
 }
