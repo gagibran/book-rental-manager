@@ -30,7 +30,7 @@ public sealed class BookController : ApiController
         if (!getAllBooksResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return NotFound(getAllBooksResult.ErrorMessage);
+            return CustomNotFound<IReadOnlyList<GetBookDto>>(getAllBooksResult.ErrorMessage);
         }
         return Ok(getAllBooksResult.Value);
     }
@@ -47,7 +47,7 @@ public sealed class BookController : ApiController
         if (!getBookByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getBookByIdResult.ErrorMessage);
-            return NotFound(getBookByIdResult.ErrorMessage);
+            return CustomNotFound<GetBookDto>(getBookByIdResult.ErrorMessage);
         }
         return Ok(getBookByIdResult.Value);
     }
@@ -64,7 +64,7 @@ public sealed class BookController : ApiController
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);
-            return BadRequest(createBookResult.ErrorMessage);
+            return CustomUnprocessableEntity(createBookResult.ErrorMessage);
         }
         return CreatedAtAction(
             nameof(GetBookByIdFromBookAuthorAsync),

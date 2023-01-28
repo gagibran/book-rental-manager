@@ -38,7 +38,7 @@ public sealed class CustomerController : ApiController
         if (!getCustomerByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getCustomerByIdResult.ErrorMessage);
-            return NotFound(getCustomerByIdResult.ErrorMessage);
+            return CustomNotFound<GetCustomerDto>(getCustomerByIdResult.ErrorMessage);
         }
         return Ok(getCustomerByIdResult.Value);
     }
@@ -52,9 +52,8 @@ public sealed class CustomerController : ApiController
         if (!createCustomerResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
-            return BadRequest(createCustomerResult.ErrorMessage);
+            return CustomUnprocessableEntity(createCustomerResult.ErrorMessage);
         }
-
         return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 }
