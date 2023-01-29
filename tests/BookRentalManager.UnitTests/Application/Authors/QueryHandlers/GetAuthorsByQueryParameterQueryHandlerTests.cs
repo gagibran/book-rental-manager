@@ -3,23 +3,23 @@ using BookRentalManager.Application.Authors.QueryHandlers;
 
 namespace BookRentalManager.UnitTests.Application.Authors.QueryHandlers;
 
-public sealed class GetAuthorsBySearchParameterQueryHandlerTests
+public sealed class GetAuthorsByQueryParameterQueryHandlerTests
 {
     private readonly Author _author;
     private readonly List<Author> _authors;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IMapper<Author, GetAuthorDto>> _getAuthorDtoMapperStub;
-    private readonly GetAuthorsBySearchParameterQueryHandler _getAuthorsBySearchParameterQueryHandler;
+    private readonly GetAuthorsByQueryParameterQueryHandler _getAuthorsByQueryParameterQueryHandler;
     private readonly GetAuthorDto _getAuthorDto;
 
-    public GetAuthorsBySearchParameterQueryHandlerTests()
+    public GetAuthorsByQueryParameterQueryHandlerTests()
     {
         _author = TestFixtures.CreateDummyAuthor();
         _authors = new List<Author> { _author };
         _getAuthorDto = new(Guid.NewGuid(), _author.FullName, new List<GetBookFromAuthorDto>());
         _getAuthorDtoMapperStub = new();
         _authorRepositoryStub = new();
-        _getAuthorsBySearchParameterQueryHandler = new(
+        _getAuthorsByQueryParameterQueryHandler = new(
             _authorRepositoryStub.Object,
             _getAuthorDtoMapperStub.Object);
         _getAuthorDtoMapperStub
@@ -31,7 +31,7 @@ public sealed class GetAuthorsBySearchParameterQueryHandlerTests
     public async Task HandleAsync_WithoutAnyAuthorsWithSearchParameter_ReturnsEmptyList()
     {
         // Arrange:
-        var getAuthorsBySearchParameterQuery = new GetAuthorsBySearchParameterQuery(
+        var getAuthorsByQueryParameterQuery = new GetAuthorsByQueryParameterQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             "Name");
@@ -44,8 +44,8 @@ public sealed class GetAuthorsBySearchParameterQueryHandlerTests
             .ReturnsAsync(new List<Author>());
 
         // Act:
-        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsBySearchParameterQueryHandler.HandleAsync(
-            getAuthorsBySearchParameterQuery,
+        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParameterQueryHandler.HandleAsync(
+            getAuthorsByQueryParameterQuery,
             default);
 
         // Assert:
@@ -56,7 +56,7 @@ public sealed class GetAuthorsBySearchParameterQueryHandlerTests
     public async Task HandleAsync_WithAtLeastOneAuthorWithSearchParameter_ReturnsListWithMatchingAuthor()
     {
         // Arrange:
-        var getAuthorsBySearchParameterQuery = new GetAuthorsBySearchParameterQuery(
+        var getAuthorsByQueryParameterQuery = new GetAuthorsByQueryParameterQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             _author.FullName.CompleteName);
@@ -69,8 +69,8 @@ public sealed class GetAuthorsBySearchParameterQueryHandlerTests
             .ReturnsAsync(_authors);
 
         // Act:
-        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsBySearchParameterQueryHandler.HandleAsync(
-            getAuthorsBySearchParameterQuery,
+        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParameterQueryHandler.HandleAsync(
+            getAuthorsByQueryParameterQuery,
             default);
 
         // Assert:
@@ -80,13 +80,13 @@ public sealed class GetAuthorsBySearchParameterQueryHandlerTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllAuthors(string searchParam)
+    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllAuthors(string searchParameter)
     {
         // Arrange:
-        var getAuthorsBySearchParameterQuery = new GetAuthorsBySearchParameterQuery(
+        var getAuthorsByQueryParameterQuery = new GetAuthorsByQueryParameterQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
-            searchParam);
+            searchParameter);
         _authors.Add(new Author(FullName.Create("Sarah", "Smith").Value));
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetAllBySpecificationAsync(
@@ -97,8 +97,8 @@ public sealed class GetAuthorsBySearchParameterQueryHandlerTests
             .ReturnsAsync(_authors);
 
         // Act:
-        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsBySearchParameterQueryHandler.HandleAsync(
-            getAuthorsBySearchParameterQuery,
+        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParameterQueryHandler.HandleAsync(
+            getAuthorsByQueryParameterQuery,
             default);
 
         // Assert:

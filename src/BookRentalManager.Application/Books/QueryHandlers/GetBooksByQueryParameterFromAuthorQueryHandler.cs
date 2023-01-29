@@ -27,7 +27,7 @@ internal sealed class GetBooksByQueryParameterFromAuthorQueryHandler
         {
             return Result.Fail<IReadOnlyList<GetBookDto>>($"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
-        var booksInAuthorBooksAndQueryParameterSpecification = new BooksFromAuthorBooksByQueryParameterSpecification(
+        var booksInAuthorBooksAndQueryParameterSpecification = new BooksFromAuthorBooksBySearchParameterSpecification(
             author.Books,
             getBooksByQueryParameterFromAuthor.SearchParameter);
         IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(

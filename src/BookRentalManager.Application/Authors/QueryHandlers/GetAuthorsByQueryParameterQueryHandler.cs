@@ -1,12 +1,12 @@
 namespace BookRentalManager.Application.Authors.QueryHandlers;
 
-internal sealed class GetAuthorsBySearchParameterQueryHandler
-    : IQueryHandler<GetAuthorsBySearchParameterQuery, IReadOnlyList<GetAuthorDto>>
+internal sealed class GetAuthorsByQueryParameterQueryHandler
+    : IQueryHandler<GetAuthorsByQueryParameterQuery, IReadOnlyList<GetAuthorDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IMapper<Author, GetAuthorDto> _getAuthorDtoMapper;
 
-    public GetAuthorsBySearchParameterQueryHandler(
+    public GetAuthorsByQueryParameterQueryHandler(
         IRepository<Author> authorRepository,
         IMapper<Author, GetAuthorDto> getAuthorDtoMapper)
     {
@@ -15,13 +15,13 @@ internal sealed class GetAuthorsBySearchParameterQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetAuthorDto>>> HandleAsync(
-        GetAuthorsBySearchParameterQuery getAuthorsBySearchParameterQuery,
+        GetAuthorsByQueryParameterQuery getAuthorsByQueryParameterQuery,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
-            getAuthorsBySearchParameterQuery.PageIndex,
-            getAuthorsBySearchParameterQuery.TotalItemsPerPage,
-            new AuthorsBySearchParameterSpecification(getAuthorsBySearchParameterQuery.SearchParameter),
+            getAuthorsByQueryParameterQuery.PageIndex,
+            getAuthorsByQueryParameterQuery.TotalItemsPerPage,
+            new AuthorsBySearchParameterSpecification(getAuthorsByQueryParameterQuery.SearchParameter),
             cancellationToken);
         IReadOnlyList<GetAuthorDto> getAuthorDtos = (from author in authors
                                                      select _getAuthorDtoMapper.Map(author)).ToList().AsReadOnly();

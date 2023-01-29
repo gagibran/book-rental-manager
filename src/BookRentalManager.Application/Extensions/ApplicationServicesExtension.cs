@@ -31,7 +31,7 @@ public static class ApplicationServicesExtension
     {
         serviceCollection.AddScoped<IQueryHandler<GetCustomersBySearchParameterQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersBySearchParameterQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetAuthorsBySearchParameterQuery, IReadOnlyList<GetAuthorDto>>, GetAuthorsBySearchParameterQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetAuthorsByQueryParameterQuery, IReadOnlyList<GetAuthorDto>>, GetAuthorsByQueryParameterQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParameterFromAuthorQuery, IReadOnlyList<GetBookDto>>, GetBooksByQueryParameterFromAuthorQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetBookByIdFromAuthorQuery, GetBookDto>, GetBookByIdFromAuthorQueryHandler>();
         return serviceCollection;
