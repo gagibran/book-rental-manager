@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Customers.Commands;
 
-public sealed class CreateCustomerCommand : ICommand
+public sealed class CreateCustomerCommand : ICommand<CustomerCreatedDto>
 {
     public CreateCustomerDto CreateCustomerDto { get; }
 

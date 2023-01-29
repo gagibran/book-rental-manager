@@ -24,7 +24,7 @@ public sealed class Dispatcher : IDispatcher
         return await commandHandler.HandleAsync((dynamic)command, cancellationToken);
     }
 
-    public async Task<Result<TResult>> DispatchAsync<TResult>(ICommand command, CancellationToken cancellationToken)
+    public async Task<Result<TResult>> DispatchAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken)
     {
         Type commandHandlerType = typeof(ICommandHandler<,>);
         Type[] commandHandlerArgumentTypes =

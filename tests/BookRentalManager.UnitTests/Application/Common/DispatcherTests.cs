@@ -56,16 +56,17 @@ public sealed class DispatcherTests
     public async Task DispatchAsync_WithValidCommandHandlerReturningResult_ReturnsSuccess()
     {
         // Arrange:
-        var commandHandlerStub = new Mock<ICommandHandler<ICommand, Customer>>();
+        var commandHandlerStub = new Mock<ICommandHandler<ICommand<Customer>, Customer>>();
+        var commandStub = new Mock<ICommand<Customer>>();
         commandHandlerStub
-            .Setup(commandHandler => commandHandler.HandleAsync(It.IsAny<ICommand>(), It.IsAny<CancellationToken>()))
+            .Setup(commandHandler => commandHandler.HandleAsync(It.IsAny<ICommand<Customer>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success<Customer>(_customer));
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
             .Returns(commandHandlerStub.Object);
 
         // Act:
-        Result<Customer> dispatcherResult = await _dispatcher.DispatchAsync<Customer>(_commandStub.Object, default);
+        Result<Customer> dispatcherResult = await _dispatcher.DispatchAsync<Customer>(commandStub.Object, default);
 
         // Assert:
         Assert.True(dispatcherResult.IsSuccess);
@@ -82,7 +83,7 @@ public sealed class DispatcherTests
 
         // Assert:
         Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
-            () => _dispatcher.DispatchAsync<Customer>(It.IsAny<ICommand>(), It.IsAny<CancellationToken>()));
+            () => _dispatcher.DispatchAsync<Customer>(It.IsAny<ICommand<Customer>>(), It.IsAny<CancellationToken>()));
     }
 
     [Fact]
