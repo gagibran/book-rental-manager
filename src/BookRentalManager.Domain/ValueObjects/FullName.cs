@@ -18,11 +18,11 @@ public sealed class FullName : ValueObject
     {
         if (string.IsNullOrWhiteSpace(firstName))
         {
-            return Result.Fail<FullName>("First name cannot be empty.");
+            return Result.Fail<FullName>(nameof(Create), "First name cannot be empty.");
         }
         if (string.IsNullOrWhiteSpace(lastName))
         {
-            return Result.Fail<FullName>("Last name cannot be empty.");
+            return Result.Fail<FullName>(nameof(Create), "Last name cannot be empty.");
         }
         return Result.Success<FullName>(new FullName(firstName.Trim() + " " + lastName.Trim()));
     }

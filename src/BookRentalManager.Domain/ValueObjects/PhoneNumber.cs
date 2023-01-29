@@ -23,11 +23,11 @@ public sealed class PhoneNumber : ValueObject
     {
         if (areaCode < MinAreaCode || areaCode > MaxAreaCode)
         {
-            return Result.Fail<PhoneNumber>("Invalid area code.");
+            return Result.Fail<PhoneNumber>(nameof(Create), "Invalid area code.");
         }
         if (prefixAndLineNumber < MinPrefixAndLineNumber || prefixAndLineNumber > MaxPrefixAndLineNumber)
         {
-            return Result.Fail<PhoneNumber>("Invalid phone number.");
+            return Result.Fail<PhoneNumber>(nameof(Create), "Invalid phone number.");
         }
         return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, prefixAndLineNumber));
     }

@@ -3,7 +3,7 @@ using BookRentalManager.Application.Books.Queries;
 
 namespace BookRentalManager.Api.Controllers;
 
-[Route("api/bookauthor/{authorId}/[controller]")]
+[Route("api/author/{authorId}/[controller]")]
 public sealed class BookController : ApiController
 {
     public BookController(IDispatcher dispatcher, ILogger<BookController> authorControllerLogger)
@@ -28,7 +28,7 @@ public sealed class BookController : ApiController
         if (!getAllBooksResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return CustomNotFound<IReadOnlyList<GetBookDto>>(getAllBooksResult.ErrorMessage);
+            return CustomNotFound<IReadOnlyList<GetBookDto>>(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage);
         }
         return Ok(getAllBooksResult.Value);
     }
@@ -45,7 +45,7 @@ public sealed class BookController : ApiController
         if (!getBookByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getBookByIdResult.ErrorMessage);
-            return CustomNotFound<GetBookDto>(getBookByIdResult.ErrorMessage);
+            return CustomNotFound<GetBookDto>(getBookByIdResult.ErrorType, getBookByIdResult.ErrorMessage);
         }
         return Ok(getBookByIdResult.Value);
     }
@@ -53,14 +53,18 @@ public sealed class BookController : ApiController
     [HttpPost]
     public async Task<ActionResult> CreateBookForAuthorAsync(
         Guid authorId,
-        CreateBookForAuthorCommand createBookForAuthorCommand,
+        CreateBookForAuthorDto createBookForAuthorDto,
         CancellationToken cancellationToken)
     {
-        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookForAuthorCommand, cancellationToken);
+        var createBookForAuthorCommand = new CreateBookForAuthorCommand(
+            authorId, createBookForAuthorDto.BookTitle,
+            createBookForAuthorDto.Edition,
+            createBookForAuthorDto.Isbn);
+        Result<BookForAuthorCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookForAuthorCreatedDto>(createBookForAuthorCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);
-            return CustomUnprocessableEntity(createBookResult.ErrorMessage);
+            return CustomUnprocessableEntity(createBookResult.ErrorType, createBookResult.ErrorMessage);
         }
         return CreatedAtAction(
             nameof(GetBookByIdFromAuthorAsync),

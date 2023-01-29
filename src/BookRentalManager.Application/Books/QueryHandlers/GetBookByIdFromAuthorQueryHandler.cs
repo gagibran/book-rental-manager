@@ -22,14 +22,14 @@ internal sealed class GetBookByIdFromAuthorQueryHandler : IQueryHandler<GetBookB
         Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
         if (author is null)
         {
-            return Result.Fail<GetBookDto>($"No author with the ID of '{getBookByIdFromAuthorQuery.AuthorId}' was found.");
+            return Result.Fail<GetBookDto>(nameof(HandleAsync), $"No author with the ID of '{getBookByIdFromAuthorQuery.AuthorId}' was found.");
         }
         Guid bookId = (from book in author.Books
                        where book.Id == getBookByIdFromAuthorQuery.Id
                        select book.Id).FirstOrDefault();
         if (bookId.Equals(Guid.Empty))
         {
-            return Result.Fail<GetBookDto>($"No book with the ID of '{getBookByIdFromAuthorQuery.Id}' was found for this author.");
+            return Result.Fail<GetBookDto>(nameof(HandleAsync), $"No book with the ID of '{getBookByIdFromAuthorQuery.Id}' was found for this author.");
         }
         Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(
             new BookByIdSpecification(bookId),

@@ -22,6 +22,7 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         if (customerWithEmail is not null)
         {
             return Result.Fail<CustomerCreatedDto>(
+                nameof(HandleAsync),
                 $"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
         }
         Result<FullName> fullNameResult = FullName.Create(createCustomerCommand.FirstName, createCustomerCommand.LastName);
@@ -32,7 +33,7 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         Result combinedResults = Result.Combine(fullNameResult, emailResult, phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {
-            return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorMessage);
+            return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
         await _customerRepository.CreateAsync(newCustomer, cancellationToken);

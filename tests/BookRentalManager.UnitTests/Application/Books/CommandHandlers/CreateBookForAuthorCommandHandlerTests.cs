@@ -7,8 +7,8 @@ public sealed class CreateBookForAuthorCommandHandlerTests
 {
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, BookCreatedDto>> _bookCreatedDtoMapperStub;
-    private readonly BookCreatedDto _bookCreatedDto;
+    private readonly Mock<IMapper<Book, BookForAuthorCreatedDto>> _bookForAuthorCreatedDtoMapperStub;
+    private readonly BookForAuthorCreatedDto _bookForAuthorCreatedDto;
     private readonly Author _author;
     private readonly CreateBookForAuthorCommand _createBookForAuthorCommand;
     private readonly CreateBookForAuthorCommandHandler _createBookForAuthorCommandHandler;
@@ -18,14 +18,14 @@ public sealed class CreateBookForAuthorCommandHandlerTests
         Book book = TestFixtures.CreateDummyBook();
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
-        _bookCreatedDtoMapperStub = new();
-        _bookCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
+        _bookForAuthorCreatedDtoMapperStub = new();
+        _bookForAuthorCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _author = TestFixtures.CreateDummyAuthor();
         _createBookForAuthorCommand = new(_author.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _createBookForAuthorCommandHandler = new(
             _bookRepositoryStub.Object,
             _authorRepositoryStub.Object,
-            _bookCreatedDtoMapperStub.Object);
+            _bookForAuthorCreatedDtoMapperStub.Object);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Author>>(),
@@ -36,9 +36,9 @@ public sealed class CreateBookForAuthorCommandHandlerTests
                 It.IsAny<Specification<Book>>(),
                 default))
             .ReturnsAsync(book);
-        _bookCreatedDtoMapperStub
-            .Setup(bookCreatedDtoMapper => bookCreatedDtoMapper.Map(It.IsAny<Book>()))
-            .Returns(_bookCreatedDto);
+        _bookForAuthorCreatedDtoMapperStub
+            .Setup(bookForAuthorCreatedDtoMapper => bookForAuthorCreatedDtoMapper.Map(It.IsAny<Book>()))
+            .Returns(_bookForAuthorCreatedDto);
     }
 
     [Fact]

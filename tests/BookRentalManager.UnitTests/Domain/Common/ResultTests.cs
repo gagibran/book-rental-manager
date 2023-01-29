@@ -4,23 +4,28 @@ namespace BookRentalManager.UnitTests.Domain.Common;
 
 public sealed class ResultTests
 {
-    [Fact]
-    public void Fail_WithEmptyErrorMessage_ThrowsException()
+    [Theory]
+    [InlineData(" ", "This is an error type.")]
+    [InlineData("This is an error message.", "")]
+    [InlineData("", " ")]
+    public void Fail_WithEmptyErrorMessage_ThrowsException(string errorType, string errorMessage)
     {
         // Assert:
-        Assert.Throws<UnsuccessfulResultMustHaveErrorMessageException>(() => Result.Fail(" "));
+        Assert.Throws<UnsuccessfulResultMustHaveErrorTypeWithErrorMessageException>(() => Result.Fail(errorType, errorMessage));
     }
 
     [Fact]
     public void Fail_WithErrorMessage_ReturnsErrorMessage()
     {
         // Arrange:
+        var errorType = "This is an error type.";
         var errorMessage = "This is an error message.";
 
         // Act:
-        Result result = Result.Fail(errorMessage);
+        Result result = Result.Fail(errorType, errorMessage);
 
         // Assert:
+        Assert.Equal(errorType, result.ErrorType);
         Assert.Equal(errorMessage, result.ErrorMessage);
     }
 
@@ -51,7 +56,7 @@ public sealed class ResultTests
     public void Fail_WithErrorMessage_ReturnsUnsuccessful()
     {
         // Act:
-        Result result = Result.Fail("This is an error message.");
+        Result result = Result.Fail("This is an error type.", "This is an error message.");
 
         // Assert:
         Assert.False(result.IsSuccess);
@@ -61,15 +66,16 @@ public sealed class ResultTests
     public void Combine_WithAtLeastTwoFailedResult_ReturnsErrorMessagesCombined()
     {
         // Arrange:
-        Result failedResult1 = Result.Fail("This result has failed.");
-        Result failedResult2 = Result.Fail("This result has also failed.");
+        Result failedResult1 = Result.Fail("Error type.", "This result has failed.");
+        Result failedResult2 = Result.Fail("Another error type.", "This result has also failed.");
         Result successResult = Result.Success();
 
         // Act:
         Result combinedResults = Result.Combine(failedResult1, failedResult2, successResult);
 
         // Assert:
-        Assert.Equal("This result has failed. This result has also failed.", combinedResults.ErrorMessage);
+        Assert.Equal("Error type.|Another error type.|", combinedResults.ErrorType);
+        Assert.Equal("This result has failed.|This result has also failed.|", combinedResults.ErrorMessage);
     }
 
     [Fact]

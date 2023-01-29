@@ -1,19 +1,16 @@
-namespace BookRentalManager.Application.Books.Commands;
+namespace BookRentalManager.Application.Dtos;
 
-public sealed class CreateBookForAuthorCommand : ICommand<BookForAuthorCreatedDto>
+public sealed class CreateBookForAuthorDto
 {
-    public Guid AuthorId { get; }
     public string BookTitle { get; }
     public int Edition { get; }
     public string Isbn { get; }
 
-    public CreateBookForAuthorCommand(
-        Guid authorId,
+    public CreateBookForAuthorDto(
         string bookTitle,
         int edition,
         string isbn)
     {
-        AuthorId = authorId;
         BookTitle = bookTitle;
         Edition = edition;
         Isbn = isbn;

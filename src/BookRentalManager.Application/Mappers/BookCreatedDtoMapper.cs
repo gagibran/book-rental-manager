@@ -1,10 +1,10 @@
 namespace BookRentalManager.Application.Mappers;
 
-internal sealed class BookCreatedDtoMapper : IMapper<Book, BookCreatedDto>
+internal sealed class BookForAuthorCreatedDtoMapper : IMapper<Book, BookForAuthorCreatedDto>
 {
-    public BookCreatedDto Map(Book book)
+    public BookForAuthorCreatedDto Map(Book book)
     {
-        return new BookCreatedDto(
+        return new BookForAuthorCreatedDto(
             book.Id,
             book.BookTitle,
             book.Edition.EditionNumber,

@@ -39,7 +39,7 @@ public sealed class Customer : Entity
         Result availabilityResult = CheckBookAvailability(book);
         if (!string.IsNullOrWhiteSpace(availabilityResult.ErrorMessage))
         {
-            return Result.Fail(availabilityResult.ErrorMessage);
+            return Result.Fail(availabilityResult.ErrorType, availabilityResult.ErrorMessage);
         }
         book.IsAvailable = false;
         _books.Add(book);
@@ -53,12 +53,12 @@ public sealed class Customer : Entity
     {
         if (!book.IsAvailable)
         {
-            return Result.Fail($"The book '{book.BookTitle}' is not available.");
+            return Result.Fail(nameof(CheckBookAvailability), $"The book '{book.BookTitle}' is not available.");
         }
         Result<CustomerStatus> customerStatusResult = CustomerStatus.CheckCustomerTypeBookAvailability(Books.Count());
         if (!string.IsNullOrWhiteSpace(customerStatusResult.ErrorMessage))
         {
-            return Result.Fail(customerStatusResult.ErrorMessage);
+            return Result.Fail(customerStatusResult.ErrorType, customerStatusResult.ErrorMessage);
         }
         return Result.Success();
     }
@@ -67,7 +67,7 @@ public sealed class Customer : Entity
     {
         if (!Books.Contains(book))
         {
-            return Result.Fail($"You don't have the book '{book.BookTitle}'.");
+            return Result.Fail(nameof(ReturnBook), $"You don't have the book '{book.BookTitle}'.");
         }
         _books.Remove(book);
         book.IsAvailable = true;
