@@ -21,8 +21,7 @@ public sealed class Isbn : ValueObject
         {
             return Result.Fail<Isbn>(nameof(Create), "Invalid ISBN format.");
         }
-        var isbn = new Isbn(isbnValue);
-        return Result.Success<Isbn>(isbn);
+        return Result.Success<Isbn>(new Isbn(isbnValue.Trim()));
     }
 
     public override IEnumerable<object> GetEqualityComponents()

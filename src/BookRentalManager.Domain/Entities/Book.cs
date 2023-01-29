@@ -27,7 +27,7 @@ public sealed class Book : Entity
         Isbn isbn)
     {
         _authors = new();
-        BookTitle = bookTitle;
+        BookTitle = bookTitle.Trim();
         Edition = edition;
         Isbn = isbn;
         IsAvailable = true;

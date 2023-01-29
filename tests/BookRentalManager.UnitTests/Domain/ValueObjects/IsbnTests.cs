@@ -19,9 +19,9 @@ public sealed class IsbnTests
     }
 
     [Theory]
-    [InlineData("978-1-86197-876-9")]
-    [InlineData("978 1 86197 876 9")]
-    [InlineData("0-19-852663-6")]
+    [InlineData("978-1-86197-876-9         ")]
+    [InlineData("  978 1 86197 876 9 ")]
+    [InlineData("    0-19-852663-6")]
     [InlineData("1 86197 271-7")]
     public void Create_WithValidIsbn_ReturnsSuccess(string isbnValue)
     {
