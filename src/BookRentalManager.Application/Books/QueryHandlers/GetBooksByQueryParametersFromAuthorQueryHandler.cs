@@ -1,13 +1,13 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBooksByQueryParameterFromAuthorQueryHandler
-    : IQueryHandler<GetBooksByQueryParameterFromAuthorQuery, IReadOnlyList<GetBookDto>>
+internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
+    : IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, IReadOnlyList<GetBookDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _getBookDtoMapper;
 
-    public GetBooksByQueryParameterFromAuthorQueryHandler(
+    public GetBooksByQueryParametersFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
         IMapper<Book, GetBookDto> getBookDtoMapper)
@@ -18,7 +18,7 @@ internal sealed class GetBooksByQueryParameterFromAuthorQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetBookDto>>> HandleAsync(
-        GetBooksByQueryParameterFromAuthorQuery getBooksByQueryParameterFromAuthor,
+        GetBooksByQueryParametersFromAuthorQuery getBooksByQueryParameterFromAuthor,
         CancellationToken cancellationToken)
     {
         var authorByIdSpecification = new AuthorByIdSpecification(getBooksByQueryParameterFromAuthor.AuthorId);

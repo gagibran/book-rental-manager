@@ -18,12 +18,12 @@ public sealed class CustomerController : ApiController
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getCustomersByQueryParameterQuery = new GetCustomersByQueryParameterQuery(
+        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
-            getCustomersByQueryParameterQuery,
+            getCustomersByQueryParametersQuery,
             cancellationToken);
         return Ok(getAllCustomersResult.Value);
     }

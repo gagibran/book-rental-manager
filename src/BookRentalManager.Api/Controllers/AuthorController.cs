@@ -11,18 +11,18 @@ public sealed class AuthorController : ApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<GetAuthorDto>>> GetAuthorsByQueryParameterAsync(
+    public async Task<ActionResult<IReadOnlyList<GetAuthorDto>>> GetAuthorsByQueryParametersAsync(
         CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getAuthorsByQueryParameterQuery = new GetAuthorsByQueryParameterQuery(
+        var getAuthorsByQueryParametersQuery = new GetAuthorsByQueryParametersQuery(
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetAuthorDto>> getAllAuthorsResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetAuthorDto>>(
-                getAuthorsByQueryParameterQuery,
+                getAuthorsByQueryParametersQuery,
                 cancellationToken);
         return Ok(getAllAuthorsResult.Value);
     }

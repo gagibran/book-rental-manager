@@ -19,7 +19,7 @@ public sealed class BookController : ApiController
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParameterFromAuthorQuery(
+        var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParametersFromAuthorQuery(
             authorId,
             pageIndex,
             totalItemsPerPage,

@@ -29,10 +29,10 @@ public static class ApplicationServicesExtension
 
     private static IServiceCollection AddApplicationQueriesService(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddScoped<IQueryHandler<GetCustomersByQueryParameterQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersByQueryParameterQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetCustomersByQueryParametersQuery, IReadOnlyList<GetCustomerDto>>, GetCustomersByQueryParametersQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetAuthorsByQueryParameterQuery, IReadOnlyList<GetAuthorDto>>, GetAuthorsByQueryParameterQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParameterFromAuthorQuery, IReadOnlyList<GetBookDto>>, GetBooksByQueryParameterFromAuthorQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetAuthorsByQueryParametersQuery, IReadOnlyList<GetAuthorDto>>, GetAuthorsByQueryParametersQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, IReadOnlyList<GetBookDto>>, GetBooksByQueryParametersFromAuthorQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetBookByIdFromAuthorQuery, GetBookDto>, GetBookByIdFromAuthorQueryHandler>();
         return serviceCollection;
     }

@@ -1,15 +1,15 @@
 namespace BookRentalManager.UnitTests.Application.Customers.QueryHandlers;
 
-public sealed class GetCustomersByQueryParameterQueryHandlerTests
+public sealed class GetCustomersByQueryParametersQueryHandlerTests
 {
     private readonly Customer _customer;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
-    private readonly GetCustomersByQueryParameterQueryHandler _getCustomersByQueryParameterQueryHandler;
+    private readonly GetCustomersByQueryParametersQueryHandler _getCustomersByQueryParametersQueryHandler;
     private readonly GetCustomerDto _getCustomerDto;
     private readonly List<Customer> _customers;
 
-    public GetCustomersByQueryParameterQueryHandlerTests()
+    public GetCustomersByQueryParametersQueryHandlerTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
         _customers = new List<Customer> { _customer };
@@ -23,7 +23,7 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
             _customer.CustomerPoints);
         _getCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
-        _getCustomersByQueryParameterQueryHandler = new(
+        _getCustomersByQueryParametersQueryHandler = new(
             _customerRepositoryStub.Object,
             _getCustomerDtoMapperStub.Object);
         _getCustomerDtoMapperStub
@@ -35,7 +35,7 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
     public async Task HandleAsync_WithAtLeastOneCustomerWithSearchParameter_ReturnsListWithMatchingCustomer()
     {
         // Arrange:
-        var getCustomersByQueryParameterQuery = new GetCustomersByQueryParameterQuery(
+        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             _customer.Email.EmailAddress);
@@ -48,8 +48,8 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
             .ReturnsAsync(_customers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParameterQueryHandler.HandleAsync(
-            getCustomersByQueryParameterQuery,
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+            getCustomersByQueryParametersQuery,
             default);
 
         // Assert:
@@ -60,7 +60,7 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
     public async Task HandleAsync_WithoutAnyCustomerWithSearchParameter_ReturnsEmptyList()
     {
         // Arrange:
-        var getCustomersByQueryParameterQuery = new GetCustomersByQueryParameterQuery(
+        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             "test@email.com");
@@ -73,8 +73,8 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
             .ReturnsAsync(new List<Customer>());
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParameterQueryHandler.HandleAsync(
-            getCustomersByQueryParameterQuery,
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+            getCustomersByQueryParametersQuery,
             default);
 
         // Assert:
@@ -87,7 +87,7 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
     public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers(string searchParam)
     {
         // Arrange:
-        var getCustomersByQueryParameterQuery = new GetCustomersByQueryParameterQuery(
+        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             searchParam);
@@ -104,8 +104,8 @@ public sealed class GetCustomersByQueryParameterQueryHandlerTests
             .ReturnsAsync(_customers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParameterQueryHandler.HandleAsync(
-            getCustomersByQueryParameterQuery,
+        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+            getCustomersByQueryParametersQuery,
             default);
 
         // Assert:
