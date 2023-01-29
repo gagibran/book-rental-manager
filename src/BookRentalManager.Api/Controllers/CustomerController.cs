@@ -44,14 +44,8 @@ public sealed class CustomerController : ApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateCustomerAsync(CreateCustomerDto createCustomerDto, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateCustomerAsync(CreateCustomerCommand createCustomerCommand, CancellationToken cancellationToken)
     {
-        var createCustomerCommand = new CreateCustomerCommand(
-            createCustomerDto.FirstName,
-            createCustomerDto.LastName,
-            createCustomerDto.Email,
-            createCustomerDto.PhoneNumber.AreaCode,
-            createCustomerDto.PhoneNumber.PrefixAndLineNumber);
         Result<CustomerCreatedDto> createCustomerResult = await _dispatcher.DispatchAsync<CustomerCreatedDto>(
             createCustomerCommand,
             cancellationToken);

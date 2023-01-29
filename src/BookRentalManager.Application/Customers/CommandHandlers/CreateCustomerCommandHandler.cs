@@ -27,8 +27,8 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         Result<FullName> fullNameResult = FullName.Create(createCustomerCommand.FirstName, createCustomerCommand.LastName);
         Result<Email> emailResult = Email.Create(createCustomerCommand.Email);
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
-            createCustomerCommand.AreaCode,
-            createCustomerCommand.PrefixAndLineNumber);
+            createCustomerCommand.PhoneNumber.AreaCode,
+            createCustomerCommand.PhoneNumber.PrefixAndLineNumber);
         Result combinedResults = Result.Combine(fullNameResult, emailResult, phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {

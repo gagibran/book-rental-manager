@@ -8,7 +8,6 @@ public sealed class CreateBookCommandHandlerTests
     private readonly Mock<IRepository<BookAuthor>> _bookAuthorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, BookCreatedDto>> _bookCreatedDtoMapperStub;
-    private readonly CreateBookDto _createBookDto;
     private readonly BookCreatedDto _bookCreatedDto;
     private readonly BookAuthor _bookAuthor;
     private readonly CreateBookCommand _createBookCommand;
@@ -20,10 +19,9 @@ public sealed class CreateBookCommandHandlerTests
         _bookAuthorRepositoryStub = new();
         _bookRepositoryStub = new();
         _bookCreatedDtoMapperStub = new();
-        _createBookDto = new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _bookCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _createBookCommand = new(_bookAuthor.Id, _createBookDto.BookTitle, _createBookDto.Edition, _createBookDto.Isbn);
+        _createBookCommand = new(_bookAuthor.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _createBookCommandHandler = new(
             _bookRepositoryStub.Object,
             _bookAuthorRepositoryStub.Object,

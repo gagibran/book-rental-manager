@@ -7,7 +7,6 @@ public sealed class CreateCustomerCommandHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, CustomerCreatedDto>> _customerCreatedDtoMapperStub;
-    private readonly CreateCustomerDto _createCustomerDto;
     private readonly CustomerCreatedDto _customerCreatedDto;
     private readonly CreateCustomerCommand _createCustomerCommand;
     private readonly CreateCustomerCommandHandler _createCustomerCommandHandler;
@@ -17,7 +16,7 @@ public sealed class CreateCustomerCommandHandlerTests
         Customer customer = TestFixtures.CreateDummyCustomer();
         _customerRepositoryStub = new();
         _customerCreatedDtoMapperStub = new();
-        _createCustomerDto = new("John", "Doe", "john.doe@email.com", new PhoneNumberDto(200, 2_000_000));
+        _createCustomerCommand = new("John", "Doe", "john.doe@email.com", new PhoneNumberDto(200, 2_000_000));
         _customerCreatedDto = new(
             customer.Id,
             customer.FullName.CompleteName,
@@ -25,12 +24,6 @@ public sealed class CreateCustomerCommandHandlerTests
             customer.PhoneNumber.CompletePhoneNumber,
             customer.CustomerStatus.CustomerType.ToString(),
             customer.CustomerPoints);
-        _createCustomerCommand = new(
-            _createCustomerDto.FirstName,
-            _createCustomerDto.LastName,
-            _createCustomerDto.Email,
-            _createCustomerDto.PhoneNumber.AreaCode,
-            _createCustomerDto.PhoneNumber.PrefixAndLineNumber);
         _createCustomerCommandHandler = new(_customerRepositoryStub.Object, _customerCreatedDtoMapperStub.Object);
         _customerCreatedDtoMapperStub
             .Setup(customerCreatedDtoMapper => customerCreatedDtoMapper.Map(It.IsAny<Customer>()))

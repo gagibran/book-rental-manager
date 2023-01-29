@@ -55,10 +55,9 @@ public sealed class BookController : ApiController
     [HttpPost]
     public async Task<ActionResult> CreateBookForBookAuthorAsync(
         Guid bookAuthorId,
-        CreateBookDto createBookDto,
+        CreateBookCommand createBookCommand,
         CancellationToken cancellationToken)
     {
-        var createBookCommand = new CreateBookCommand(bookAuthorId, createBookDto.BookTitle, createBookDto.Edition, createBookDto.Isbn);
         Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
