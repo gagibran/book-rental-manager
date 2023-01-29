@@ -7,19 +7,19 @@ public sealed class GetBookDtoMapperTests
     {
         // Arrange:
         Book book = TestFixtures.CreateDummyBook();
-        var getBookBookAuthorDtosMapperStub = new Mock<IMapper<IReadOnlyList<BookAuthor>, IReadOnlyList<GetBookBookAuthorDto>>>();
+        var getAuthorFromBookDtosMapperStub = new Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>>();
         var getRentedByDtoMapperStub = new Mock<IMapper<Customer, GetRentedByDto>>();
-        getBookBookAuthorDtosMapperStub
-            .Setup(getBookBookAuthorDtosMapper => getBookBookAuthorDtosMapper.Map(It.IsAny<IReadOnlyList<BookAuthor>>()))
-            .Returns(new List<GetBookBookAuthorDto>());
+        getAuthorFromBookDtosMapperStub
+            .Setup(getAuthorFromBookDtosMapper => getAuthorFromBookDtosMapper.Map(It.IsAny<IReadOnlyList<Author>>()))
+            .Returns(new List<GetAuthorFromBookDto>());
         getRentedByDtoMapperStub
             .Setup(getRentedByDtoMapper => getRentedByDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(new GetRentedByDto());
-        var getBookDtoMapper = new GetBookDtoMapper(getBookBookAuthorDtosMapperStub.Object, getRentedByDtoMapperStub.Object);
+        var getBookDtoMapper = new GetBookDtoMapper(getAuthorFromBookDtosMapperStub.Object, getRentedByDtoMapperStub.Object);
         var expectedGetBookDto = new GetBookDto(
             book.Id,
             book.BookTitle,
-            new List<GetBookBookAuthorDto>(),
+            new List<GetAuthorFromBookDto>(),
             book.Edition,
             book.Isbn,
             book.IsAvailable,
@@ -30,7 +30,7 @@ public sealed class GetBookDtoMapperTests
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetBookDto.BookTitle, actualGetBookDto.BookTitle);
-        Assert.Equal(expectedGetBookDto.BookAuthors, actualGetBookDto.BookAuthors);
+        Assert.Equal(expectedGetBookDto.Authors, actualGetBookDto.Authors);
         Assert.Equal(expectedGetBookDto.Edition, actualGetBookDto.Edition);
         Assert.Equal(expectedGetBookDto.Isbn, actualGetBookDto.Isbn);
         Assert.Equal(expectedGetBookDto.IsAvailable, actualGetBookDto.IsAvailable);

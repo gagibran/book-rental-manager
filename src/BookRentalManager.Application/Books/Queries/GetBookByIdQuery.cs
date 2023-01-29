@@ -2,12 +2,12 @@ namespace BookRentalManager.Application.Books.Queries;
 
 public sealed class GetBookByIdQuery : IQuery<GetBookDto>
 {
-    public Guid BookAuthorId { get; }
+    public Guid AuthorId { get; }
     public Guid Id { get; }
 
-    public GetBookByIdQuery(Guid bookAuthorId, Guid id)
+    public GetBookByIdQuery(Guid authorId, Guid id)
     {
-        BookAuthorId = bookAuthorId;
+        AuthorId = authorId;
         Id = id;
     }
 }

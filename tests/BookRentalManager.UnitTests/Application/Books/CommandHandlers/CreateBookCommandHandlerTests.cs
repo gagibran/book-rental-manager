@@ -5,32 +5,32 @@ namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
 
 public sealed class CreateBookCommandHandlerTests
 {
-    private readonly Mock<IRepository<BookAuthor>> _bookAuthorRepositoryStub;
+    private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, BookCreatedDto>> _bookCreatedDtoMapperStub;
     private readonly BookCreatedDto _bookCreatedDto;
-    private readonly BookAuthor _bookAuthor;
+    private readonly Author _author;
     private readonly CreateBookCommand _createBookCommand;
     private readonly CreateBookCommandHandler _createBookCommandHandler;
 
     public CreateBookCommandHandlerTests()
     {
         Book book = TestFixtures.CreateDummyBook();
-        _bookAuthorRepositoryStub = new();
+        _authorRepositoryStub = new();
         _bookRepositoryStub = new();
         _bookCreatedDtoMapperStub = new();
         _bookCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
-        _bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _createBookCommand = new(_bookAuthor.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
+        _author = TestFixtures.CreateDummyAuthor();
+        _createBookCommand = new(_author.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _createBookCommandHandler = new(
             _bookRepositoryStub.Object,
-            _bookAuthorRepositoryStub.Object,
+            _authorRepositoryStub.Object,
             _bookCreatedDtoMapperStub.Object);
-        _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<BookAuthor>>(),
+        _authorRepositoryStub
+            .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync(_bookAuthor);
+            .ReturnsAsync(_author);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Book>>(),
@@ -42,15 +42,15 @@ public sealed class CreateBookCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithNonexistingBookAuthor_ReturnsErrorMessage()
+    public async Task HandleAsync_WithNonexistingAuthor_ReturnsErrorMessage()
     {
         // Arrange:
-        _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<BookAuthor>>(),
+        _authorRepositoryStub
+            .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync((BookAuthor)null);
-        var expectedErrorMessage = $"No book author with the ID of '{_bookAuthor.Id}' was found.";
+            .ReturnsAsync((Author)null);
+        var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
 
         // Act:
         Result handleResult = await _createBookCommandHandler.HandleAsync(_createBookCommand, default);
@@ -63,8 +63,8 @@ public sealed class CreateBookCommandHandlerTests
     public async Task HandleAsync_WithExistingBookTitle_ReturnsErrorMessage()
     {
         // Arrange:
-        _bookAuthor.AddBook(TestFixtures.CreateDummyBook());
-        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' has already been added to this book author.";
+        _author.AddBook(TestFixtures.CreateDummyBook());
+        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' has already been added to this author.";
 
         // Act:
         Result handleResult = await _createBookCommandHandler.HandleAsync(_createBookCommand, default);

@@ -6,7 +6,7 @@ public sealed class GetCustomerDto
     public string FullName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
-    public IReadOnlyList<GetCustomerBookDto> Books { get; }
+    public IReadOnlyList<GetBookRentedByCustomerDto> Books { get; }
     public string CustomerStatus { get; }
     public int CustomerPoints { get; }
 
@@ -15,7 +15,7 @@ public sealed class GetCustomerDto
         FullName fullName,
         Email email,
         PhoneNumber phoneNumber,
-        IReadOnlyList<GetCustomerBookDto> books,
+        IReadOnlyList<GetBookRentedByCustomerDto> books,
         CustomerStatus customerStatus,
         int customerPoints
     )

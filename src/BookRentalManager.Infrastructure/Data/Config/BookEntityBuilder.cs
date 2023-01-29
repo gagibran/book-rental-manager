@@ -12,12 +12,12 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
             .HasColumnName("BookTitle")
             .IsRequired();
         bookBuilder
-            .HasMany(book => book.BookAuthors)
-            .WithMany(bookAuthors => bookAuthors.Books)
+            .HasMany(book => book.Authors)
+            .WithMany(authors => authors.Books)
             .UsingEntity(bookBuilder =>
             {
                 bookBuilder
-                    .ToTable("BookAuthor_Book")
+                    .ToTable("Author_Book")
                     .Property("BooksId")
                     .HasColumnName("BookId");
             });

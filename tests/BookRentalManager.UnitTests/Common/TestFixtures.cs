@@ -21,8 +21,8 @@ public static class TestFixtures
             Isbn.Create("0-201-61622-X").Value);
     }
 
-    public static BookAuthor CreateDummyBookAuthor()
+    public static Author CreateDummyAuthor()
     {
-        return new BookAuthor(FullName.Create("John", "Doe").Value);
+        return new Author(FullName.Create("John", "Doe").Value);
     }
 }

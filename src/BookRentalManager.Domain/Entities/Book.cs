@@ -2,10 +2,10 @@ namespace BookRentalManager.Domain.Entities;
 
 public sealed class Book : Entity
 {
-    private readonly List<BookAuthor> _bookAuthors;
+    private readonly List<Author> _authors;
 
     public string BookTitle { get; }
-    public IReadOnlyList<BookAuthor> BookAuthors => _bookAuthors.AsReadOnly();
+    public IReadOnlyList<Author> Authors => _authors.AsReadOnly();
     public Edition Edition { get; }
     public Isbn Isbn { get; }
     public bool IsAvailable { get; internal set; }
@@ -13,7 +13,7 @@ public sealed class Book : Entity
 
     private Book()
     {
-        _bookAuthors = new();
+        _authors = new();
         BookTitle = string.Empty!;
         Edition = default!;
         Isbn = default!;
@@ -26,16 +26,16 @@ public sealed class Book : Entity
         Edition edition,
         Isbn isbn)
     {
-        _bookAuthors = new();
+        _authors = new();
         BookTitle = bookTitle;
         Edition = edition;
         Isbn = isbn;
         IsAvailable = true;
     }
 
-    internal void AddBookAuthor(BookAuthor bookAuthor)
+    internal void AddAuthor(Author author)
     {
-        _bookAuthors.Add(bookAuthor);
+        _authors.Add(author);
     }
 
     internal void SetRentedBy(Customer customer)

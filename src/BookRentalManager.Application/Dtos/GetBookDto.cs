@@ -4,7 +4,7 @@ public sealed class GetBookDto
 {
     public Guid Id { get; }
     public string BookTitle { get; }
-    public IReadOnlyList<GetBookBookAuthorDto> BookAuthors { get; }
+    public IReadOnlyList<GetAuthorFromBookDto> Authors { get; }
     public int Edition { get; }
     public string Isbn { get; }
     public bool IsAvailable { get; internal set; }
@@ -13,7 +13,7 @@ public sealed class GetBookDto
     public GetBookDto(
         Guid id,
         string bookTitle,
-        IReadOnlyList<GetBookBookAuthorDto> bookAuthors,
+        IReadOnlyList<GetAuthorFromBookDto> authors,
         Edition edition,
         Isbn isbn,
         bool isAvailable,
@@ -21,7 +21,7 @@ public sealed class GetBookDto
     {
         Id = id;
         BookTitle = bookTitle;
-        BookAuthors = bookAuthors;
+        Authors = authors;
         Edition = edition.EditionNumber;
         Isbn = isbn.IsbnValue;
         IsAvailable = isAvailable;

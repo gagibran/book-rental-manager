@@ -15,7 +15,7 @@ public sealed class TestDataSeeder
     {
         DbSet<Customer> customers = _bookRentalManagerDbContext.Set<Customer>();
         DbSet<Book> books = _bookRentalManagerDbContext.Set<Book>();
-        DbSet<BookAuthor> bookAuthors = _bookRentalManagerDbContext.Set<BookAuthor>();
+        DbSet<Author> authors = _bookRentalManagerDbContext.Set<Author>();
         if (!customers.Any())
         {
             var newCustomers = new List<Customer>
@@ -35,87 +35,87 @@ public sealed class TestDataSeeder
             };
             await customers.AddRangeAsync(newCustomers);
         }
-        if (!books.Any() && !bookAuthors.Any())
+        if (!books.Any() && !authors.Any())
         {
-            var newBookAuthors = new List<BookAuthor>
+            var newAuthors = new List<Author>
             {
-                new BookAuthor(FullName.Create("Erich", "Gamma").Value!),
-                new BookAuthor(FullName.Create("John", "Vlissides").Value!),
-                new BookAuthor(FullName.Create("Ralph", "Johnson").Value!),
-                new BookAuthor(FullName.Create("Richard", "Helm").Value!),
-                new BookAuthor(FullName.Create("Bob", "Martin").Value!),
-                new BookAuthor(FullName.Create("Lewis", "Carroll").Value!),
-                new BookAuthor(FullName.Create("Franz", "Kafka").Value!),
-                new BookAuthor(FullName.Create("Howard", "Lovecraft").Value!),
-                new BookAuthor(FullName.Create("Isabel", "Allende").Value!),
-                new BookAuthor(FullName.Create("Edgar Allan", "Poe").Value!),
-                new BookAuthor(FullName.Create("Andy", "Hunt").Value!),
-                new BookAuthor(FullName.Create("John Ronald", "Tolkien").Value!),
-                new BookAuthor(FullName.Create("Stephen", "King").Value!),
-                new BookAuthor(FullName.Create("George Raymond", "Martin").Value!),
-                new BookAuthor(FullName.Create("Agatha", "Christie").Value!),
-                new BookAuthor(FullName.Create("Leo", "Tolstoy").Value!),
-                new BookAuthor(FullName.Create("William", "Shakespeare").Value!),
-                new BookAuthor(FullName.Create("James", "Joyce").Value!),
-                new BookAuthor(FullName.Create("Vladimir", "Nabokov").Value!),
-                new BookAuthor(FullName.Create("Fyodor", "Dostoevsky").Value!),
-                new BookAuthor(FullName.Create("William", "Faulkner").Value!),
-                new BookAuthor(FullName.Create("Charles", "Dickens").Value!),
-                new BookAuthor(FullName.Create("Anton", "Chekhov").Value!),
-                new BookAuthor(FullName.Create("Gustave", "Flaubert").Value!),
-                new BookAuthor(FullName.Create("Jane", "Austen").Value!),
-                new BookAuthor(FullName.Create("Joanne", "Rowling").Value!),
-                new BookAuthor(FullName.Create("Ernest", "Hemingway").Value!),
-                new BookAuthor(FullName.Create("Maria", "Popova").Value!),
-                new BookAuthor(FullName.Create("Francis Scott", "Fitzgerald").Value!),
-                new BookAuthor(FullName.Create("Edgar Allan", "Poe").Value!),
-                new BookAuthor(FullName.Create("Nora", "Roberts").Value!),
-                new BookAuthor(FullName.Create("Paulo", "Coelho").Value!),
-                new BookAuthor(FullName.Create("Roald", "Dahl").Value!),
-                new BookAuthor(FullName.Create("George", "Orwell").Value!),
-                new BookAuthor(FullName.Create("Georges", "Simenon").Value!),
-                new BookAuthor(FullName.Create("Anne", "Frank").Value!),
-                new BookAuthor(FullName.Create("Dan", "Brown").Value!),
-                new BookAuthor(FullName.Create("Enid", "Blyton").Value!),
-                new BookAuthor(FullName.Create("Gilbert", "Patten").Value!),
-                new BookAuthor(FullName.Create("Beatrix", "Potter").Value!),
-                new BookAuthor(FullName.Create("Karl", "May").Value!),
-                new BookAuthor(FullName.Create("Rex", "Stout").Value!),
-                new BookAuthor(FullName.Create("Yasuo", "Uchida").Value!),
-                new BookAuthor(FullName.Create("Stephenie", "Meyer").Value!),
-                new BookAuthor(FullName.Create("Anne", "Golon").Value!),
-                new BookAuthor(FullName.Create("Nicholas", "Sparks").Value!),
-                new BookAuthor(FullName.Create("Debbie", "Macomber").Value!),
-                new BookAuthor(FullName.Create("Dr.", "Seuss").Value!),
-                new BookAuthor(FullName.Create("Jane", "Austen").Value!),
-                new BookAuthor(FullName.Create("Nora", "Roberts").Value!),
-                new BookAuthor(FullName.Create("Ken", "Follett").Value!),
-                new BookAuthor(FullName.Create("Patricia", "Cornwell").Value!),
-                new BookAuthor(FullName.Create("Hermann", "Hesse").Value!),
-                new BookAuthor(FullName.Create("Harold", "Robbins").Value!),
-                new BookAuthor(FullName.Create("Sidney", "Sheldon").Value!),
-                new BookAuthor(FullName.Create("Barbara", "Catland").Value!)
+                new Author(FullName.Create("Erich", "Gamma").Value!),
+                new Author(FullName.Create("John", "Vlissides").Value!),
+                new Author(FullName.Create("Ralph", "Johnson").Value!),
+                new Author(FullName.Create("Richard", "Helm").Value!),
+                new Author(FullName.Create("Bob", "Martin").Value!),
+                new Author(FullName.Create("Lewis", "Carroll").Value!),
+                new Author(FullName.Create("Franz", "Kafka").Value!),
+                new Author(FullName.Create("Howard", "Lovecraft").Value!),
+                new Author(FullName.Create("Isabel", "Allende").Value!),
+                new Author(FullName.Create("Edgar Allan", "Poe").Value!),
+                new Author(FullName.Create("Andy", "Hunt").Value!),
+                new Author(FullName.Create("John Ronald", "Tolkien").Value!),
+                new Author(FullName.Create("Stephen", "King").Value!),
+                new Author(FullName.Create("George Raymond", "Martin").Value!),
+                new Author(FullName.Create("Agatha", "Christie").Value!),
+                new Author(FullName.Create("Leo", "Tolstoy").Value!),
+                new Author(FullName.Create("William", "Shakespeare").Value!),
+                new Author(FullName.Create("James", "Joyce").Value!),
+                new Author(FullName.Create("Vladimir", "Nabokov").Value!),
+                new Author(FullName.Create("Fyodor", "Dostoevsky").Value!),
+                new Author(FullName.Create("William", "Faulkner").Value!),
+                new Author(FullName.Create("Charles", "Dickens").Value!),
+                new Author(FullName.Create("Anton", "Chekhov").Value!),
+                new Author(FullName.Create("Gustave", "Flaubert").Value!),
+                new Author(FullName.Create("Jane", "Austen").Value!),
+                new Author(FullName.Create("Joanne", "Rowling").Value!),
+                new Author(FullName.Create("Ernest", "Hemingway").Value!),
+                new Author(FullName.Create("Maria", "Popova").Value!),
+                new Author(FullName.Create("Francis Scott", "Fitzgerald").Value!),
+                new Author(FullName.Create("Edgar Allan", "Poe").Value!),
+                new Author(FullName.Create("Nora", "Roberts").Value!),
+                new Author(FullName.Create("Paulo", "Coelho").Value!),
+                new Author(FullName.Create("Roald", "Dahl").Value!),
+                new Author(FullName.Create("George", "Orwell").Value!),
+                new Author(FullName.Create("Georges", "Simenon").Value!),
+                new Author(FullName.Create("Anne", "Frank").Value!),
+                new Author(FullName.Create("Dan", "Brown").Value!),
+                new Author(FullName.Create("Enid", "Blyton").Value!),
+                new Author(FullName.Create("Gilbert", "Patten").Value!),
+                new Author(FullName.Create("Beatrix", "Potter").Value!),
+                new Author(FullName.Create("Karl", "May").Value!),
+                new Author(FullName.Create("Rex", "Stout").Value!),
+                new Author(FullName.Create("Yasuo", "Uchida").Value!),
+                new Author(FullName.Create("Stephenie", "Meyer").Value!),
+                new Author(FullName.Create("Anne", "Golon").Value!),
+                new Author(FullName.Create("Nicholas", "Sparks").Value!),
+                new Author(FullName.Create("Debbie", "Macomber").Value!),
+                new Author(FullName.Create("Dr.", "Seuss").Value!),
+                new Author(FullName.Create("Jane", "Austen").Value!),
+                new Author(FullName.Create("Nora", "Roberts").Value!),
+                new Author(FullName.Create("Ken", "Follett").Value!),
+                new Author(FullName.Create("Patricia", "Cornwell").Value!),
+                new Author(FullName.Create("Hermann", "Hesse").Value!),
+                new Author(FullName.Create("Harold", "Robbins").Value!),
+                new Author(FullName.Create("Sidney", "Sheldon").Value!),
+                new Author(FullName.Create("Barbara", "Catland").Value!)
             };
             var designPatternsBook = new Book(
                 "Design Patterns: Elements of Reusable Object-Oriented Software",
                 Edition.Create(1).Value!,
                 Isbn.Create("0-201-63361-2").Value!);
-            newBookAuthors[0].AddBook(designPatternsBook);
-            newBookAuthors[1].AddBook(designPatternsBook);
-            newBookAuthors[2].AddBook(designPatternsBook);
-            newBookAuthors[3].AddBook(designPatternsBook);
+            newAuthors[0].AddBook(designPatternsBook);
+            newAuthors[1].AddBook(designPatternsBook);
+            newAuthors[2].AddBook(designPatternsBook);
+            newAuthors[3].AddBook(designPatternsBook);
             var cleanCodeBook = new Book(
                 "Clean Code: A Handbook of Agile Software Craftsmanship",
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
-            newBookAuthors[4].AddBook(cleanCodeBook);
+            newAuthors[4].AddBook(cleanCodeBook);
             var newBooks = new List<Book> { cleanCodeBook, designPatternsBook };
             var customer = new Customer(
                 FullName.Create("Rosanne", "Johnson").Value!,
                 Email.Create("rosane.johnson@email.com").Value!,
                 PhoneNumber.Create(559, 7852361).Value!);
             customer.RentBook(cleanCodeBook);
-            await bookAuthors.AddRangeAsync(newBookAuthors);
+            await authors.AddRangeAsync(newAuthors);
             await books.AddRangeAsync(newBooks);
             await customers.AddAsync(customer);
         }

@@ -5,7 +5,7 @@ global using BookRentalManager.Domain.Entities;
 global using BookRentalManager.Domain.Interfaces;
 global using BookRentalManager.Application.Dtos;
 global using BookRentalManager.Application.Customers.Queries;
-global using BookRentalManager.Application.BooksAuthors.Queries;
+global using BookRentalManager.Application.Authors.Queries;
 global using BookRentalManager.Application.Interfaces;
 global using BookRentalManager.Domain.Specifications;
 global using BookRentalManager.Application.Books.Queries;

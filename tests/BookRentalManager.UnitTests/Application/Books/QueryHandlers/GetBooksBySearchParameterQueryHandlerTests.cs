@@ -2,8 +2,8 @@ namespace BookRentalManager.UnitTests.Application.Books.QueryHandlers;
 
 public sealed class GetBooksBySearchParameterQueryHandlerTests
 {
-    private readonly Mock<IRepository<BookAuthor>> _bookAuthorRepositoryStub;
-    private readonly BookAuthor _bookAuthor;
+    private readonly Mock<IRepository<Author>> _authorRepositoryStub;
+    private readonly Author _author;
     private readonly Book _book;
     private readonly List<Book> _books;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
@@ -13,8 +13,8 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
 
     public GetBooksBySearchParameterQueryHandlerTests()
     {
-        _bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _bookAuthorRepositoryStub = new();
+        _author = TestFixtures.CreateDummyAuthor();
+        _authorRepositoryStub = new();
         _bookRepositoryStub = new();
         _getBookDtoMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
@@ -22,23 +22,23 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
         _getBookDto = new(
             Guid.NewGuid(),
             _book.BookTitle,
-            new List<GetBookBookAuthorDto>(),
+            new List<GetAuthorFromBookDto>(),
             _book.Edition,
             _book.Isbn,
             _book.IsAvailable,
             new GetRentedByDto());
         _getBooksBySearchParameterQueryHandler = new GetBooksBySearchParameterQueryHandler(
-            _bookAuthorRepositoryStub.Object,
+            _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
             _getBookDtoMapperStub.Object);
         _getBookDtoMapperStub
             .Setup(_getBookDtoMapper => _getBookDtoMapper.Map(It.IsAny<Book>()))
             .Returns(_getBookDto);
-        _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<BookAuthor>>(),
+        _authorRepositoryStub
+            .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync(_bookAuthor);
+            .ReturnsAsync(_author);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     {
         // Arrange:
         var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
-            _bookAuthor.Id,
+            _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             "Name");
@@ -72,7 +72,7 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     {
         // Arrange:
         var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
-            _bookAuthor.Id,
+            _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             _book.BookTitle);
@@ -93,7 +93,7 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(_getBookDto.Id, actualBookDto.Id);
         Assert.Equal(_getBookDto.BookTitle, actualBookDto.BookTitle);
-        Assert.Equal(_getBookDto.BookAuthors, actualBookDto.BookAuthors);
+        Assert.Equal(_getBookDto.Authors, actualBookDto.Authors);
         Assert.Equal(_getBookDto.Edition, actualBookDto.Edition);
         Assert.Equal(_getBookDto.Isbn, actualBookDto.Isbn);
         Assert.Equal(_getBookDto.IsAvailable, actualBookDto.IsAvailable);
@@ -108,7 +108,7 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     {
         // Arrange:
         var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
-            _bookAuthor.Id,
+            _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             searchParam);
@@ -135,20 +135,20 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithNonexistingBookAuthor_ReturnErrorMessage()
+    public async Task HandleAsync_WithNonexistingAuthor_ReturnErrorMessage()
     {
         // Arrange:
         var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
-            _bookAuthor.Id,
+            _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             "Test");
-        var expectedErrorMessage = $"No book author with the ID of '{_bookAuthor.Id}' was found.";
-        _bookAuthorRepositoryStub
-            .Setup(bookAuthorRepository => bookAuthorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<BookAuthor>>(),
+        var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
+        _authorRepositoryStub
+            .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync((BookAuthor)null);
+            .ReturnsAsync((Author)null);
 
         // Act:
         Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksBySearchParameterQueryHandler.HandleAsync(
