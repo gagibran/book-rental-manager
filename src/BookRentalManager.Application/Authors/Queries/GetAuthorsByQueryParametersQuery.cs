@@ -1,15 +1,9 @@
 namespace BookRentalManager.Application.Authors.Queries;
 
-public sealed class GetAuthorsByQueryParametersQuery : IQuery<IReadOnlyList<GetAuthorDto>>
+public sealed class GetAuthorsByQueryParametersQuery : GetAllItemsQuery, IQuery<IReadOnlyList<GetAuthorDto>>
 {
-    public int PageIndex { get; }
-    public int TotalItemsPerPage { get; }
-    public string SearchParameter { get; }
-
     public GetAuthorsByQueryParametersQuery(int pageIndex, int totalItemsPerPage, string searchParameter)
+        : base(pageIndex, totalItemsPerPage, searchParameter)
     {
-        PageIndex = pageIndex;
-        TotalItemsPerPage = totalItemsPerPage;
-        SearchParameter = searchParameter;
     }
 }

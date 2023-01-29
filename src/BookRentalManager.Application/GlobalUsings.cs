@@ -10,3 +10,4 @@ global using BookRentalManager.Application.Interfaces;
 global using BookRentalManager.Domain.Specifications;
 global using BookRentalManager.Application.Books.Queries;
 global using BookRentalManager.Application.Books.Commands;
+global using BookRentalManager.Application.Common;

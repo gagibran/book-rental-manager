@@ -1,15 +1,9 @@
 namespace BookRentalManager.Application.Customers.Queries;
 
-public sealed class GetCustomersByQueryParametersQuery : IQuery<IReadOnlyList<GetCustomerDto>>
+public sealed class GetCustomersByQueryParametersQuery : GetAllItemsQuery, IQuery<IReadOnlyList<GetCustomerDto>>
 {
-    public int PageIndex { get; }
-    public int TotalItemsPerPage { get; }
-    public string SearchParameter { get; }
-
     public GetCustomersByQueryParametersQuery(int pageIndex, int totalItemsPerPage, string searchParameter)
+        : base(pageIndex, totalItemsPerPage, searchParameter)
     {
-        PageIndex = pageIndex;
-        TotalItemsPerPage = totalItemsPerPage;
-        SearchParameter = searchParameter;
     }
 }
