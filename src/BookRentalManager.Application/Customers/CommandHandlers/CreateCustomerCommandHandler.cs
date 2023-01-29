@@ -18,19 +18,17 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         CancellationToken cancellationToken)
     {
         Customer? customerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
-            new CustomerByEmailSpecification(createCustomerCommand.CreateCustomerDto.Email));
+            new CustomerByEmailSpecification(createCustomerCommand.Email));
         if (customerWithEmail is not null)
         {
             return Result.Fail<CustomerCreatedDto>(
                 $"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
         }
-        Result<FullName> fullNameResult = FullName.Create(
-            createCustomerCommand.CreateCustomerDto.FirstName,
-            createCustomerCommand.CreateCustomerDto.LastName);
-        Result<Email> emailResult = Email.Create(createCustomerCommand.CreateCustomerDto.Email);
+        Result<FullName> fullNameResult = FullName.Create(createCustomerCommand.FirstName, createCustomerCommand.LastName);
+        Result<Email> emailResult = Email.Create(createCustomerCommand.Email);
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
-            createCustomerCommand.CreateCustomerDto.PhoneNumber.AreaCode,
-            createCustomerCommand.CreateCustomerDto.PhoneNumber.PrefixAndLineNumber);
+            createCustomerCommand.AreaCode,
+            createCustomerCommand.PrefixAndLineNumber);
         Result combinedResults = Result.Combine(fullNameResult, emailResult, phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {

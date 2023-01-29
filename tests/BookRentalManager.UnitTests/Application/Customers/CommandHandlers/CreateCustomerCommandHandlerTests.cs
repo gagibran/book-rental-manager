@@ -25,7 +25,12 @@ public sealed class CreateCustomerCommandHandlerTests
             customer.PhoneNumber.CompletePhoneNumber,
             customer.CustomerStatus.CustomerType.ToString(),
             customer.CustomerPoints);
-        _createCustomerCommand = new(_createCustomerDto);
+        _createCustomerCommand = new(
+            _createCustomerDto.FirstName,
+            _createCustomerDto.LastName,
+            _createCustomerDto.Email,
+            _createCustomerDto.PhoneNumber.AreaCode,
+            _createCustomerDto.PhoneNumber.PrefixAndLineNumber);
         _createCustomerCommandHandler = new(_customerRepositoryStub.Object, _customerCreatedDtoMapperStub.Object);
         _customerCreatedDtoMapperStub
             .Setup(customerCreatedDtoMapper => customerCreatedDtoMapper.Map(It.IsAny<Customer>()))

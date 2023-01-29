@@ -25,14 +25,14 @@ public sealed class CreateBookCommandHandler : ICommandHandler<CreateBookCommand
             return Result.Fail<BookCreatedDto>(
                 $"No book author with the ID of '{createBookCommand.BookAuthorId}' was found.");
         }
-        Result<Edition> editionResult = Edition.Create(createBookCommand.CreateBookDto.Edition);
-        Result<Isbn> isbnResult = Isbn.Create(createBookCommand.CreateBookDto.Isbn);
+        Result<Edition> editionResult = Edition.Create(createBookCommand.Edition);
+        Result<Isbn> isbnResult = Isbn.Create(createBookCommand.Isbn);
         Result combinedResults = Result.Combine(editionResult, isbnResult);
         if (!combinedResults.IsSuccess)
         {
             return Result.Fail<BookCreatedDto>(combinedResults.ErrorMessage);
         }
-        var newBook = new Book(createBookCommand.CreateBookDto.BookTitle, editionResult.Value!, isbnResult.Value!);
+        var newBook = new Book(createBookCommand.BookTitle, editionResult.Value!, isbnResult.Value!);
         Result addBookToBookAuthorResult = bookAuthor.AddBook(newBook);
         if (!addBookToBookAuthorResult.IsSuccess)
         {

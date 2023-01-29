@@ -23,7 +23,7 @@ public sealed class CreateBookCommandHandlerTests
         _createBookDto = new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _bookCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _bookAuthor = TestFixtures.CreateDummyBookAuthor();
-        _createBookCommand = new(_bookAuthor.Id, _createBookDto);
+        _createBookCommand = new(_bookAuthor.Id, _createBookDto.BookTitle, _createBookDto.Edition, _createBookDto.Isbn);
         _createBookCommandHandler = new(
             _bookRepositoryStub.Object,
             _bookAuthorRepositoryStub.Object,

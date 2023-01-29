@@ -58,9 +58,8 @@ public sealed class BookController : ApiController
         CreateBookDto createBookDto,
         CancellationToken cancellationToken)
     {
-        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(
-            new CreateBookCommand(bookAuthorId, createBookDto),
-            cancellationToken);
+        var createBookCommand = new CreateBookCommand(bookAuthorId, createBookDto.BookTitle, createBookDto.Edition, createBookDto.Isbn);
+        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);

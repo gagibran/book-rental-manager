@@ -2,10 +2,23 @@ namespace BookRentalManager.Application.Customers.Commands;
 
 public sealed class CreateCustomerCommand : ICommand<CustomerCreatedDto>
 {
-    public CreateCustomerDto CreateCustomerDto { get; }
+    public string FirstName { get; }
+    public string LastName { get; }
+    public string Email { get; }
+    public int AreaCode { get; }
+    public int PrefixAndLineNumber { get; }
 
-    public CreateCustomerCommand(CreateCustomerDto createCustomerDto)
+    public CreateCustomerCommand(
+        string firstName,
+        string lastName,
+        string email,
+        int areaCode,
+        int prefixAndLineNumber)
     {
-        CreateCustomerDto = createCustomerDto;
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        AreaCode = areaCode;
+        PrefixAndLineNumber = prefixAndLineNumber;
     }
 }
