@@ -3,17 +3,17 @@ using BookRentalManager.Application.Books.CommandHandlers;
 
 namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
 
-public sealed class CreateBookCommandHandlerTests
+public sealed class CreateBookForAuthorCommandHandlerTests
 {
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, BookCreatedDto>> _bookCreatedDtoMapperStub;
     private readonly BookCreatedDto _bookCreatedDto;
     private readonly Author _author;
-    private readonly CreateBookCommand _createBookCommand;
-    private readonly CreateBookCommandHandler _createBookCommandHandler;
+    private readonly CreateBookForAuthorCommand _createBookForAuthorCommand;
+    private readonly CreateBookForAuthorCommandHandler _createBookForAuthorCommandHandler;
 
-    public CreateBookCommandHandlerTests()
+    public CreateBookForAuthorCommandHandlerTests()
     {
         Book book = TestFixtures.CreateDummyBook();
         _authorRepositoryStub = new();
@@ -21,8 +21,8 @@ public sealed class CreateBookCommandHandlerTests
         _bookCreatedDtoMapperStub = new();
         _bookCreatedDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
         _author = TestFixtures.CreateDummyAuthor();
-        _createBookCommand = new(_author.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
-        _createBookCommandHandler = new(
+        _createBookForAuthorCommand = new(_author.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
+        _createBookForAuthorCommandHandler = new(
             _bookRepositoryStub.Object,
             _authorRepositoryStub.Object,
             _bookCreatedDtoMapperStub.Object);
@@ -53,7 +53,7 @@ public sealed class CreateBookCommandHandlerTests
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
 
         // Act:
-        Result handleResult = await _createBookCommandHandler.HandleAsync(_createBookCommand, default);
+        Result handleResult = await _createBookForAuthorCommandHandler.HandleAsync(_createBookForAuthorCommand, default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
@@ -67,7 +67,7 @@ public sealed class CreateBookCommandHandlerTests
         var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' has already been added to this author.";
 
         // Act:
-        Result handleResult = await _createBookCommandHandler.HandleAsync(_createBookCommand, default);
+        Result handleResult = await _createBookForAuthorCommandHandler.HandleAsync(_createBookForAuthorCommand, default);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
@@ -87,7 +87,7 @@ public sealed class CreateBookCommandHandlerTests
             .Verifiable();
 
         // Act:
-        Result handleResult = await _createBookCommandHandler.HandleAsync(_createBookCommand, default);
+        Result handleResult = await _createBookForAuthorCommandHandler.HandleAsync(_createBookForAuthorCommand, default);
 
         // Assert:
         Assert.True(handleResult.IsSuccess);

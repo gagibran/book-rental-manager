@@ -1,13 +1,13 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBooksBySearchParameterQueryHandler
-    : IQueryHandler<GetBooksBySearchParameterQuery, IReadOnlyList<GetBookDto>>
+internal sealed class GetBooksByQueryParameterFromAuthorQueryHandler
+    : IQueryHandler<GetBooksByQueryParameterFromAuthorQuery, IReadOnlyList<GetBookDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _getBookDtoMapper;
 
-    public GetBooksBySearchParameterQueryHandler(
+    public GetBooksByQueryParameterFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
         IMapper<Book, GetBookDto> getBookDtoMapper)
@@ -18,22 +18,22 @@ internal sealed class GetBooksBySearchParameterQueryHandler
     }
 
     public async Task<Result<IReadOnlyList<GetBookDto>>> HandleAsync(
-        GetBooksBySearchParameterQuery getBooksBySearchParameterQuery,
+        GetBooksByQueryParameterFromAuthorQuery getBooksByQueryParameterFromAuthor,
         CancellationToken cancellationToken)
     {
-        var authorByIdSpecification = new AuthorByIdSpecification(getBooksBySearchParameterQuery.AuthorId);
+        var authorByIdSpecification = new AuthorByIdSpecification(getBooksByQueryParameterFromAuthor.AuthorId);
         Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
         if (author is null)
         {
-            return Result.Fail<IReadOnlyList<GetBookDto>>($"No author with the ID of '{getBooksBySearchParameterQuery.AuthorId}' was found.");
+            return Result.Fail<IReadOnlyList<GetBookDto>>($"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
-        var booksInAuthorBooksAndSearchParameterSpecification = new BooksFromAuthorBooksAndSearchParameterSpecification(
+        var booksInAuthorBooksAndQueryParameterSpecification = new BooksFromAuthorBooksByQueryParameterSpecification(
             author.Books,
-            getBooksBySearchParameterQuery.SearchParameter);
+            getBooksByQueryParameterFromAuthor.SearchParameter);
         IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
-            getBooksBySearchParameterQuery.PageIndex,
-            getBooksBySearchParameterQuery.TotalItemsPerPage,
-            booksInAuthorBooksAndSearchParameterSpecification,
+            getBooksByQueryParameterFromAuthor.PageIndex,
+            getBooksByQueryParameterFromAuthor.TotalItemsPerPage,
+            booksInAuthorBooksAndQueryParameterSpecification,
             cancellationToken);
         IReadOnlyList<GetBookDto> getBookDtos = (from book in books
                                                  select _getBookDtoMapper.Map(book)).ToList().AsReadOnly();

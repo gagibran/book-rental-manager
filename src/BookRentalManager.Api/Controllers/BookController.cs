@@ -12,20 +12,20 @@ public sealed class BookController : ApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<GetBookDto>>> GetBooksFromAuthorAsync(
+    public async Task<ActionResult<IReadOnlyList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
         Guid authorId,
         CancellationToken cancellationToken,
         int pageIndex = 1,
         int totalItemsPerPage = 50,
         [FromQuery(Name = "search")] string searchParameter = "")
     {
-        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
+        var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParameterFromAuthorQuery(
             authorId,
             pageIndex,
             totalItemsPerPage,
             searchParameter);
         Result<IReadOnlyList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookDto>>(
-                getBooksBySearchParameterQuery,
+                getBooksBySearchParameterFromAuthor,
                 cancellationToken);
         if (!getAllBooksResult.IsSuccess)
         {
@@ -42,8 +42,8 @@ public sealed class BookController : ApiController
         Guid id,
         CancellationToken cancellationToken)
     {
-        var getBookByIdQuery = new GetBookByIdQuery(authorId, id);
-        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdQuery, cancellationToken);
+        var getBookByIdFromAuthorQuery = new GetBookByIdFromAuthorQuery(authorId, id);
+        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdFromAuthorQuery, cancellationToken);
         if (!getBookByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getBookByIdResult.ErrorMessage);
@@ -55,10 +55,10 @@ public sealed class BookController : ApiController
     [HttpPost]
     public async Task<ActionResult> CreateBookForAuthorAsync(
         Guid authorId,
-        CreateBookCommand createBookCommand,
+        CreateBookForAuthorCommand createBookForAuthorCommand,
         CancellationToken cancellationToken)
     {
-        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookCommand, cancellationToken);
+        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookForAuthorCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);

@@ -1,16 +1,16 @@
 namespace BookRentalManager.UnitTests.Application.Books.QueryHandlers;
 
-public sealed class GetBookByIdQueryHandlerTests
+public sealed class GetBookByIdFromAuthorQueryHandlerTests
 {
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, GetBookDto>> _getBookDtoMapperStub;
-    private readonly GetBookByIdQueryHandler _getBookByIdQueryHandler;
+    private readonly GetBookByIdFromAuthorQueryHandler _getBookByIdFromAuthorQueryHandler;
     private readonly Author _author;
     private readonly Book _book;
     private readonly GetBookDto _getBookDto;
 
-    public GetBookByIdQueryHandlerTests()
+    public GetBookByIdFromAuthorQueryHandlerTests()
     {
         _author = TestFixtures.CreateDummyAuthor();
         _book = TestFixtures.CreateDummyBook();
@@ -25,7 +25,7 @@ public sealed class GetBookByIdQueryHandlerTests
         _getBookDtoMapperStub = new();
         _bookRepositoryStub = new();
         _authorRepositoryStub = new();
-        _getBookByIdQueryHandler = new(
+        _getBookByIdFromAuthorQueryHandler = new(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
             _getBookDtoMapperStub.Object);
@@ -51,8 +51,8 @@ public sealed class GetBookByIdQueryHandlerTests
             .ReturnsAsync(_book);
 
         // Act:
-        Result<GetBookDto> handlerResult = await _getBookByIdQueryHandler.HandleAsync(
-            new GetBookByIdQuery(_author.Id, _book.Id),
+        Result<GetBookDto> handlerResult = await _getBookByIdFromAuthorQueryHandler.HandleAsync(
+            new GetBookByIdFromAuthorQuery(_author.Id, _book.Id),
             default);
 
         // Assert:
@@ -71,8 +71,8 @@ public sealed class GetBookByIdQueryHandlerTests
             .ReturnsAsync((Book)null);
 
         // Act:
-        Result<GetBookDto> handlerResult = await _getBookByIdQueryHandler.HandleAsync(
-            new GetBookByIdQuery(_author.Id, _book.Id),
+        Result<GetBookDto> handlerResult = await _getBookByIdFromAuthorQueryHandler.HandleAsync(
+            new GetBookByIdFromAuthorQuery(_author.Id, _book.Id),
             default);
 
         // Assert:
@@ -91,8 +91,8 @@ public sealed class GetBookByIdQueryHandlerTests
             .ReturnsAsync((Author)null);
 
         // Act:
-        Result<GetBookDto> handlerResult = await _getBookByIdQueryHandler.HandleAsync(
-            new GetBookByIdQuery(_author.Id, _book.Id),
+        Result<GetBookDto> handlerResult = await _getBookByIdFromAuthorQueryHandler.HandleAsync(
+            new GetBookByIdFromAuthorQuery(_author.Id, _book.Id),
             default);
 
         // Assert:

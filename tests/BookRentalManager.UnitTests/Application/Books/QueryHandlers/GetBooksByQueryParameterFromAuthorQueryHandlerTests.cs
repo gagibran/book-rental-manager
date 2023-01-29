@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Application.Books.QueryHandlers;
 
-public sealed class GetBooksBySearchParameterQueryHandlerTests
+public sealed class GetBooksByQueryParameterFromAuthorQueryHandlerTestsQuery
 {
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Author _author;
@@ -9,9 +9,9 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, GetBookDto>> _getBookDtoMapperStub;
     private readonly GetBookDto _getBookDto;
-    private readonly GetBooksBySearchParameterQueryHandler _getBooksBySearchParameterQueryHandler;
+    private readonly GetBooksByQueryParameterFromAuthorQueryHandler _getBooksByQueryParameterFromAuthorQueryHandler;
 
-    public GetBooksBySearchParameterQueryHandlerTests()
+    public GetBooksByQueryParameterFromAuthorQueryHandlerTestsQuery()
     {
         _author = TestFixtures.CreateDummyAuthor();
         _authorRepositoryStub = new();
@@ -27,7 +27,7 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
             _book.Isbn,
             _book.IsAvailable,
             new GetRentedByDto());
-        _getBooksBySearchParameterQueryHandler = new GetBooksBySearchParameterQueryHandler(
+        _getBooksByQueryParameterFromAuthorQueryHandler = new GetBooksByQueryParameterFromAuthorQueryHandler(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
             _getBookDtoMapperStub.Object);
@@ -42,10 +42,10 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithoutAnyBooksWithSearchParameter_ReturnsEmptyList()
+    public async Task HandleAsync_WithoutAnyBooksWithQueryParameter_ReturnsEmptyList()
     {
         // Arrange:
-        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
+        var getBooksByQueryParameterFromAuthorQuery = new GetBooksByQueryParameterFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
@@ -59,8 +59,8 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
             .ReturnsAsync(new List<Book>());
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksBySearchParameterQueryHandler.HandleAsync(
-            getBooksBySearchParameterQuery,
+        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParameterFromAuthorQueryHandler.HandleAsync(
+            getBooksByQueryParameterFromAuthorQuery,
             default);
 
         // Assert:
@@ -68,10 +68,10 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithAtLeastOneBookWithSearchParameter_ReturnsListWithMatchingBook()
+    public async Task HandleAsync_WithAtLeastOneBookWithQueryParameter_ReturnsListWithMatchingBook()
     {
         // Arrange:
-        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
+        var getBooksByQueryParameterFromAuthorQuery = new GetBooksByQueryParameterFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
@@ -85,8 +85,8 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
             .ReturnsAsync(_books);
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksBySearchParameterQueryHandler.HandleAsync(
-            getBooksBySearchParameterQuery,
+        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParameterFromAuthorQueryHandler.HandleAsync(
+            getBooksByQueryParameterFromAuthorQuery,
             default);
         GetBookDto actualBookDto = handlerResult.Value.FirstOrDefault();
 
@@ -104,14 +104,14 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllBooks(string searchParam)
+    public async Task HandleAsync_WithEmptyQueryParameter_ReturnsListWithAllBooks(string searchParameter)
     {
         // Arrange:
-        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
+        var getBooksByQueryParameterFromAuthorQuery = new GetBooksByQueryParameterFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
-            searchParam);
+            searchParameter);
         var newBook = new Book(
             "Clean Code: A Handbook of Agile Software Craftsmanship",
             Edition.Create(1).Value,
@@ -126,8 +126,8 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
             .ReturnsAsync(_books);
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksBySearchParameterQueryHandler.HandleAsync(
-            getBooksBySearchParameterQuery,
+        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParameterFromAuthorQueryHandler.HandleAsync(
+            getBooksByQueryParameterFromAuthorQuery,
             default);
 
         // Assert:
@@ -138,7 +138,7 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
     public async Task HandleAsync_WithNonexistingAuthor_ReturnErrorMessage()
     {
         // Arrange:
-        var getBooksBySearchParameterQuery = new GetBooksBySearchParameterQuery(
+        var getBooksByQueryParameterFromAuthorQuery = new GetBooksByQueryParameterFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
@@ -151,8 +151,8 @@ public sealed class GetBooksBySearchParameterQueryHandlerTests
             .ReturnsAsync((Author)null);
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksBySearchParameterQueryHandler.HandleAsync(
-            getBooksBySearchParameterQuery,
+        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParameterFromAuthorQueryHandler.HandleAsync(
+            getBooksByQueryParameterFromAuthorQuery,
             default);
 
         // Assert:
