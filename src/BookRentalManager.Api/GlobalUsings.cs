@@ -3,5 +3,4 @@ global using Microsoft.AspNetCore.Mvc;
 global using BookRentalManager.Application.Interfaces;
 global using BookRentalManager.Application.Dtos;
 global using BookRentalManager.Domain.Common;
-global using BookRentalManager.Domain.ValueObjects;
-global using BookRentalManager.Domain.Entities;
+global using BookRentalManager.Api.QueryParameters;
