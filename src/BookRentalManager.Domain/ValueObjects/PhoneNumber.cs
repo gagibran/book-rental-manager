@@ -21,20 +21,18 @@ public sealed class PhoneNumber : ValueObject
 
     public static Result<PhoneNumber> Create(int areaCode, int prefixAndLineNumber)
     {
-        Result areaCodeResult = Result.Success();
-        Result prefixAndLineNumberResult = Result.Success();
+        Result finalResult = Result.Success();
         if (areaCode < MinAreaCode || areaCode > MaxAreaCode)
         {
-            areaCodeResult = Result.Fail<PhoneNumber>("invalidAreaCode", "Invalid area code.");
+            finalResult = Result.Fail<PhoneNumber>("invalidAreaCode", "Invalid area code.");
         }
         if (prefixAndLineNumber < MinPrefixAndLineNumber || prefixAndLineNumber > MaxPrefixAndLineNumber)
         {
-            prefixAndLineNumberResult = Result.Fail<PhoneNumber>("invalidPhoneNumber", "Invalid phone number.");
+            finalResult = Result.Combine(finalResult, Result.Fail<PhoneNumber>("invalidPhoneNumber", "Invalid phone number."));
         }
-        Result combinedResults = Result.Combine(areaCodeResult, prefixAndLineNumberResult);
-        if (!combinedResults.IsSuccess)
+        if (!finalResult.IsSuccess)
         {
-            return Result.Fail<PhoneNumber>(combinedResults.ErrorType, combinedResults.ErrorMessage);
+            return Result.Fail<PhoneNumber>(finalResult.ErrorType, finalResult.ErrorMessage);
         }
         return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, prefixAndLineNumber));
     }

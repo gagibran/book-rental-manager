@@ -15,9 +15,8 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
 
     public async Task<Result<GetCustomerDto>> HandleAsync(GetCustomerByIdQuery getCustomerByIdQuery, CancellationToken cancellationToken)
     {
-        var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
-            new CustomerByIdSpecification(getCustomerByIdQuery.Id),
-            cancellationToken);
+        var customerByIdSpecification = new CustomerByIdSpecification(getCustomerByIdQuery.Id);
+        var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdSpecification, cancellationToken);
         if (customer is null)
         {
             return Result.Fail<GetCustomerDto>("customerId", $"No customer with the ID of '{getCustomerByIdQuery.Id}' was found.");

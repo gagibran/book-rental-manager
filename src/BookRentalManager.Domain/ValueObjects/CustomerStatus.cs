@@ -22,31 +22,28 @@ public sealed class CustomerStatus : ValueObject
 
     public Result<CustomerStatus> CheckCustomerTypeBookAvailability(int customerBookCount)
     {
-        Result explorerResult = Result.Success();
-        Result adventurerResult = Result.Success();
-        Result masterResult = Result.Success();
+        Result finalResult = Result.Success();
         if (customerBookCount >= MaximumAmountOfBooksExplorer && CustomerType is CustomerType.Explorer)
         {
-            explorerResult = Result.Fail<CustomerStatus>(
+            finalResult = Result.Fail<CustomerStatus>(
                 "explorerMaximumAmountReached",
                 AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksExplorer}).");
         }
         if (customerBookCount >= MaximumAmountOfBooksAdventurer && CustomerType is CustomerType.Adventurer)
         {
-            adventurerResult = Result.Fail<CustomerStatus>(
-                "adventurerMaximumAmountReached",
-                AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksAdventurer}).");
+            finalResult = Result.Combine(
+                finalResult,
+                Result.Fail<CustomerStatus>("adventurerMaximumAmountReached", AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksAdventurer})."));
         }
         if (customerBookCount >= MaximumAmountOfBooksMaster && CustomerType is CustomerType.Master)
         {
-            masterResult = Result.Fail<CustomerStatus>(
-                "masterMaximumAmountReached",
-                AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksMaster}).");
+            finalResult = Result.Combine(
+                finalResult,
+                Result.Fail<CustomerStatus>("masterMaximumAmountReached", AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksMaster})."));
         }
-        Result combinedResults = Result.Combine(explorerResult, adventurerResult, masterResult);
-        if (!combinedResults.IsSuccess)
+        if (!finalResult.IsSuccess)
         {
-            return Result.Fail<CustomerStatus>(combinedResults.ErrorType, combinedResults.ErrorMessage);
+            return Result.Fail<CustomerStatus>(finalResult.ErrorType, finalResult.ErrorMessage);
         }
         return Result.Success<CustomerStatus>(new CustomerStatus(CustomerType));
     }

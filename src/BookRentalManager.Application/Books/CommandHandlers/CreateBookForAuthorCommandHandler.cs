@@ -22,15 +22,13 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
     {
         var authorByIdSpecification = new AuthorByIdSpecification(createBookForAuthorCommand.AuthorId);
         Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
-        Result<Author?> existingAuthorResult = Result.Success<Author?>(existingAuthor);
-        Result<Edition> editionResult = Edition.Create(createBookForAuthorCommand.Edition);
-        Result<Isbn> isbnResult = Isbn.Create(createBookForAuthorCommand.Isbn);
+        Result existingAuthorResult = Result.Success();
         if (existingAuthor is null)
         {
-            existingAuthorResult = Result.Fail<Author?>(
-                "authorId",
-                $"No author with the ID of '{createBookForAuthorCommand.AuthorId}' was found.");
+            existingAuthorResult = Result.Fail("authorId", $"No author with the ID of '{createBookForAuthorCommand.AuthorId}' was found.");
         }
+        Result<Edition> editionResult = Edition.Create(createBookForAuthorCommand.Edition);
+        Result<Isbn> isbnResult = Isbn.Create(createBookForAuthorCommand.Isbn);
         Result combinedResults = Result.Combine(existingAuthorResult, editionResult, isbnResult);
         if (!combinedResults.IsSuccess)
         {

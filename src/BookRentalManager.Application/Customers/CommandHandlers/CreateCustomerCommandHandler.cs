@@ -17,12 +17,12 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         CreateCustomerCommand createCustomerCommand,
         CancellationToken cancellationToken)
     {
-        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
-            new CustomerByEmailSpecification(createCustomerCommand.Email));
-        Result<Customer?> existingCustomerWithEmailResult = Result.Success<Customer?>(existingCustomerWithEmail);
+        var customerByEmailSpecification = new CustomerByEmailSpecification(createCustomerCommand.Email);
+        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailSpecification);
+        Result existingCustomerWithEmailResult = Result.Success();
         if (existingCustomerWithEmail is not null)
         {
-            existingCustomerWithEmailResult = Result.Fail<Customer?>(
+            existingCustomerWithEmailResult = Result.Fail(
                 "customerEmailAlreadyExists",
                 $"A customer with the email '{existingCustomerWithEmail.Email.EmailAddress}' already exists.");
         }
