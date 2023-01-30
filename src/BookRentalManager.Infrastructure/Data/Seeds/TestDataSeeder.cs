@@ -30,7 +30,7 @@ public sealed class TestDataSeeder
                     PhoneNumber.Create(235, 2204063).Value!),
                 new Customer(
                     FullName.Create("Peter", "Griffin").Value!,
-                    Email.Create("peter.grifin@email.com").Value!,
+                    Email.Create("peter.griffin@email.com").Value!,
                     PhoneNumber.Create(546, 4056780).Value!)
             };
             await customers.AddRangeAsync(newCustomers);

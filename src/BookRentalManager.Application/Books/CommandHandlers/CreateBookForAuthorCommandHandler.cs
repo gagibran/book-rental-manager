@@ -21,22 +21,23 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
         CancellationToken cancellationToken)
     {
         var authorByIdSpecification = new AuthorByIdSpecification(createBookForAuthorCommand.AuthorId);
-        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
-        if (author is null)
-        {
-            return Result.Fail<BookForAuthorCreatedDto>(
-                nameof(HandleAsync),
-                $"No author with the ID of '{createBookForAuthorCommand.AuthorId}' was found.");
-        }
+        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
+        Result<Author?> existingAuthorResult = Result.Success<Author?>(existingAuthor);
         Result<Edition> editionResult = Edition.Create(createBookForAuthorCommand.Edition);
         Result<Isbn> isbnResult = Isbn.Create(createBookForAuthorCommand.Isbn);
-        Result combinedResults = Result.Combine(editionResult, isbnResult);
+        if (existingAuthor is null)
+        {
+            existingAuthorResult = Result.Fail<Author?>(
+                "authorId",
+                $"No author with the ID of '{createBookForAuthorCommand.AuthorId}' was found.");
+        }
+        Result combinedResults = Result.Combine(existingAuthorResult, editionResult, isbnResult);
         if (!combinedResults.IsSuccess)
         {
             return Result.Fail<BookForAuthorCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newBook = new Book(createBookForAuthorCommand.BookTitle, editionResult.Value!, isbnResult.Value!);
-        Result addBookToAuthorResult = author.AddBook(newBook);
+        Result addBookToAuthorResult = existingAuthor!.AddBook(newBook);
         if (!addBookToAuthorResult.IsSuccess)
         {
             return Result.Fail<BookForAuthorCreatedDto>(addBookToAuthorResult.ErrorType, addBookToAuthorResult.ErrorMessage);

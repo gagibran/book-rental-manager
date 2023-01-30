@@ -22,23 +22,31 @@ public sealed class CustomerStatus : ValueObject
 
     public Result<CustomerStatus> CheckCustomerTypeBookAvailability(int customerBookCount)
     {
+        Result explorerResult = Result.Success();
+        Result adventurerResult = Result.Success();
+        Result masterResult = Result.Success();
         if (customerBookCount >= MaximumAmountOfBooksExplorer && CustomerType is CustomerType.Explorer)
         {
-            return Result.Fail<CustomerStatus>(
-                nameof(CheckCustomerTypeBookAvailability),
+            explorerResult = Result.Fail<CustomerStatus>(
+                "explorerMaximumAmountReached",
                 AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksExplorer}).");
         }
         if (customerBookCount >= MaximumAmountOfBooksAdventurer && CustomerType is CustomerType.Adventurer)
         {
-            return Result.Fail<CustomerStatus>(
-                nameof(CheckCustomerTypeBookAvailability),
+            adventurerResult = Result.Fail<CustomerStatus>(
+                "adventurerMaximumAmountReached",
                 AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksAdventurer}).");
         }
         if (customerBookCount >= MaximumAmountOfBooksMaster && CustomerType is CustomerType.Master)
         {
-            return Result.Fail<CustomerStatus>(
-                nameof(CheckCustomerTypeBookAvailability),
+            masterResult = Result.Fail<CustomerStatus>(
+                "masterMaximumAmountReached",
                 AvailabilityErrorMessage + $" ({CustomerType}: {MaximumAmountOfBooksMaster}).");
+        }
+        Result combinedResults = Result.Combine(explorerResult, adventurerResult, masterResult);
+        if (!combinedResults.IsSuccess)
+        {
+            return Result.Fail<CustomerStatus>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         return Result.Success<CustomerStatus>(new CustomerStatus(CustomerType));
     }

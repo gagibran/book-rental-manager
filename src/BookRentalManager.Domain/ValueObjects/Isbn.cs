@@ -19,7 +19,7 @@ public sealed class Isbn : ValueObject
         string formattedIsbn = Regex.Replace(isbnValue, @"\s+|-+", "").ToUpper();
         if (formattedIsbn.Length != 10 && formattedIsbn.Length != 13)
         {
-            return Result.Fail<Isbn>(nameof(Create), "Invalid ISBN format.");
+            return Result.Fail<Isbn>("isbnFormat", "Invalid ISBN format.");
         }
         return Result.Success<Isbn>(new Isbn(isbnValue.Trim()));
     }

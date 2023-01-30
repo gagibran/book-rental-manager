@@ -19,7 +19,7 @@ public sealed class Email : ValueObject
         bool isEmailValid = Regex.IsMatch(emailAddress, @"^(\w|\d).*@(\d|\w)+(\d|\w|-)+\.\w{2,3}$");
         if (!isEmailValid)
         {
-            return Result.Fail<Email>(nameof(Create), "Email address is not in a valid format.");
+            return Result.Fail<Email>("email", "Email address is not in a valid format.");
         }
         return Result.Success<Email>(new Email(emailAddress.Trim()));
     }

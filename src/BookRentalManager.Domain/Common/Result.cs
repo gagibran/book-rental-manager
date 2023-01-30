@@ -51,6 +51,8 @@ public class Result
                 finalErrorMessage += result.ErrorMessage + "|";
             }
         }
+        finalErrorType = Regex.Replace(finalErrorType, @"\|+$", "");
+        finalErrorMessage = Regex.Replace(finalErrorMessage, @"\.\|+$", ".");
         var isSuccess = string.IsNullOrWhiteSpace(finalErrorMessage) ? true : false;
         return new Result(isSuccess, finalErrorType, finalErrorMessage);
     }

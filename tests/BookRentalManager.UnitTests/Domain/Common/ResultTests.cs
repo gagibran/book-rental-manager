@@ -74,8 +74,8 @@ public sealed class ResultTests
         Result combinedResults = Result.Combine(failedResult1, failedResult2, successResult);
 
         // Assert:
-        Assert.Equal("Error type.|Another error type.|", combinedResults.ErrorType);
-        Assert.Equal("This result has failed.|This result has also failed.|", combinedResults.ErrorMessage);
+        Assert.Equal("Error type.|Another error type.", combinedResults.ErrorType);
+        Assert.Equal("This result has failed.|This result has also failed.", combinedResults.ErrorMessage);
     }
 
     [Fact]

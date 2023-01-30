@@ -51,23 +51,24 @@ public sealed class Customer : Entity
 
     public Result CheckBookAvailability(Book book)
     {
+        Result bookAvailabilityResult = Result.Success();
         if (!book.IsAvailable)
         {
-            return Result.Fail(nameof(CheckBookAvailability), $"The book '{book.BookTitle}' is not available.");
+            bookAvailabilityResult = Result.Fail("bookNotAvailable", $"The book '{book.BookTitle}' is not available.");
         }
         Result<CustomerStatus> customerStatusResult = CustomerStatus.CheckCustomerTypeBookAvailability(Books.Count());
         if (!string.IsNullOrWhiteSpace(customerStatusResult.ErrorMessage))
         {
-            return Result.Fail(customerStatusResult.ErrorType, customerStatusResult.ErrorMessage);
+            customerStatusResult = Result.Fail<CustomerStatus>(customerStatusResult.ErrorType, customerStatusResult.ErrorMessage);
         }
-        return Result.Success();
+        return Result.Combine(bookAvailabilityResult, customerStatusResult);
     }
 
     public Result ReturnBook(Book book)
     {
         if (!Books.Contains(book))
         {
-            return Result.Fail(nameof(ReturnBook), $"You don't have the book '{book.BookTitle}'.");
+            return Result.Fail("noBook", $"You don't have the book '{book.BookTitle}'.");
         }
         _books.Remove(book);
         book.IsAvailable = true;

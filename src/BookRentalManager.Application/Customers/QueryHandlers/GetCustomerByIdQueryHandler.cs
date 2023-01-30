@@ -21,7 +21,7 @@ internal sealed class GetCustomerByIdQueryHandler : IQueryHandler<GetCustomerByI
             cancellationToken);
         if (customer is null)
         {
-            return Result.Fail<GetCustomerDto>(nameof(HandleAsync), $"No customer with the ID of '{getCustomerByIdQuery.Id}' was found.");
+            return Result.Fail<GetCustomerDto>("customerId", $"No customer with the ID of '{getCustomerByIdQuery.Id}' was found.");
         }
         return Result.Success<GetCustomerDto>(_getCustomerDtoMapper.Map(customer));
     }

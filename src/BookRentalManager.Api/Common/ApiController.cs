@@ -14,15 +14,11 @@ public abstract class ApiController : ControllerBase
 
     private void AddErrorsToModelError(string errorTypes, string errorMessages)
     {
-        string[] splitErrorMessages = errorMessages.Split('|');
         string[] splitErrorTypes = errorTypes.Split('|');
+        string[] splitErrorMessages = errorMessages.Split('|');
         for (int i = 0; i < splitErrorMessages.Length; i++)
         {
-            if (!string.IsNullOrWhiteSpace(splitErrorMessages[i]))
-            {
-                var camelCasedErrorType = char.ToLower(splitErrorTypes[i][0]) + splitErrorTypes[i].Substring(1);
-                ModelState.AddModelError(camelCasedErrorType, splitErrorMessages[i]);
-            }
+            ModelState.AddModelError(splitErrorTypes[i], splitErrorMessages[i]);
         }
     }
 

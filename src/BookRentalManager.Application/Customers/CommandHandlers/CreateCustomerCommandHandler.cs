@@ -17,20 +17,21 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         CreateCustomerCommand createCustomerCommand,
         CancellationToken cancellationToken)
     {
-        Customer? customerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
+        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
             new CustomerByEmailSpecification(createCustomerCommand.Email));
-        if (customerWithEmail is not null)
+        Result<Customer?> existingCustomerWithEmailResult = Result.Success<Customer?>(existingCustomerWithEmail);
+        if (existingCustomerWithEmail is not null)
         {
-            return Result.Fail<CustomerCreatedDto>(
-                nameof(HandleAsync),
-                $"A customer with the email '{customerWithEmail.Email.EmailAddress}' already exists.");
+            existingCustomerWithEmailResult = Result.Fail<Customer?>(
+                "customerEmailAlreadyExists",
+                $"A customer with the email '{existingCustomerWithEmail.Email.EmailAddress}' already exists.");
         }
         Result<FullName> fullNameResult = FullName.Create(createCustomerCommand.FirstName, createCustomerCommand.LastName);
         Result<Email> emailResult = Email.Create(createCustomerCommand.Email);
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
             createCustomerCommand.PhoneNumber.AreaCode,
             createCustomerCommand.PhoneNumber.PrefixAndLineNumber);
-        Result combinedResults = Result.Combine(fullNameResult, emailResult, phoneNumberResult);
+        Result combinedResults = Result.Combine(existingCustomerWithEmailResult, fullNameResult, emailResult, phoneNumberResult);
         if (!combinedResults.IsSuccess)
         {
             return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
