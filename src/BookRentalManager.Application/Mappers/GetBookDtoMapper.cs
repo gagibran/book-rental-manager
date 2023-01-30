@@ -3,14 +3,14 @@ namespace BookRentalManager.Application.Mappers;
 internal sealed class GetBookDtoMapper : IMapper<Book, GetBookDto>
 {
     private IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> _getAuthorFromBookDtosMapper;
-    private IMapper<Customer?, GetRentedByDto> _getRentedByDtoMapper;
+    private IMapper<Customer?, GetCustomerThatRentedBookDto> _getCustomerThatRentedBookDtoMapper;
 
     public GetBookDtoMapper(
         IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> getAuthorFromBookDtosMapper,
-        IMapper<Customer?, GetRentedByDto> getRentedByDtoMapper)
+        IMapper<Customer?, GetCustomerThatRentedBookDto> getCustomerThatRentedBookDtoMapper)
     {
         _getAuthorFromBookDtosMapper = getAuthorFromBookDtosMapper;
-        _getRentedByDtoMapper = getRentedByDtoMapper;
+        _getCustomerThatRentedBookDtoMapper = getCustomerThatRentedBookDtoMapper;
     }
 
     public GetBookDto Map(Book book)
@@ -22,6 +22,6 @@ internal sealed class GetBookDtoMapper : IMapper<Book, GetBookDto>
             book.Edition,
             book.Isbn,
             book.IsAvailable,
-            _getRentedByDtoMapper.Map(book.Customer));
+            _getCustomerThatRentedBookDtoMapper.Map(book.Customer));
     }
 }

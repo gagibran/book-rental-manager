@@ -17,8 +17,7 @@ public sealed class GetCustomerDto
         PhoneNumber phoneNumber,
         IReadOnlyList<GetBookRentedByCustomerDto> books,
         CustomerStatus customerStatus,
-        int customerPoints
-    )
+        int customerPoints)
     {
         Id = id;
         FullName = fullName.CompleteName;

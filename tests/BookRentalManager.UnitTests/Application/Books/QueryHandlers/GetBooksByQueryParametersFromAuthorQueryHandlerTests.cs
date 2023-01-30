@@ -26,7 +26,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             _book.Edition,
             _book.Isbn,
             _book.IsAvailable,
-            new GetRentedByDto());
+            new GetCustomerThatRentedBookDto());
         _getBooksByQueryParametersFromAuthorQueryHandler = new GetBooksByQueryParametersFromAuthorQueryHandler(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,

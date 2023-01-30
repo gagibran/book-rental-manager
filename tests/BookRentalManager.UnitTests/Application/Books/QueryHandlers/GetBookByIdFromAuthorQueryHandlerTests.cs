@@ -21,7 +21,7 @@ public sealed class GetBookByIdFromAuthorQueryHandlerTests
             _book.Edition,
             _book.Isbn,
             _book.IsAvailable,
-            new GetRentedByDto());
+            new GetCustomerThatRentedBookDto());
         _getBookDtoMapperStub = new();
         _bookRepositoryStub = new();
         _authorRepositoryStub = new();

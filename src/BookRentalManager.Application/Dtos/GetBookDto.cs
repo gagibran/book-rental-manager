@@ -8,7 +8,7 @@ public sealed class GetBookDto
     public int Edition { get; }
     public string Isbn { get; }
     public bool IsAvailable { get; internal set; }
-    public GetRentedByDto RentedBy { get; }
+    public GetCustomerThatRentedBookDto RentedBy { get; }
 
     public GetBookDto(
         Guid id,
@@ -17,7 +17,7 @@ public sealed class GetBookDto
         Edition edition,
         Isbn isbn,
         bool isAvailable,
-        GetRentedByDto rentedBy)
+        GetCustomerThatRentedBookDto rentedBy)
     {
         Id = id;
         BookTitle = bookTitle;

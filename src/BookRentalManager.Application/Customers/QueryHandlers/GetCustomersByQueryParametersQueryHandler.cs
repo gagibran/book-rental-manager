@@ -8,8 +8,7 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
 
     public GetCustomersByQueryParametersQueryHandler(
         IRepository<Customer> customerRepository,
-        IMapper<Customer, GetCustomerDto> getCustomerDtoMapper
-    )
+        IMapper<Customer, GetCustomerDto> getCustomerDtoMapper)
     {
         _customerRepository = customerRepository;
         _getCustomerDtoMapper = getCustomerDtoMapper;

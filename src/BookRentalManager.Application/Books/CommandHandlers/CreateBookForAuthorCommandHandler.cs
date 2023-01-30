@@ -1,22 +1,22 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBookForAuthorCommand, BookForAuthorCreatedDto>
+public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>
 {
     private readonly IRepository<Book> _bookRepository;
     private readonly IRepository<Author> _authorRepository;
-    private readonly IMapper<Book, BookForAuthorCreatedDto> _bookForAuthorCreatedDtoMapper;
+    private readonly IMapper<Book, BookCreatedForAuthorDto> _bookCreatedForAuthorDtoMapper;
 
     public CreateBookForAuthorCommandHandler(
         IRepository<Book> bookRepository,
         IRepository<Author> authorRepository,
-        IMapper<Book, BookForAuthorCreatedDto> bookForAuthorCreatedDtoMapper)
+        IMapper<Book, BookCreatedForAuthorDto> bookCreatedForAuthorDtoMapper)
     {
         _bookRepository = bookRepository;
         _authorRepository = authorRepository;
-        _bookForAuthorCreatedDtoMapper = bookForAuthorCreatedDtoMapper;
+        _bookCreatedForAuthorDtoMapper = bookCreatedForAuthorDtoMapper;
     }
 
-    public async Task<Result<BookForAuthorCreatedDto>> HandleAsync(
+    public async Task<Result<BookCreatedForAuthorDto>> HandleAsync(
         CreateBookForAuthorCommand createBookForAuthorCommand,
         CancellationToken cancellationToken)
     {
@@ -34,15 +34,15 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
         Result combinedResults = Result.Combine(existingAuthorResult, editionResult, isbnResult);
         if (!combinedResults.IsSuccess)
         {
-            return Result.Fail<BookForAuthorCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
+            return Result.Fail<BookCreatedForAuthorDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newBook = new Book(createBookForAuthorCommand.BookTitle, editionResult.Value!, isbnResult.Value!);
         Result addBookToAuthorResult = existingAuthor!.AddBook(newBook);
         if (!addBookToAuthorResult.IsSuccess)
         {
-            return Result.Fail<BookForAuthorCreatedDto>(addBookToAuthorResult.ErrorType, addBookToAuthorResult.ErrorMessage);
+            return Result.Fail<BookCreatedForAuthorDto>(addBookToAuthorResult.ErrorType, addBookToAuthorResult.ErrorMessage);
         }
         await _bookRepository.CreateAsync(newBook, cancellationToken);
-        return Result.Success<BookForAuthorCreatedDto>(_bookForAuthorCreatedDtoMapper.Map(newBook));
+        return Result.Success<BookCreatedForAuthorDto>(_bookCreatedForAuthorDtoMapper.Map(newBook));
     }
 }

@@ -8,14 +8,14 @@ public sealed class GetBookDtoMapperTests
         // Arrange:
         Book book = TestFixtures.CreateDummyBook();
         var getAuthorFromBookDtosMapperStub = new Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>>();
-        var getRentedByDtoMapperStub = new Mock<IMapper<Customer, GetRentedByDto>>();
+        var getCustomerThatRentedBookDtoMapperStub = new Mock<IMapper<Customer, GetCustomerThatRentedBookDto>>();
         getAuthorFromBookDtosMapperStub
             .Setup(getAuthorFromBookDtosMapper => getAuthorFromBookDtosMapper.Map(It.IsAny<IReadOnlyList<Author>>()))
             .Returns(new List<GetAuthorFromBookDto>());
-        getRentedByDtoMapperStub
-            .Setup(getRentedByDtoMapper => getRentedByDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(new GetRentedByDto());
-        var getBookDtoMapper = new GetBookDtoMapper(getAuthorFromBookDtosMapperStub.Object, getRentedByDtoMapperStub.Object);
+        getCustomerThatRentedBookDtoMapperStub
+            .Setup(getCustomerThatRentedBookDtoMapper => getCustomerThatRentedBookDtoMapper.Map(It.IsAny<Customer>()))
+            .Returns(new GetCustomerThatRentedBookDto());
+        var getBookDtoMapper = new GetBookDtoMapper(getAuthorFromBookDtosMapperStub.Object, getCustomerThatRentedBookDtoMapperStub.Object);
         var expectedGetBookDto = new GetBookDto(
             book.Id,
             book.BookTitle,
@@ -23,7 +23,7 @@ public sealed class GetBookDtoMapperTests
             book.Edition,
             book.Isbn,
             book.IsAvailable,
-            new GetRentedByDto());
+            new GetCustomerThatRentedBookDto());
 
         // Act:
         GetBookDto actualGetBookDto = getBookDtoMapper.Map(book);

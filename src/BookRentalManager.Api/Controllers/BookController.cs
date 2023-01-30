@@ -60,7 +60,7 @@ public sealed class BookController : ApiController
             authorId, createBookForAuthorDto.BookTitle,
             createBookForAuthorDto.Edition,
             createBookForAuthorDto.Isbn);
-        Result<BookForAuthorCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookForAuthorCreatedDto>(createBookForAuthorCommand, cancellationToken);
+        Result<BookCreatedForAuthorDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedForAuthorDto>(createBookForAuthorCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);
