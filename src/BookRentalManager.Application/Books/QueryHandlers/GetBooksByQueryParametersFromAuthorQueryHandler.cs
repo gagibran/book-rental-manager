@@ -29,7 +29,7 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
                 "authorId",
                 $"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
-        var booksInAuthorBooksAndQueryParameterSpecification = new BooksFromAuthorBooksBySearchParameterSpecification(
+        var booksInAuthorBooksAndQueryParameterSpecification = new BooksBySearchParameterInBooksFromAuthorSpecification(
             author.Books,
             getBooksByQueryParameterFromAuthor.SearchParameter);
         IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
