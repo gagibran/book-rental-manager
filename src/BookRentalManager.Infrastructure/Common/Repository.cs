@@ -15,12 +15,12 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 
     public async Task<PaginatedList<TEntity>> GetAllBySpecificationAsync(
         int pageIndex,
-        int totalItemsPerPage,
+        int pageSize,
         Specification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
         IQueryable<TEntity> query = ApplySpecification(_dbSet, specification);
-        return await PaginatedList<TEntity>.CreateAsync(query, pageIndex, totalItemsPerPage, cancellationToken);
+        return await PaginatedList<TEntity>.CreateAsync(query, pageIndex, pageSize, cancellationToken);
     }
 
     public async Task<TEntity?> GetFirstOrDefaultBySpecificationAsync(

@@ -15,7 +15,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     public GetAuthorsByQueryParametersQueryHandlerTests()
     {
         _author = TestFixtures.CreateDummyAuthor();
-        _paginatedAuthors = new PaginatedList<Author>(new List<Author> { _author }, 1, 50);
+        _paginatedAuthors = new PaginatedList<Author>(new List<Author> { _author }, 1, 1, 1, 1);
         _getAuthorDto = new(Guid.NewGuid(), _author.FullName, new List<GetBookFromAuthorDto>());
         _getAuthorDtoMapperStub = new();
         _authorRepositoryStub = new();
@@ -33,7 +33,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
         // Arrange:
         var getAuthorsByQueryParametersQuery = new GetAuthorsByQueryParametersQuery(
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             "Name");
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetAllBySpecificationAsync(
@@ -41,7 +41,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync(new PaginatedList<Author>(new List<Author>(), 1, 50));
+            .ReturnsAsync(new PaginatedList<Author>(new List<Author>(), 1, 1, 1, 1));
 
         // Act:
         Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
@@ -58,7 +58,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
         // Arrange:
         var getAuthorsByQueryParametersQuery = new GetAuthorsByQueryParametersQuery(
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             _author.FullName.CompleteName);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetAllBySpecificationAsync(
@@ -85,7 +85,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
         // Arrange:
         var getAuthorsByQueryParametersQuery = new GetAuthorsByQueryParametersQuery(
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             searchParameter);
         _paginatedAuthors.Add(new Author(FullName.Create("Sarah", "Smith").Value));
         _authorRepositoryStub

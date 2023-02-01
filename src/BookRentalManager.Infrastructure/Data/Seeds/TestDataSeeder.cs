@@ -68,7 +68,7 @@ public sealed class TestDataSeeder
                 new Author(FullName.Create("Ernest", "Hemingway").Value!),
                 new Author(FullName.Create("Maria", "Popova").Value!),
                 new Author(FullName.Create("Francis Scott", "Fitzgerald").Value!),
-                new Author(FullName.Create("Edgar Allan", "Poe").Value!),
+                new Author(FullName.Create("Vladimir", "Khorikov").Value!),
                 new Author(FullName.Create("Nora", "Roberts").Value!),
                 new Author(FullName.Create("Paulo", "Coelho").Value!),
                 new Author(FullName.Create("Roald", "Dahl").Value!),

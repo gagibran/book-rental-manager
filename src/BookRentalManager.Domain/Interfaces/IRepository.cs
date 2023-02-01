@@ -4,7 +4,7 @@ public interface IRepository<TEntity> where TEntity : Entity
 {
     Task<PaginatedList<TEntity>> GetAllBySpecificationAsync(
         int pageIndex,
-        int totalItemsPerPage,
+        int pageSize,
         Specification<TEntity> specification,
         CancellationToken cancellationToken);
     Task<TEntity?> GetFirstOrDefaultBySpecificationAsync(Specification<TEntity> specification, CancellationToken cancellationToken = default);

@@ -20,15 +20,17 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
     {
         PaginatedList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
             getAuthorsByQueryParametersQuery.PageIndex,
-            getAuthorsByQueryParametersQuery.TotalAmountOfItemsPerPage,
+            getAuthorsByQueryParametersQuery.PageSize,
             new AuthorsBySearchParameterSpecification(getAuthorsByQueryParametersQuery.SearchParameter),
             cancellationToken);
         List<GetAuthorDto> getAuthorDtos = (from author in authors
                                             select _getAuthorDtoMapper.Map(author)).ToList();
         var paginatedGetAuthorDtos = new PaginatedList<GetAuthorDto>(
             getAuthorDtos,
-            getAuthorsByQueryParametersQuery.PageIndex,
-            getAuthorsByQueryParametersQuery.TotalAmountOfItemsPerPage);
+            authors.TotalAmountOfItems,
+            authors.TotalAmountOfPages,
+            authors.PageIndex,
+            authors.PageSize);
         return Result.Success<PaginatedList<GetAuthorDto>>(paginatedGetAuthorDtos);
     }
 }

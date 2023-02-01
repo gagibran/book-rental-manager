@@ -18,11 +18,12 @@ public sealed class CustomerController : ApiController
     {
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             queryParameters.PageIndex,
-            queryParameters.TotalItemsPerPage,
-            queryParameters.Search);
+            queryParameters.PageSize,
+            queryParameters.SearchQuery);
         Result<PaginatedList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<PaginatedList<GetCustomerDto>>(
             getCustomersByQueryParametersQuery,
             cancellationToken);
+        CreatePagingMetadata(nameof(GetCustomersByQueryParametersAsync), queryParameters.SearchQuery, getAllCustomersResult.Value!);
         return Ok(getAllCustomersResult.Value);
     }
 
@@ -52,6 +53,6 @@ public sealed class CustomerController : ApiController
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
             return CustomUnprocessableEntity(createCustomerResult.ErrorType, createCustomerResult.ErrorMessage);
         }
-        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
+        return CreatedAtAction("Test", new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 }

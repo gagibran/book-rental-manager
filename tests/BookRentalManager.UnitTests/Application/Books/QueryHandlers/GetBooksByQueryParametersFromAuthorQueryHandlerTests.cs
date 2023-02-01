@@ -18,7 +18,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _bookRepositoryStub = new();
         _getBookDtoMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
-        _paginatedBooks = new PaginatedList<Book>(new List<Book> { _book }, 1, 50);
+        _paginatedBooks = new PaginatedList<Book>(new List<Book> { _book }, 1, 1, 1, 1);
         _getBookDto = new(
             Guid.NewGuid(),
             _book.BookTitle,
@@ -48,7 +48,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         var getBooksByQueryParametersFromAuthorQuery = new GetBooksByQueryParametersFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             "Name");
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
@@ -56,7 +56,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
                 It.IsAny<int>(),
                 It.IsAny<Specification<Book>>(),
                 default))
-            .ReturnsAsync(new PaginatedList<Book>(new List<Book>(), 1, 50));
+            .ReturnsAsync(new PaginatedList<Book>(new List<Book>(), 1, 1, 1, 1));
 
         // Act:
         Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
@@ -74,7 +74,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         var getBooksByQueryParametersFromAuthorQuery = new GetBooksByQueryParametersFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             _book.BookTitle);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
@@ -110,7 +110,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         var getBooksByQueryParametersFromAuthorQuery = new GetBooksByQueryParametersFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             searchParameter);
         var newBook = new Book(
             "Clean Code: A Handbook of Agile Software Craftsmanship",
@@ -141,7 +141,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         var getBooksByQueryParametersFromAuthorQuery = new GetBooksByQueryParametersFromAuthorQuery(
             _author.Id,
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             "Test");
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
         _authorRepositoryStub

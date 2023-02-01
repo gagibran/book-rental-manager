@@ -4,8 +4,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQuery : GetAllItemsQuery,
 {
     public Guid AuthorId { get; }
 
-    public GetBooksByQueryParametersFromAuthorQuery(Guid authorId, int pageIndex, int totalItemsPerPage, string searchParameter)
-        : base(pageIndex, totalItemsPerPage, searchParameter)
+    public GetBooksByQueryParametersFromAuthorQuery(Guid authorId, int pageIndex, int pageSize, string searchParameter)
+        : base(pageIndex, pageSize, searchParameter)
     {
         AuthorId = authorId;
     }

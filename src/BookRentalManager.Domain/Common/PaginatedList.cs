@@ -9,33 +9,44 @@ public class PaginatedList<TItem> : List<TItem>
     public int TotalAmountOfPages { get; }
     public int TotalAmountOfItems { get; }
     public int PageIndex { get; }
-    public int TotalAmountOfItemsPerPage { get; }
-    public bool HasNextPage => PageIndex < TotalAmountOfPages;
-    public bool HasPreviousPage => PageIndex > 1;
+    public int PageSize { get; }
+    public bool HasNextPage { get; }
+    public bool HasPreviousPage { get; }
 
     public PaginatedList(
         List<TItem> items,
+        int totalAmountOfItems,
+        int totalAMountOfPages,
         int pageIndex,
-        int totalAmountOfItemsPerPage)
+        int pageSize)
     {
-        TotalAmountOfItems = items.Count();
-        TotalAmountOfPages = (int)Math.Ceiling(TotalAmountOfItems / (double)TotalAmountOfItemsPerPage);
+        TotalAmountOfItems = totalAmountOfItems;
+        TotalAmountOfPages = totalAMountOfPages;
         PageIndex = pageIndex;
-        TotalAmountOfItemsPerPage = totalAmountOfItemsPerPage;
+        PageSize = pageSize;
+        HasNextPage = pageIndex < totalAMountOfPages;
+        HasPreviousPage = pageIndex > 1;
         AddRange(items);
     }
 
     public static async Task<PaginatedList<TItem>> CreateAsync(
         IQueryable<TItem> items,
         int pageIndex,
-        int totalAmountOfItemsPerPage,
+        int pageSize,
         CancellationToken cancellationToken)
     {
-        int actualTotalAmountOfItemsPerPage = totalAmountOfItemsPerPage > MaxItemsPerPage ? MaxItemsPerPage : totalAmountOfItemsPerPage;
-        List<TItem> paginatedItems = await items
-            .Skip((pageIndex - 1) * actualTotalAmountOfItemsPerPage)
-            .Take(actualTotalAmountOfItemsPerPage)
-            .ToListAsync(cancellationToken);
-        return new PaginatedList<TItem>(paginatedItems, pageIndex, actualTotalAmountOfItemsPerPage);
+        var paginatedItems = new List<TItem>();
+        int totalAmountOfItems = items.Count();
+        int totalAmountOfPages = (int)Math.Ceiling(totalAmountOfItems / (double)pageSize);
+        int actualPageSize = pageSize > MaxItemsPerPage ? MaxItemsPerPage : pageSize;
+        int actualPageIndex = pageIndex > totalAmountOfPages ? totalAmountOfPages : pageIndex;
+        if (totalAmountOfItems > 0)
+        {
+            paginatedItems = await items
+                .Skip((actualPageIndex - 1) * actualPageSize)
+                .Take(actualPageSize)
+                .ToListAsync(cancellationToken);
+        }
+        return new PaginatedList<TItem>(paginatedItems, totalAmountOfItems, totalAmountOfPages, actualPageIndex, actualPageSize);
     }
 }

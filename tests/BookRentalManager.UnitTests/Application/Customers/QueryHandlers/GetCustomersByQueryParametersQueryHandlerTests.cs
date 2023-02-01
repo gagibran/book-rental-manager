@@ -12,7 +12,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
     public GetCustomersByQueryParametersQueryHandlerTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
-        _paginatedCustomers = new PaginatedList<Customer>(new List<Customer> { _customer }, 1, 50);
+        _paginatedCustomers = new PaginatedList<Customer>(new List<Customer> { _customer }, 1, 1, 1, 1);
         _getCustomerDto = new(
             Guid.NewGuid(),
             _customer.FullName,
@@ -37,7 +37,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         // Arrange:
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             _customer.Email.EmailAddress);
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
@@ -62,7 +62,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         // Arrange:
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             "test@email.com");
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
@@ -70,7 +70,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Customer>>(),
                 default))
-            .ReturnsAsync(new PaginatedList<Customer>(new List<Customer>(), 1, 50));
+            .ReturnsAsync(new PaginatedList<Customer>(new List<Customer>(), 1, 1, 1, 1));
 
         // Act:
         Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
@@ -89,7 +89,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         // Arrange:
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
-            TestFixtures.TotalItemsPerPage,
+            TestFixtures.PageSize,
             searchParam);
         _paginatedCustomers.Add(new Customer(
             FullName.Create("Sarah", "Smith").Value,

@@ -34,15 +34,17 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
             getBooksByQueryParameterFromAuthor.SearchParameter);
         PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParameterFromAuthor.PageIndex,
-            getBooksByQueryParameterFromAuthor.TotalAmountOfItemsPerPage,
+            getBooksByQueryParameterFromAuthor.PageSize,
             booksInAuthorBooksAndQueryParameterSpecification,
             cancellationToken);
         List<GetBookDto> getBookDtos = (from book in books
                                         select _getBookDtoMapper.Map(book)).ToList();
         var paginatedGetBookDtos = new PaginatedList<GetBookDto>(
             getBookDtos,
-            getBooksByQueryParameterFromAuthor.PageIndex,
-            getBooksByQueryParameterFromAuthor.TotalAmountOfItemsPerPage);
+            books.TotalAmountOfItems,
+            books.TotalAmountOfPages,
+            books.PageIndex,
+            books.PageSize);
         return Result.Success<PaginatedList<GetBookDto>>(paginatedGetBookDtos);
     }
 }

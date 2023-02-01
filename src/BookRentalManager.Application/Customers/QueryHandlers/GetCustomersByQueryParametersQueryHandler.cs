@@ -20,15 +20,17 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
     {
         PaginatedList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
             getCustomersByQueryParametersQuery.PageIndex,
-            getCustomersByQueryParametersQuery.TotalAmountOfItemsPerPage,
+            getCustomersByQueryParametersQuery.PageSize,
             new CustomersBySearchParameterSpecification(getCustomersByQueryParametersQuery.SearchParameter),
             cancellationToken);
         List<GetCustomerDto> getCustomerDtos = (from customer in customers
                                                 select _getCustomerDtoMapper.Map(customer)).ToList();
         var paginatedGetCustomerDtos = new PaginatedList<GetCustomerDto>(
             getCustomerDtos,
-            getCustomersByQueryParametersQuery.PageIndex,
-            getCustomersByQueryParametersQuery.TotalAmountOfItemsPerPage);
+            customers.TotalAmountOfItems,
+            customers.TotalAmountOfPages,
+            customers.PageIndex,
+            customers.PageSize);
         return Result.Success<PaginatedList<GetCustomerDto>>(paginatedGetCustomerDtos);
     }
 }

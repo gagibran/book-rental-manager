@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace BookRentalManager.Api.Common;
 
 [ApiController]
@@ -20,6 +22,46 @@ public abstract class ApiController : ControllerBase
         {
             ModelState.AddModelError(splitErrorTypes[i], splitErrorMessages[i]);
         }
+    }
+
+    protected void CreatePagingMetadata<TItem>(string routeName, string searchQuery, PaginatedList<TItem> paginatedList)
+    {
+        string? previousPageLink = null;
+        string? nextPageLink = null;
+        if (paginatedList.HasPreviousPage)
+        {
+            previousPageLink = Url.Link(routeName, new
+            {
+                PageIndex = paginatedList.PageIndex - 1,
+                PageSize = paginatedList.PageSize,
+                SearchQuery = searchQuery
+            });
+        }
+        if (paginatedList.HasNextPage)
+        {
+            nextPageLink = Url.Link(routeName, new
+            {
+                PageIndex = paginatedList.PageIndex + 1,
+                PageSize = paginatedList.PageSize,
+                SearchQuery = searchQuery
+            });
+        }
+        int totalAmountOfPages = paginatedList.TotalAmountOfPages == int.MinValue ? 0 : paginatedList.TotalAmountOfPages;
+        string serializedMetadata = JsonSerializer.Serialize(
+            new
+            {
+                TotalAmountOfItems = paginatedList.TotalAmountOfItems,
+                PageIndex = paginatedList.PageIndex,
+                PageSize = paginatedList.PageSize,
+                TotalAmountOfPages = totalAmountOfPages,
+                PreviousPageLink = previousPageLink,
+                NextPageLink = nextPageLink
+            },
+            new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+        Response.Headers.Add("X-Pagination", serializedMetadata);
     }
 
     protected virtual ActionResult CustomUnprocessableEntity(string errorTypes, string errorMessages)

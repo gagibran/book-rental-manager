@@ -3,13 +3,13 @@ namespace BookRentalManager.Application.Common;
 public class GetAllItemsQuery
 {
     public int PageIndex { get; }
-    public int TotalAmountOfItemsPerPage { get; }
+    public int PageSize { get; }
     public string SearchParameter { get; }
 
-    public GetAllItemsQuery(int pageIndex, int totalItemsPerPage, string search)
+    public GetAllItemsQuery(int pageIndex, int pageSize, string search)
     {
         PageIndex = pageIndex;
-        TotalAmountOfItemsPerPage = totalItemsPerPage;
+        PageSize = pageSize;
         SearchParameter = search;
     }
 }
