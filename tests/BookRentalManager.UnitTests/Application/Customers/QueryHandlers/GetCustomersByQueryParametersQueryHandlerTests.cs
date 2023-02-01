@@ -7,12 +7,12 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
     private readonly GetCustomersByQueryParametersQueryHandler _getCustomersByQueryParametersQueryHandler;
     private readonly GetCustomerDto _getCustomerDto;
-    private readonly List<Customer> _customers;
+    private readonly PaginatedList<Customer> _paginatedCustomers;
 
     public GetCustomersByQueryParametersQueryHandlerTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
-        _customers = new List<Customer> { _customer };
+        _paginatedCustomers = new PaginatedList<Customer>(new List<Customer> { _customer }, 1, 50);
         _getCustomerDto = new(
             Guid.NewGuid(),
             _customer.FullName,
@@ -45,10 +45,10 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Customer>>(),
                 default))
-            .ReturnsAsync(_customers);
+            .ReturnsAsync(_paginatedCustomers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+        Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
             getCustomersByQueryParametersQuery,
             default);
 
@@ -70,10 +70,10 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Customer>>(),
                 default))
-            .ReturnsAsync(new List<Customer>());
+            .ReturnsAsync(new PaginatedList<Customer>(new List<Customer>(), 1, 50));
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+        Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
             getCustomersByQueryParametersQuery,
             default);
 
@@ -91,7 +91,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             searchParam);
-        _customers.Add(new Customer(
+        _paginatedCustomers.Add(new Customer(
             FullName.Create("Sarah", "Smith").Value,
             Email.Create("sarah.smith@email.com").Value,
             PhoneNumber.Create(200, 3_454_763).Value));
@@ -101,10 +101,10 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Customer>>(),
                 default))
-            .ReturnsAsync(_customers);
+            .ReturnsAsync(_paginatedCustomers);
 
         // Act:
-        Result<IReadOnlyList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+        Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
             getCustomersByQueryParametersQuery,
             default);
 

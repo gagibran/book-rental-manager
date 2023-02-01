@@ -1,5 +1,4 @@
 using BookRentalManager.Infrastructure.Data;
-using BookRentalManager.Infrastructure.Extensions;
 
 namespace BookRentalManager.Infrastructure.Common;
 
@@ -14,14 +13,14 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         _dbSet = bookRentalManagerDbContext.Set<TEntity>();
     }
 
-    public async Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
+    public async Task<PaginatedList<TEntity>> GetAllBySpecificationAsync(
         int pageIndex,
         int totalItemsPerPage,
         Specification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
         IQueryable<TEntity> query = ApplySpecification(_dbSet, specification);
-        return await query.ToReadOnlyPaginatedListAsync(cancellationToken, pageIndex, totalItemsPerPage);
+        return await PaginatedList<TEntity>.CreateAsync(query, pageIndex, totalItemsPerPage, cancellationToken);
     }
 
     public async Task<TEntity?> GetFirstOrDefaultBySpecificationAsync(

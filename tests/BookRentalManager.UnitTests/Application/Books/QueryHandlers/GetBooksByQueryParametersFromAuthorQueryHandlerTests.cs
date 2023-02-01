@@ -5,7 +5,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Author _author;
     private readonly Book _book;
-    private readonly List<Book> _books;
+    private readonly PaginatedList<Book> _paginatedBooks;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, GetBookDto>> _getBookDtoMapperStub;
     private readonly GetBookDto _getBookDto;
@@ -18,7 +18,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _bookRepositoryStub = new();
         _getBookDtoMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
-        _books = new List<Book> { _book };
+        _paginatedBooks = new PaginatedList<Book>(new List<Book> { _book }, 1, 50);
         _getBookDto = new(
             Guid.NewGuid(),
             _book.BookTitle,
@@ -56,10 +56,10 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
                 It.IsAny<int>(),
                 It.IsAny<Specification<Book>>(),
                 default))
-            .ReturnsAsync(new List<Book>());
+            .ReturnsAsync(new PaginatedList<Book>(new List<Book>(), 1, 50));
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
             getBooksByQueryParametersFromAuthorQuery,
             default);
 
@@ -82,10 +82,10 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
                 It.IsAny<int>(),
                 It.IsAny<Specification<Book>>(),
                 default))
-            .ReturnsAsync(_books);
+            .ReturnsAsync(_paginatedBooks);
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
             getBooksByQueryParametersFromAuthorQuery,
             default);
         GetBookDto actualBookDto = handlerResult.Value.FirstOrDefault();
@@ -116,17 +116,17 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             "Clean Code: A Handbook of Agile Software Craftsmanship",
             Edition.Create(1).Value,
             Isbn.Create("978-0132350884").Value);
-        _books.Add(newBook);
+        _paginatedBooks.Add(newBook);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<Specification<Book>>(),
                 default))
-            .ReturnsAsync(_books);
+            .ReturnsAsync(_paginatedBooks);
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
             getBooksByQueryParametersFromAuthorQuery,
             default);
 
@@ -151,7 +151,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             .ReturnsAsync((Author)null);
 
         // Act:
-        Result<IReadOnlyList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
             getBooksByQueryParametersFromAuthorQuery,
             default);
 

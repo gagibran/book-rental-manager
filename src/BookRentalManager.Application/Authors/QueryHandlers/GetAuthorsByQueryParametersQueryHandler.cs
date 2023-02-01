@@ -1,7 +1,7 @@
 namespace BookRentalManager.Application.Authors.QueryHandlers;
 
 internal sealed class GetAuthorsByQueryParametersQueryHandler
-    : IQueryHandler<GetAuthorsByQueryParametersQuery, IReadOnlyList<GetAuthorDto>>
+    : IQueryHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IMapper<Author, GetAuthorDto> _getAuthorDtoMapper;
@@ -14,17 +14,21 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
         _getAuthorDtoMapper = getAuthorDtoMapper;
     }
 
-    public async Task<Result<IReadOnlyList<GetAuthorDto>>> HandleAsync(
+    public async Task<Result<PaginatedList<GetAuthorDto>>> HandleAsync(
         GetAuthorsByQueryParametersQuery getAuthorsByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
+        PaginatedList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
             getAuthorsByQueryParametersQuery.PageIndex,
-            getAuthorsByQueryParametersQuery.TotalItemsPerPage,
+            getAuthorsByQueryParametersQuery.TotalAmountOfItemsPerPage,
             new AuthorsBySearchParameterSpecification(getAuthorsByQueryParametersQuery.SearchParameter),
             cancellationToken);
-        IReadOnlyList<GetAuthorDto> getAuthorDtos = (from author in authors
-                                                     select _getAuthorDtoMapper.Map(author)).ToList().AsReadOnly();
-        return Result.Success<IReadOnlyList<GetAuthorDto>>(getAuthorDtos);
+        List<GetAuthorDto> getAuthorDtos = (from author in authors
+                                            select _getAuthorDtoMapper.Map(author)).ToList();
+        var paginatedGetAuthorDtos = new PaginatedList<GetAuthorDto>(
+            getAuthorDtos,
+            getAuthorsByQueryParametersQuery.PageIndex,
+            getAuthorsByQueryParametersQuery.TotalAmountOfItemsPerPage);
+        return Result.Success<PaginatedList<GetAuthorDto>>(paginatedGetAuthorDtos);
     }
 }

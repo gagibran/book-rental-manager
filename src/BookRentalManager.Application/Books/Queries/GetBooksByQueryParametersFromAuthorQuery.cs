@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Books.Queries;
 
-public sealed class GetBooksByQueryParametersFromAuthorQuery : GetAllItemsQuery, IQuery<IReadOnlyList<GetBookDto>>
+public sealed class GetBooksByQueryParametersFromAuthorQuery : GetAllItemsQuery, IQuery<PaginatedList<GetBookDto>>
 {
     public Guid AuthorId { get; }
 

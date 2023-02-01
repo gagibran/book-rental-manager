@@ -12,7 +12,7 @@ public sealed class BookController : ApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
+    public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
         Guid authorId,
         [FromQuery] GetAllQueryParameters queryParameters,
         CancellationToken cancellationToken)
@@ -22,13 +22,13 @@ public sealed class BookController : ApiController
             queryParameters.PageIndex,
             queryParameters.TotalItemsPerPage,
             queryParameters.Search);
-        Result<IReadOnlyList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetBookDto>>(
+        Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
                 getBooksBySearchParameterFromAuthor,
                 cancellationToken);
         if (!getAllBooksResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return CustomNotFound<IReadOnlyList<GetBookDto>>(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage);
+            return CustomNotFound<PaginatedList<GetBookDto>>(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage);
         }
         return Ok(getAllBooksResult.Value);
     }

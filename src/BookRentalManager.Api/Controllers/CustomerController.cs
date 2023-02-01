@@ -12,7 +12,7 @@ public sealed class CustomerController : ApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<GetCustomerDto>>> GetCustomersByQueryParametersAsync(
+    public async Task<ActionResult<PaginatedList<GetCustomerDto>>> GetCustomersByQueryParametersAsync(
         [FromQuery] GetAllQueryParameters queryParameters,
         CancellationToken cancellationToken)
     {
@@ -20,7 +20,7 @@ public sealed class CustomerController : ApiController
             queryParameters.PageIndex,
             queryParameters.TotalItemsPerPage,
             queryParameters.Search);
-        Result<IReadOnlyList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<IReadOnlyList<GetCustomerDto>>(
+        Result<PaginatedList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<PaginatedList<GetCustomerDto>>(
             getCustomersByQueryParametersQuery,
             cancellationToken);
         return Ok(getAllCustomersResult.Value);

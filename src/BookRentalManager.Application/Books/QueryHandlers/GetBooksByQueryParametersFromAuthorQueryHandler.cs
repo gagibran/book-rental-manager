@@ -1,7 +1,7 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
 internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
-    : IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, IReadOnlyList<GetBookDto>>
+    : IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, PaginatedList<GetBookDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
@@ -17,7 +17,7 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
         _getBookDtoMapper = getBookDtoMapper;
     }
 
-    public async Task<Result<IReadOnlyList<GetBookDto>>> HandleAsync(
+    public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
         GetBooksByQueryParametersFromAuthorQuery getBooksByQueryParameterFromAuthor,
         CancellationToken cancellationToken)
     {
@@ -25,20 +25,24 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
         Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
         if (author is null)
         {
-            return Result.Fail<IReadOnlyList<GetBookDto>>(
+            return Result.Fail<PaginatedList<GetBookDto>>(
                 "authorId",
                 $"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
         var booksInAuthorBooksAndQueryParameterSpecification = new BooksBySearchParameterInBooksFromAuthorSpecification(
             author.Books,
             getBooksByQueryParameterFromAuthor.SearchParameter);
-        IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
+        PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParameterFromAuthor.PageIndex,
-            getBooksByQueryParameterFromAuthor.TotalItemsPerPage,
+            getBooksByQueryParameterFromAuthor.TotalAmountOfItemsPerPage,
             booksInAuthorBooksAndQueryParameterSpecification,
             cancellationToken);
-        IReadOnlyList<GetBookDto> getBookDtos = (from book in books
-                                                 select _getBookDtoMapper.Map(book)).ToList().AsReadOnly();
-        return Result.Success<IReadOnlyList<GetBookDto>>(getBookDtos);
+        List<GetBookDto> getBookDtos = (from book in books
+                                        select _getBookDtoMapper.Map(book)).ToList();
+        var paginatedGetBookDtos = new PaginatedList<GetBookDto>(
+            getBookDtos,
+            getBooksByQueryParameterFromAuthor.PageIndex,
+            getBooksByQueryParameterFromAuthor.TotalAmountOfItemsPerPage);
+        return Result.Success<PaginatedList<GetBookDto>>(paginatedGetBookDtos);
     }
 }

@@ -2,7 +2,7 @@ namespace BookRentalManager.Domain.Interfaces;
 
 public interface IRepository<TEntity> where TEntity : Entity
 {
-    Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
+    Task<PaginatedList<TEntity>> GetAllBySpecificationAsync(
         int pageIndex,
         int totalItemsPerPage,
         Specification<TEntity> specification,

@@ -1,8 +1,8 @@
 namespace BookRentalManager.Domain.Specifications;
 
-public sealed class BookByIdFromAuthorSpecification : Specification<Book>
+public sealed class BookByIdSpecification : Specification<Book>
 {
-    public BookByIdFromAuthorSpecification(Guid id)
+    public BookByIdSpecification(Guid id)
     {
         Where = book => book.Id == id;
         IncludeExpressions.Add(book => book.Authors);

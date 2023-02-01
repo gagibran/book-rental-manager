@@ -1,5 +1,3 @@
-using BookRentalManager.Domain.Exceptions;
-
 namespace BookRentalManager.Domain.Common;
 
 public class Result

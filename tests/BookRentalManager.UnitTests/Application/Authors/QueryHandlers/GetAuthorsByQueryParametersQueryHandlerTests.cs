@@ -6,7 +6,7 @@ namespace BookRentalManager.UnitTests.Application.Authors.QueryHandlers;
 public sealed class GetAuthorsByQueryParametersQueryHandlerTests
 {
     private readonly Author _author;
-    private readonly List<Author> _authors;
+    private readonly PaginatedList<Author> _paginatedAuthors;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IMapper<Author, GetAuthorDto>> _getAuthorDtoMapperStub;
     private readonly GetAuthorsByQueryParametersQueryHandler _getAuthorsByQueryParametersQueryHandler;
@@ -15,7 +15,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     public GetAuthorsByQueryParametersQueryHandlerTests()
     {
         _author = TestFixtures.CreateDummyAuthor();
-        _authors = new List<Author> { _author };
+        _paginatedAuthors = new PaginatedList<Author>(new List<Author> { _author }, 1, 50);
         _getAuthorDto = new(Guid.NewGuid(), _author.FullName, new List<GetBookFromAuthorDto>());
         _getAuthorDtoMapperStub = new();
         _authorRepositoryStub = new();
@@ -41,10 +41,10 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync(new List<Author>());
+            .ReturnsAsync(new PaginatedList<Author>(new List<Author>(), 1, 50));
 
         // Act:
-        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
+        Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
             getAuthorsByQueryParametersQuery,
             default);
 
@@ -66,10 +66,10 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
                 It.IsAny<int>(),
                 It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync(_authors);
+            .ReturnsAsync(_paginatedAuthors);
 
         // Act:
-        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
+        Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
             getAuthorsByQueryParametersQuery,
             default);
 
@@ -87,17 +87,17 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             TestFixtures.PageIndex,
             TestFixtures.TotalItemsPerPage,
             searchParameter);
-        _authors.Add(new Author(FullName.Create("Sarah", "Smith").Value));
+        _paginatedAuthors.Add(new Author(FullName.Create("Sarah", "Smith").Value));
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync(_authors);
+            .ReturnsAsync(_paginatedAuthors);
 
         // Act:
-        Result<IReadOnlyList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
+        Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
             getAuthorsByQueryParametersQuery,
             default);
 
