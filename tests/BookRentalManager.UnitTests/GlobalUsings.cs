@@ -14,3 +14,4 @@ global using BookRentalManager.Application.Customers.QueryHandlers;
 global using BookRentalManager.Domain.Specifications;
 global using BookRentalManager.Application.Books.QueryHandlers;
 global using BookRentalManager.Application.Books.Queries;
+global using BookRentalManager.Domain.Exceptions;

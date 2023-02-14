@@ -1,4 +1,3 @@
-using BookRentalManager.Domain.Exceptions;
 using BookRentalManager.Domain.Extensions;
 
 namespace BookRentalManager.UnitTests.Domain.Extensions;

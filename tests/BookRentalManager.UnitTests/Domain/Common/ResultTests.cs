@@ -1,5 +1,3 @@
-using BookRentalManager.Domain.Exceptions;
-
 namespace BookRentalManager.UnitTests.Domain.Common;
 
 public sealed class ResultTests
