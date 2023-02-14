@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using BookRentalManager.Domain.Extensions;
 
 namespace BookRentalManager.Infrastructure.Common;
 
@@ -11,6 +12,10 @@ public static class SpecificationEvaluator
         if (specification.Where is not null)
         {
             currentQuery = currentQuery.Where(specification.Where);
+        }
+        if (specification.OrderByPropertyName is not null)
+        {
+            currentQuery = currentQuery.OrderByPropertyName(specification.OrderByPropertyName);
         }
         foreach (Expression<Func<TEntity, object>> includeExpression in specification.IncludeExpressions)
         {
