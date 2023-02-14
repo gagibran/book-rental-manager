@@ -12,7 +12,6 @@ public sealed class BooksBySearchParameterInBooksFromAuthorSpecification : Speci
                 || book.IsAvailable.ToString().ToLower().Contains(formattedSearchParameter)
                 || book.Customer!.FullName.CompleteName.ToLower().Contains(searchParameter)
                 || book.Customer.Email.EmailAddress.ToLower().Contains(searchParameter));
-        OrderByPropertyName = "BookTitleDesc,Edition.EditionNumberDesc"; // TODO: Continue debugging.
         IncludeExpressions.Add(book => book.Authors);
         IncludeExpressions.Add(book => book.Customer!);
     }

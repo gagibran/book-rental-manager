@@ -25,35 +25,38 @@ public static class IQueryableExtensions
 
     public static IQueryable<TItem> OrderByPropertyName<TItem>(this IQueryable<TItem> query, string propertyNamesSeparatedByComma)
     {
-        Type tItem = typeof(TItem);
+        if (string.IsNullOrWhiteSpace(propertyNamesSeparatedByComma))
+        {
+            throw new ArgumentException($"{nameof(propertyNamesSeparatedByComma)} cannot be empty.");
+        }
         foreach (string propertyName in propertyNamesSeparatedByComma.Split(','))
         {
-            var isQueryOrdered = query.Expression.Type == typeof(IOrderedQueryable<TItem>);
             var formattedPropertyName = propertyName;
+            var isQueryOrdered = query.Expression.Type == typeof(IOrderedQueryable<TItem>);
             bool isDescending = propertyName.EndsWith("Desc", StringComparison.OrdinalIgnoreCase);
             if (isDescending)
             {
                 formattedPropertyName = propertyName.Remove(propertyName.Length - 4);
             }
-            ParameterExpression parameter = Expression.Parameter(tItem, "entity");
+            ParameterExpression parameter = Expression.Parameter(typeof(TItem), "entity");
             Expression property = formattedPropertyName.Split('.').Aggregate((Expression)parameter, Expression.Property);
-            property = Expression.Convert(property, typeof(object));
-            Expression<Func<TItem, object?>> body = Expression.Lambda<Func<TItem, object?>>(property, parameter);
+            UnaryExpression convertedProperty = Expression.Convert(property, typeof(object));
+            Expression<Func<TItem, object?>> expression = Expression.Lambda<Func<TItem, object?>>(convertedProperty, parameter);
             if (isDescending && !isQueryOrdered)
             {
-                query = query.OrderByDescending(body);
+                query = query.OrderByDescending(expression);
             }
             else if (!isDescending && !isQueryOrdered)
             {
-                query = query.OrderBy(body);
+                query = query.OrderBy(expression);
             }
             else if (isDescending && isQueryOrdered)
             {
-                query = ((IOrderedQueryable<TItem>)query).ThenByDescending(body);
+                query = ((IOrderedQueryable<TItem>)query).ThenByDescending(expression);
             }
             else if (!isDescending && isQueryOrdered)
             {
-                query = ((IOrderedQueryable<TItem>)query).ThenBy(body);
+                query = ((IOrderedQueryable<TItem>)query).ThenBy(expression);
             }
         }
         return query;
