@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Extensions;
 
-public static class QueryableExtensions
+public static class IQueryableExtensions
 {
     // More information: https://github.com/dotnet/efcore/blob/main/src/EFCore/Extensions/EntityFrameworkQueryableExtensions.cs.
     public static async Task<List<TItem>> ToListAsync<TItem>(this IQueryable<TItem> query, CancellationToken cancellationToken = default)
@@ -37,10 +37,7 @@ public static class QueryableExtensions
             }
             ParameterExpression parameter = Expression.Parameter(tItem, "entity");
             Expression property = formattedPropertyName.Split('.').Aggregate((Expression)parameter, Expression.Property);
-            if (property.Type.IsValueType)
-            {
-                property = Expression.Convert(property, typeof(object));
-            }
+            property = Expression.Convert(property, typeof(object));
             Expression<Func<TItem, object?>> body = Expression.Lambda<Func<TItem, object?>>(property, parameter);
             if (isDescending && !isQueryOrdered)
             {

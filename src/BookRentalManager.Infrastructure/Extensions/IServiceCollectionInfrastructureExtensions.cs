@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BookRentalManager.Infrastructure.Extensions;
 
-public static class InfrastructureServicesExtension
+public static class IServiceCollectionInfrastructureExtensions
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {

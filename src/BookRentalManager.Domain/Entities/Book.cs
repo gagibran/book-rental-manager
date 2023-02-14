@@ -21,10 +21,7 @@ public sealed class Book : Entity
         Customer = default;
     }
 
-    public Book(
-        string bookTitle,
-        Edition edition,
-        Isbn isbn)
+    public Book(string bookTitle, Edition edition, Isbn isbn)
     {
         _authors = new();
         BookTitle = bookTitle.Trim();

@@ -8,7 +8,7 @@ using BookRentalManager.Application.Books.CommandHandlers;
 
 namespace BookRentalManager.Application.Extensions;
 
-public static class ApplicationServicesExtension
+public static class IServiceCollectionApplicationExtensions
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection serviceCollection)
     {
