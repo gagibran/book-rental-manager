@@ -31,13 +31,9 @@ public static class IQueryableExtensions
         }
         foreach (string propertyName in propertyNamesSeparatedByComma.Split(','))
         {
-            var formattedPropertyName = propertyName;
-            var isQueryOrdered = query.Expression.Type == typeof(IOrderedQueryable<TItem>);
             bool isDescending = propertyName.EndsWith("Desc", StringComparison.OrdinalIgnoreCase);
-            if (isDescending)
-            {
-                formattedPropertyName = propertyName.Remove(propertyName.Length - 4);
-            }
+            var isQueryOrdered = query.Expression.Type == typeof(IOrderedQueryable<TItem>);
+            var formattedPropertyName = isDescending ? propertyName[..^4] : propertyName;
             ParameterExpression parameter = Expression.Parameter(typeof(TItem), "entity");
             Expression property = formattedPropertyName.Split('.').Aggregate((Expression)parameter, Expression.Property);
             UnaryExpression convertedProperty = Expression.Convert(property, typeof(object));
