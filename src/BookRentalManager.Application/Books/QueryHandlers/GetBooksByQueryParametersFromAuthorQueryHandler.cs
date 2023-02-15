@@ -5,16 +5,16 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
-    private readonly IMapper<Book, GetBookDto> _getBookDtoMapper;
+    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
 
     public GetBooksByQueryParametersFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
-        IMapper<Book, GetBookDto> getBookDtoMapper)
+        IMapper<Book, GetBookDto> bookToGetBookDtoMapper)
     {
         _authorRepository = authorRepository;
         _bookRepository = bookRepository;
-        _getBookDtoMapper = getBookDtoMapper;
+        _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
     }
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
@@ -38,7 +38,7 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
             booksInAuthorBooksAndQueryParameterSpecification,
             cancellationToken);
         List<GetBookDto> getBookDtos = (from book in books
-                                        select _getBookDtoMapper.Map(book)).ToList();
+                                        select _bookToGetBookDtoMapper.Map(book)).ToList();
         var paginatedGetBookDtos = new PaginatedList<GetBookDto>(
             getBookDtos,
             books.TotalAmountOfItems,

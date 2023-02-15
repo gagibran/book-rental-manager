@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Application.Mappers;
 
-public sealed class GetCustomerDtoMapperTests
+public sealed class CustomerToGetCustomerDtoMapperTests
 {
     [Fact]
     public void Map_WithValidCustomer_ReturnsValidGetCustomerDto()
@@ -15,14 +15,14 @@ public sealed class GetCustomerDtoMapperTests
             new List<GetBookRentedByCustomerDto>(),
             customer.CustomerStatus,
             customer.CustomerPoints);
-        var getBookRentedByCustomerDtosMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookRentedByCustomerDto>>>();
-        getBookRentedByCustomerDtosMapperStub
+        var booksToGetBookRentedByCustomerDtosMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookRentedByCustomerDto>>>();
+        booksToGetBookRentedByCustomerDtosMapperStub
             .Setup(getCustomerBooksDto => getCustomerBooksDto.Map(It.IsAny<IReadOnlyList<Book>>()))
             .Returns(new List<GetBookRentedByCustomerDto>());
-        var getCustomerDtoMapper = new GetCustomerDtoMapper(getBookRentedByCustomerDtosMapperStub.Object);
+        var customerToGetCustomerDtoMapper = new CustomerToGetCustomerDtoMapper(booksToGetBookRentedByCustomerDtosMapperStub.Object);
 
         // Act:
-        GetCustomerDto getCustomerDto = getCustomerDtoMapper.Map(customer);
+        GetCustomerDto getCustomerDto = customerToGetCustomerDtoMapper.Map(customer);
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetCustomerDto.Id, getCustomerDto.Id);

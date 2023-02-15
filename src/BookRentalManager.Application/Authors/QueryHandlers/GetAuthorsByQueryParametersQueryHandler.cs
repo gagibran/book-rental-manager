@@ -4,14 +4,14 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
     : IQueryHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
 {
     private readonly IRepository<Author> _authorRepository;
-    private readonly IMapper<Author, GetAuthorDto> _getAuthorDtoMapper;
+    private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper;
 
     public GetAuthorsByQueryParametersQueryHandler(
         IRepository<Author> authorRepository,
-        IMapper<Author, GetAuthorDto> getAuthorDtoMapper)
+        IMapper<Author, GetAuthorDto> authorToGetAuthorDtoMapper)
     {
         _authorRepository = authorRepository;
-        _getAuthorDtoMapper = getAuthorDtoMapper;
+        _authorToGetAuthorDtoMapper = authorToGetAuthorDtoMapper;
     }
 
     public async Task<Result<PaginatedList<GetAuthorDto>>> HandleAsync(
@@ -24,7 +24,7 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
             new AuthorsBySearchParameterSpecification(getAuthorsByQueryParametersQuery.SearchParameter),
             cancellationToken);
         List<GetAuthorDto> getAuthorDtos = (from author in authors
-                                            select _getAuthorDtoMapper.Map(author)).ToList();
+                                            select _authorToGetAuthorDtoMapper.Map(author)).ToList();
         var paginatedGetAuthorDtos = new PaginatedList<GetAuthorDto>(
             getAuthorDtos,
             authors.TotalAmountOfItems,

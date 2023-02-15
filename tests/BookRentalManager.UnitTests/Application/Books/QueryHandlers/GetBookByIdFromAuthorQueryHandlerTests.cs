@@ -4,7 +4,7 @@ public sealed class GetBookByIdFromAuthorQueryHandlerTests
 {
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, GetBookDto>> _getBookDtoMapperStub;
+    private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
     private readonly GetBookByIdFromAuthorQueryHandler _getBookByIdFromAuthorQueryHandler;
     private readonly Author _author;
     private readonly Book _book;
@@ -22,15 +22,15 @@ public sealed class GetBookByIdFromAuthorQueryHandlerTests
             _book.Isbn,
             _book.IsAvailable,
             new GetCustomerThatRentedBookDto());
-        _getBookDtoMapperStub = new();
+        _bookToGetBookDtoMapperStub = new();
         _bookRepositoryStub = new();
         _authorRepositoryStub = new();
         _getBookByIdFromAuthorQueryHandler = new(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
-            _getBookDtoMapperStub.Object);
-        _getBookDtoMapperStub
-            .Setup(getBookDtoMapper => getBookDtoMapper.Map(It.IsAny<Book>()))
+            _bookToGetBookDtoMapperStub.Object);
+        _bookToGetBookDtoMapperStub
+            .Setup(bookToGetBookDtoMapper => bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
             .Returns(_getBookDto);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(

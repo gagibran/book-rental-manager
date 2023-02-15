@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Mappers;
 
-internal sealed class CustomerCreatedDtoMapper : IMapper<Customer, CustomerCreatedDto>
+internal sealed class CustomerToCustomerCreatedDtoMapper : IMapper<Customer, CustomerCreatedDto>
 {
     public CustomerCreatedDto Map(Customer customer)
     {

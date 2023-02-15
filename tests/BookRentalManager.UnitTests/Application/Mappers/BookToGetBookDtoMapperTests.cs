@@ -1,21 +1,21 @@
 namespace BookRentalManager.UnitTests.Application.Mappers;
 
-public sealed class GetBookDtoMapperTests
+public sealed class BookToGetBookDtoMapperTests
 {
     [Fact]
     public void Map_withValidBook_ReturnsValidGetBookDto()
     {
         // Arrange:
         Book book = TestFixtures.CreateDummyBook();
-        var getAuthorFromBookDtosMapperStub = new Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>>();
-        var getCustomerThatRentedBookDtoMapperStub = new Mock<IMapper<Customer, GetCustomerThatRentedBookDto>>();
-        getAuthorFromBookDtosMapperStub
-            .Setup(getAuthorFromBookDtosMapper => getAuthorFromBookDtosMapper.Map(It.IsAny<IReadOnlyList<Author>>()))
+        var authorsToGetAuthorFromBookDtosMapperStub = new Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>>();
+        var customerToGetCustomerThatRentedBookDtoMapperStub = new Mock<IMapper<Customer, GetCustomerThatRentedBookDto>>();
+        authorsToGetAuthorFromBookDtosMapperStub
+            .Setup(authorsToGetAuthorFromBookDtosMapper => authorsToGetAuthorFromBookDtosMapper.Map(It.IsAny<IReadOnlyList<Author>>()))
             .Returns(new List<GetAuthorFromBookDto>());
-        getCustomerThatRentedBookDtoMapperStub
-            .Setup(getCustomerThatRentedBookDtoMapper => getCustomerThatRentedBookDtoMapper.Map(It.IsAny<Customer>()))
+        customerToGetCustomerThatRentedBookDtoMapperStub
+            .Setup(customerToGetCustomerThatRentedBookDtoMapper => customerToGetCustomerThatRentedBookDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(new GetCustomerThatRentedBookDto());
-        var getBookDtoMapper = new GetBookDtoMapper(getAuthorFromBookDtosMapperStub.Object, getCustomerThatRentedBookDtoMapperStub.Object);
+        var bookToGetBookDtoMapper = new BookToGetBookDtoMapper(authorsToGetAuthorFromBookDtosMapperStub.Object, customerToGetCustomerThatRentedBookDtoMapperStub.Object);
         var expectedGetBookDto = new GetBookDto(
             book.Id,
             book.BookTitle,
@@ -26,7 +26,7 @@ public sealed class GetBookDtoMapperTests
             new GetCustomerThatRentedBookDto());
 
         // Act:
-        GetBookDto actualGetBookDto = getBookDtoMapper.Map(book);
+        GetBookDto actualGetBookDto = bookToGetBookDtoMapper.Map(book);
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetBookDto.BookTitle, actualGetBookDto.BookTitle);

@@ -4,14 +4,14 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
     : IQueryHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>
 {
     private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, GetCustomerDto> _getCustomerDtoMapper;
+    private readonly IMapper<Customer, GetCustomerDto> _customerToGetCustomerDtoMapper;
 
     public GetCustomersByQueryParametersQueryHandler(
         IRepository<Customer> customerRepository,
-        IMapper<Customer, GetCustomerDto> getCustomerDtoMapper)
+        IMapper<Customer, GetCustomerDto> customerToGetCustomerDtoMapper)
     {
         _customerRepository = customerRepository;
-        _getCustomerDtoMapper = getCustomerDtoMapper;
+        _customerToGetCustomerDtoMapper = customerToGetCustomerDtoMapper;
     }
 
     public async Task<Result<PaginatedList<GetCustomerDto>>> HandleAsync(
@@ -24,7 +24,7 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
             new CustomersBySearchParameterSpecification(getCustomersByQueryParametersQuery.SearchParameter),
             cancellationToken);
         List<GetCustomerDto> getCustomerDtos = (from customer in customers
-                                                select _getCustomerDtoMapper.Map(customer)).ToList();
+                                                select _customerToGetCustomerDtoMapper.Map(customer)).ToList();
         var paginatedGetCustomerDtos = new PaginatedList<GetCustomerDto>(
             getCustomerDtos,
             customers.TotalAmountOfItems,

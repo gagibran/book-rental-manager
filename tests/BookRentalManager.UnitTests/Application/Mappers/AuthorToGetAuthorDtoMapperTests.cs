@@ -1,6 +1,6 @@
 namespace BookRentalManager.UnitTests.Application.Mappers;
 
-public sealed class GetAuthorDtoMapperTests
+public sealed class AuthorToGetAuthorDtoMapperTests
 {
     [Fact]
     public void Map_WithValidAuthor_ReturnsValidGetAuthorDto()
@@ -11,14 +11,14 @@ public sealed class GetAuthorDtoMapperTests
             author.Id,
             author.FullName,
             new List<GetBookFromAuthorDto>());
-        var getBookFromAuthorDtosMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookFromAuthorDto>>>();
-        getBookFromAuthorDtosMapperStub
-            .Setup(getBookFromAuthorDtosMapper => getBookFromAuthorDtosMapper.Map(It.IsAny<IReadOnlyList<Book>>()))
+        var booksToGetBookFromAuthorDtosMapperStub = new Mock<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookFromAuthorDto>>>();
+        booksToGetBookFromAuthorDtosMapperStub
+            .Setup(booksToGetBookFromAuthorDtosMapper => booksToGetBookFromAuthorDtosMapper.Map(It.IsAny<IReadOnlyList<Book>>()))
             .Returns(new List<GetBookFromAuthorDto>());
-        var getAuthorDtoMapper = new GetAuthorDtoMapper(getBookFromAuthorDtosMapperStub.Object);
+        var authorToGetAuthorDtoMapper = new AuthorToGetAuthorDtoMapper(booksToGetBookFromAuthorDtosMapperStub.Object);
 
         // Act:
-        GetAuthorDto getAuthorDto = getAuthorDtoMapper.Map(author);
+        GetAuthorDto getAuthorDto = authorToGetAuthorDtoMapper.Map(author);
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetAuthorDto.Id, getAuthorDto.Id);

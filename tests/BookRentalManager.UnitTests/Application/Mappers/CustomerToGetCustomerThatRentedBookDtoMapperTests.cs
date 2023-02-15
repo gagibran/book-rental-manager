@@ -1,17 +1,17 @@
 namespace BookRentalManager.UnitTests.Application.Mappers;
 
-public sealed class GetCustomerThatRentedBookDtoMapperTests
+public sealed class CustomerToGetCustomerThatRentedBookDtoMapperTests
 {
     [Fact]
     public void Map_WithValidCustomer_ReturnGetCustomerThatRentedBookDto()
     {
         // Arrange:
         Customer customer = TestFixtures.CreateDummyCustomer();
-        var getCustomerThatRentedBookDtoMapper = new GetCustomerThatRentedBookDtoMapper();
+        var customerToGetCustomerThatRentedBookDtoMapper = new CustomerToGetCustomerThatRentedBookDtoMapper();
         var expectedGetCustomerThatRentedBookDto = new GetCustomerThatRentedBookDto(customer.FullName, customer.Email);
 
         // Act:
-        GetCustomerThatRentedBookDto actualGetCustomerThatRentedBookDto = getCustomerThatRentedBookDtoMapper.Map(customer);
+        GetCustomerThatRentedBookDto actualGetCustomerThatRentedBookDto = customerToGetCustomerThatRentedBookDtoMapper.Map(customer);
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetCustomerThatRentedBookDto.FullName, actualGetCustomerThatRentedBookDto.FullName);
@@ -22,11 +22,11 @@ public sealed class GetCustomerThatRentedBookDtoMapperTests
     public void Map_WithoutCustomer_ReturnEmptyGetCustomerThatRentedBookDto()
     {
         // Arrange:
-        var getCustomerThatRentedBookDtoMapper = new GetCustomerThatRentedBookDtoMapper();
+        var customerToGetCustomerThatRentedBookDtoMapper = new CustomerToGetCustomerThatRentedBookDtoMapper();
         var expectedGetCustomerThatRentedBookDto = new GetCustomerThatRentedBookDto();
 
         // Act:
-        GetCustomerThatRentedBookDto actualGetCustomerThatRentedBookDto = getCustomerThatRentedBookDtoMapper.Map(null);
+        GetCustomerThatRentedBookDto actualGetCustomerThatRentedBookDto = customerToGetCustomerThatRentedBookDtoMapper.Map(null);
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedGetCustomerThatRentedBookDto.FullName, actualGetCustomerThatRentedBookDto.FullName);

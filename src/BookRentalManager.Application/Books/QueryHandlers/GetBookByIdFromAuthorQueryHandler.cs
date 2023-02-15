@@ -4,16 +4,16 @@ internal sealed class GetBookByIdFromAuthorQueryHandler : IQueryHandler<GetBookB
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
-    private readonly IMapper<Book, GetBookDto> _getBookDtoMapper;
+    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
 
     public GetBookByIdFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
-        IMapper<Book, GetBookDto> getBookDtoMapper)
+        IMapper<Book, GetBookDto> bookToGetBookDtoMapper)
     {
         _authorRepository = authorRepository;
         _bookRepository = bookRepository;
-        _getBookDtoMapper = getBookDtoMapper;
+        _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
     }
 
     public async Task<Result<GetBookDto>> HandleAsync(GetBookByIdFromAuthorQuery getBookByIdFromAuthorQuery, CancellationToken cancellationToken)
@@ -33,6 +33,6 @@ internal sealed class GetBookByIdFromAuthorQueryHandler : IQueryHandler<GetBookB
         }
         var bookByIdSpecification = new BookByIdSpecification(bookId);
         Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookByIdSpecification, cancellationToken);
-        return Result.Success<GetBookDto>(_getBookDtoMapper.Map(existingBook!));
+        return Result.Success<GetBookDto>(_bookToGetBookDtoMapper.Map(existingBook!));
     }
 }

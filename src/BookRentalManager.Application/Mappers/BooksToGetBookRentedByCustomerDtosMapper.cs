@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Mappers;
 
-internal sealed class GetBookRentedByCustomerDtosMapper : IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookRentedByCustomerDto>>
+internal sealed class BooksToGetBookRentedByCustomerDtosMapper : IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookRentedByCustomerDto>>
 {
     public IReadOnlyList<GetBookRentedByCustomerDto> Map(IReadOnlyList<Book> books)
     {

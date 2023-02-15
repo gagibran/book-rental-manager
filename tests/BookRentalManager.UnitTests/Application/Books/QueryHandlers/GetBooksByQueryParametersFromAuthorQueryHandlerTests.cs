@@ -7,7 +7,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
     private readonly Book _book;
     private readonly PaginatedList<Book> _paginatedBooks;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, GetBookDto>> _getBookDtoMapperStub;
+    private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
     private readonly GetBookDto _getBookDto;
     private readonly GetBooksByQueryParametersFromAuthorQueryHandler _getBooksByQueryParametersFromAuthorQueryHandler;
 
@@ -16,7 +16,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _author = TestFixtures.CreateDummyAuthor();
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
-        _getBookDtoMapperStub = new();
+        _bookToGetBookDtoMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
         _paginatedBooks = new PaginatedList<Book>(new List<Book> { _book }, 1, 1, 1, 1);
         _getBookDto = new(
@@ -30,9 +30,9 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _getBooksByQueryParametersFromAuthorQueryHandler = new GetBooksByQueryParametersFromAuthorQueryHandler(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
-            _getBookDtoMapperStub.Object);
-        _getBookDtoMapperStub
-            .Setup(_getBookDtoMapper => _getBookDtoMapper.Map(It.IsAny<Book>()))
+            _bookToGetBookDtoMapperStub.Object);
+        _bookToGetBookDtoMapperStub
+            .Setup(_bookToGetBookDtoMapper => _bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
             .Returns(_getBookDto);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(

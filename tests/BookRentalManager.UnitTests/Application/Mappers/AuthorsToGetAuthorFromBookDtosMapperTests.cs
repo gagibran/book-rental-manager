@@ -1,17 +1,17 @@
 namespace BookRentalManager.UnitTests.Application.Mappers;
 
-public sealed class GetAuthorFromBookDtosMapperTests
+public sealed class AuthorsToGetAuthorFromBookDtosMapperTests
 {
     [Fact]
     public void Map_WithValidAuthors_ReturnsValidGetAuthorFromBookDtos()
     {
         // Arrange:
-        var getAuthorFromBookDtosMapper = new GetAuthorFromBookDtosMapper();
+        var authorsToGetAuthorFromBookDtosMapper = new AuthorsToGetAuthorFromBookDtosMapper();
         Author author = TestFixtures.CreateDummyAuthor();
         var expectedGetBookFromAuthorDto = new GetAuthorFromBookDto(author.FullName);
 
         // Act:
-        IReadOnlyList<GetAuthorFromBookDto> getAuthorFromBookDtos = getAuthorFromBookDtosMapper.Map(
+        IReadOnlyList<GetAuthorFromBookDto> getAuthorFromBookDtos = authorsToGetAuthorFromBookDtosMapper.Map(
             new List<Author> { author });
 
         // Assert:

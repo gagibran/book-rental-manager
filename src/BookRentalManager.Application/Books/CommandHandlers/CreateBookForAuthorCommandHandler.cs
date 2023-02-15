@@ -4,16 +4,16 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
 {
     private readonly IRepository<Book> _bookRepository;
     private readonly IRepository<Author> _authorRepository;
-    private readonly IMapper<Book, BookCreatedForAuthorDto> _bookCreatedForAuthorDtoMapper;
+    private readonly IMapper<Book, BookCreatedForAuthorDto> _bookToBookCreatedForAuthorDtoMapper;
 
     public CreateBookForAuthorCommandHandler(
         IRepository<Book> bookRepository,
         IRepository<Author> authorRepository,
-        IMapper<Book, BookCreatedForAuthorDto> bookCreatedForAuthorDtoMapper)
+        IMapper<Book, BookCreatedForAuthorDto> bookToBookCreatedForAuthorDtoMapper)
     {
         _bookRepository = bookRepository;
         _authorRepository = authorRepository;
-        _bookCreatedForAuthorDtoMapper = bookCreatedForAuthorDtoMapper;
+        _bookToBookCreatedForAuthorDtoMapper = bookToBookCreatedForAuthorDtoMapper;
     }
 
     public async Task<Result<BookCreatedForAuthorDto>> HandleAsync(
@@ -41,6 +41,6 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
             return Result.Fail<BookCreatedForAuthorDto>(addBookToAuthorResult.ErrorType, addBookToAuthorResult.ErrorMessage);
         }
         await _bookRepository.CreateAsync(newBook, cancellationToken);
-        return Result.Success<BookCreatedForAuthorDto>(_bookCreatedForAuthorDtoMapper.Map(newBook));
+        return Result.Success<BookCreatedForAuthorDto>(_bookToBookCreatedForAuthorDtoMapper.Map(newBook));
     }
 }

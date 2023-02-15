@@ -3,14 +3,14 @@ namespace BookRentalManager.Application.Customers.CommandHandlers;
 internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>
 {
     private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, CustomerCreatedDto> _customerCreatedDtoMapper;
+    private readonly IMapper<Customer, CustomerCreatedDto> _customerToCustomerCreatedDtoMapper;
 
     public CreateCustomerCommandHandler(
         IRepository<Customer> customerRepository,
-        IMapper<Customer, CustomerCreatedDto> customerCreatedDtoMapper)
+        IMapper<Customer, CustomerCreatedDto> customerToCustomerCreatedDtoMapper)
     {
         _customerRepository = customerRepository;
-        _customerCreatedDtoMapper = customerCreatedDtoMapper;
+        _customerToCustomerCreatedDtoMapper = customerToCustomerCreatedDtoMapper;
     }
 
     public async Task<Result<CustomerCreatedDto>> HandleAsync(
@@ -38,6 +38,6 @@ internal sealed class CreateCustomerCommandHandler : ICommandHandler<CreateCusto
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
         await _customerRepository.CreateAsync(newCustomer, cancellationToken);
-        return Result.Success(_customerCreatedDtoMapper.Map(newCustomer));
+        return Result.Success(_customerToCustomerCreatedDtoMapper.Map(newCustomer));
     }
 }

@@ -8,7 +8,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     private readonly Author _author;
     private readonly PaginatedList<Author> _paginatedAuthors;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
-    private readonly Mock<IMapper<Author, GetAuthorDto>> _getAuthorDtoMapperStub;
+    private readonly Mock<IMapper<Author, GetAuthorDto>> _authorToGetAuthorDtoMapperStub;
     private readonly GetAuthorsByQueryParametersQueryHandler _getAuthorsByQueryParametersQueryHandler;
     private readonly GetAuthorDto _getAuthorDto;
 
@@ -17,13 +17,13 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
         _author = TestFixtures.CreateDummyAuthor();
         _paginatedAuthors = new PaginatedList<Author>(new List<Author> { _author }, 1, 1, 1, 1);
         _getAuthorDto = new(Guid.NewGuid(), _author.FullName, new List<GetBookFromAuthorDto>());
-        _getAuthorDtoMapperStub = new();
+        _authorToGetAuthorDtoMapperStub = new();
         _authorRepositoryStub = new();
         _getAuthorsByQueryParametersQueryHandler = new(
             _authorRepositoryStub.Object,
-            _getAuthorDtoMapperStub.Object);
-        _getAuthorDtoMapperStub
-            .Setup(getAuthorDtoMapper => getAuthorDtoMapper.Map(It.IsAny<Author>()))
+            _authorToGetAuthorDtoMapperStub.Object);
+        _authorToGetAuthorDtoMapperStub
+            .Setup(authorToGetAuthorDtoMapper => authorToGetAuthorDtoMapper.Map(It.IsAny<Author>()))
             .Returns(_getAuthorDto);
     }
 

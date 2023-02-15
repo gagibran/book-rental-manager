@@ -4,7 +4,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
 {
     private readonly Customer _customer;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
-    private readonly Mock<IMapper<Customer, GetCustomerDto>> _getCustomerDtoMapperStub;
+    private readonly Mock<IMapper<Customer, GetCustomerDto>> _customerToGetCustomerDtoMapperStub;
     private readonly GetCustomersByQueryParametersQueryHandler _getCustomersByQueryParametersQueryHandler;
     private readonly GetCustomerDto _getCustomerDto;
     private readonly PaginatedList<Customer> _paginatedCustomers;
@@ -21,13 +21,13 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             new List<GetBookRentedByCustomerDto>(),
             _customer.CustomerStatus,
             _customer.CustomerPoints);
-        _getCustomerDtoMapperStub = new();
+        _customerToGetCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
         _getCustomersByQueryParametersQueryHandler = new(
             _customerRepositoryStub.Object,
-            _getCustomerDtoMapperStub.Object);
-        _getCustomerDtoMapperStub
-            .Setup(getCustomerDtoMapper => getCustomerDtoMapper.Map(It.IsAny<Customer>()))
+            _customerToGetCustomerDtoMapperStub.Object);
+        _customerToGetCustomerDtoMapperStub
+            .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(_getCustomerDto);
     }
 
