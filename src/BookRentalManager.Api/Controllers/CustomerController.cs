@@ -13,7 +13,7 @@ public sealed class CustomerController : ApiController
 
     [HttpGet]
     public async Task<ActionResult<PaginatedList<GetCustomerDto>>> GetCustomersByQueryParametersAsync(
-        [FromQuery] GetAllQueryParameters queryParameters,
+        [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
     {
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(

@@ -1,6 +1,6 @@
 namespace BookRentalManager.Api.QueryParameters;
 
-public sealed record GetAllQueryParameters
+public sealed record GetAllItemsQueryParameters
 {
     public int PageIndex { get; init; } = 1;
     public int PageSize { get; init; } = 50;

@@ -14,7 +14,7 @@ public sealed class BookController : ApiController
     [HttpGet]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
         Guid authorId,
-        [FromQuery] GetAllQueryParameters queryParameters,
+        [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
     {
         var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParametersFromAuthorQuery(
