@@ -18,11 +18,16 @@ public sealed class AuthorController : ApiController
         var getAuthorsByQueryParametersQuery = new GetAuthorsByQueryParametersQuery(
             queryParameters.PageIndex,
             queryParameters.PageSize,
-            queryParameters.SearchQuery);
+            queryParameters.SearchQuery,
+            queryParameters.SortBy);
         Result<PaginatedList<GetAuthorDto>> getAllAuthorsResult = await _dispatcher.DispatchAsync<PaginatedList<GetAuthorDto>>(
                 getAuthorsByQueryParametersQuery,
                 cancellationToken);
-        CreatePagingMetadata(nameof(GetAuthorsByQueryParametersAsync), queryParameters.SearchQuery, getAllAuthorsResult.Value!);
+        CreatePagingMetadata(
+            nameof(GetAuthorsByQueryParametersAsync),
+            queryParameters.SearchQuery,
+            queryParameters.SortBy,
+            getAllAuthorsResult.Value!);
         return Ok(getAllAuthorsResult.Value);
     }
 }

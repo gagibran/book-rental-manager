@@ -24,7 +24,11 @@ public abstract class ApiController : ControllerBase
         }
     }
 
-    protected void CreatePagingMetadata<TItem>(string routeName, string searchQuery, PaginatedList<TItem> paginatedList)
+    protected void CreatePagingMetadata<TItem>(
+        string routeName,
+        string searchQuery,
+        string sortQuery,
+        PaginatedList<TItem> paginatedList)
     {
         string? previousPageLink = null;
         string? nextPageLink = null;
@@ -34,7 +38,8 @@ public abstract class ApiController : ControllerBase
             {
                 PageIndex = paginatedList.PageIndex - 1,
                 PageSize = paginatedList.PageSize,
-                SearchQuery = searchQuery
+                SearchQuery = searchQuery,
+                SortQuery = sortQuery
             });
         }
         if (paginatedList.HasNextPage)
@@ -43,7 +48,8 @@ public abstract class ApiController : ControllerBase
             {
                 PageIndex = paginatedList.PageIndex + 1,
                 PageSize = paginatedList.PageSize,
-                SearchQuery = searchQuery
+                SearchQuery = searchQuery,
+                SortQuery = sortQuery
             });
         }
         int totalAmountOfPages = paginatedList.TotalAmountOfPages == int.MinValue ? 0 : paginatedList.TotalAmountOfPages;

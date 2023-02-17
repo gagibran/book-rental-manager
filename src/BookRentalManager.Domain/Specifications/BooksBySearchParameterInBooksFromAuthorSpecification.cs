@@ -2,7 +2,7 @@ namespace BookRentalManager.Domain.Specifications;
 
 public sealed class BooksBySearchParameterInBooksFromAuthorSpecification : Specification<Book>
 {
-    public BooksBySearchParameterInBooksFromAuthorSpecification(IReadOnlyList<Book> books, string searchParameter)
+    public BooksBySearchParameterInBooksFromAuthorSpecification(IReadOnlyList<Book> books, string searchParameter, string sortParameter)
     {
         string formattedSearchParameter = searchParameter.Trim().ToLower();
         Where = book => books.Contains(book)
@@ -14,5 +14,6 @@ public sealed class BooksBySearchParameterInBooksFromAuthorSpecification : Speci
                 || book.Customer.Email.EmailAddress.ToLower().Contains(searchParameter));
         IncludeExpressions.Add(book => book.Authors);
         IncludeExpressions.Add(book => book.Customer!);
+        OrderByPropertyName = sortParameter;
     }
 }

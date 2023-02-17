@@ -27,11 +27,11 @@ public static class IQueryableExtensions
     {
         if (string.IsNullOrWhiteSpace(propertyNamesSeparatedByComma))
         {
-            throw new ArgumentException($"{nameof(propertyNamesSeparatedByComma)} cannot be empty.");
+            return query;
         }
         foreach (string propertyName in propertyNamesSeparatedByComma.Split(','))
         {
-            bool isDescending = propertyName.EndsWith("Desc", StringComparison.OrdinalIgnoreCase);
+            bool isDescending = propertyName.EndsWith("Desc");
             var isQueryOrdered = query.Expression.Type == typeof(IOrderedQueryable<TItem>);
             var formattedPropertyName = isDescending ? propertyName[..^4] : propertyName;
             ParameterExpression parameter = Expression.Parameter(typeof(TItem), "entity");

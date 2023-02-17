@@ -38,7 +38,8 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            _customer.Email.EmailAddress);
+            _customer.Email.EmailAddress,
+            "");
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
@@ -63,7 +64,8 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            "test@email.com");
+            "test@email.com",
+            "");
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
@@ -90,7 +92,8 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            searchParam);
+            searchParam,
+            "");
         _paginatedCustomers.Add(new Customer(
             FullName.Create("Sarah", "Smith").Value,
             Email.Create("sarah.smith@email.com").Value,

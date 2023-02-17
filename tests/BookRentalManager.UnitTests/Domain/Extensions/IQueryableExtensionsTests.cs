@@ -31,6 +31,12 @@ public sealed class IQueryableExtensionsTests
         List<Book> books = new List<Book> { book1, book2, book3 };
         yield return new object[]
         {
+            "",
+            books,
+            books
+        };
+        yield return new object[]
+        {
             "BookTitleDesc,IsAvailable",
             books,
             books
@@ -85,15 +91,11 @@ public sealed class IQueryableExtensionsTests
         Assert.Throws<QueryableIsNotAsyncEnumerableException>(() => _numbers.AsQueryable().AsAsyncEnumerable());
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("NotAValidProperty,AnotherInvalidOne")]
-    [InlineData(" ")]
-    [InlineData("")]
-    public void OrderByPropertyName_WithIncorrectPropertyNames_ThrowsException(string propertyNamesSeparatedByComma)
+    [Fact]
+    public void OrderByPropertyName_WithInvalidPropertyNames_ThrowsException()
     {
         // Assert:
-        Assert.Throws<ArgumentException>(() => _numbers.AsQueryable().OrderByPropertyName(propertyNamesSeparatedByComma));
+        Assert.Throws<ArgumentException>(() => _numbers.AsQueryable().OrderByPropertyName("NotAValidProperty,AnotherInvalidOne"));
     }
 
     [Theory]

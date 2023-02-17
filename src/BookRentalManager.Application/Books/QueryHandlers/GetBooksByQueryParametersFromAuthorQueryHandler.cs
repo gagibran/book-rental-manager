@@ -6,15 +6,18 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
+    private readonly IMapper<BookSortParameters, string> _bookSortParametersMapper;
 
     public GetBooksByQueryParametersFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
-        IMapper<Book, GetBookDto> bookToGetBookDtoMapper)
+        IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
+        IMapper<BookSortParameters, string> bookSortParametersMapper)
     {
         _authorRepository = authorRepository;
         _bookRepository = bookRepository;
         _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
+        _bookSortParametersMapper = bookSortParametersMapper;
     }
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
@@ -29,9 +32,11 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
                 "authorId",
                 $"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
+        string convertedSortParameters = _bookSortParametersMapper.Map(new BookSortParameters(getBooksByQueryParameterFromAuthor.SortParameters));
         var booksInAuthorBooksAndQueryParameterSpecification = new BooksBySearchParameterInBooksFromAuthorSpecification(
             author.Books,
-            getBooksByQueryParameterFromAuthor.SearchParameter);
+            getBooksByQueryParameterFromAuthor.SearchParameter,
+            convertedSortParameters);
         PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParameterFromAuthor.PageIndex,
             getBooksByQueryParameterFromAuthor.PageSize,

@@ -21,7 +21,8 @@ public sealed class BookController : ApiController
             authorId,
             queryParameters.PageIndex,
             queryParameters.PageSize,
-            queryParameters.SearchQuery);
+            queryParameters.SearchQuery,
+            queryParameters.SortBy);
         Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
                 getBooksBySearchParameterFromAuthor,
                 cancellationToken);
@@ -31,8 +32,9 @@ public sealed class BookController : ApiController
             return CustomNotFound<PaginatedList<GetBookDto>>(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage);
         }
         CreatePagingMetadata(
-            "Test",
+            nameof(GetBooksByQueryParametersFromAuthorAsync),
             queryParameters.SearchQuery,
+            queryParameters.SortBy,
             getAllBooksResult.Value!);
         return Ok(getAllBooksResult.Value);
     }

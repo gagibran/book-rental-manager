@@ -5,6 +5,7 @@ using BookRentalManager.Application.Customers.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using BookRentalManager.Application.Mappers;
 using BookRentalManager.Application.Books.CommandHandlers;
+using BookRentalManager.Application.SortParametersMappers;
 
 namespace BookRentalManager.Application.Extensions;
 
@@ -13,20 +14,21 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IDispatcher, Dispatcher>();
-        serviceCollection.AddApplicationCommandsServices();
-        serviceCollection.AddApplicationQueriesService();
-        serviceCollection.AddApplicationMappersServices();
+        serviceCollection.AddCommandServices();
+        serviceCollection.AddQueryServices();
+        serviceCollection.AddMapperServices();
+        serviceCollection.AddSortParametersMapperServices();
         return serviceCollection;
     }
 
-    private static IServiceCollection AddApplicationCommandsServices(this IServiceCollection serviceCollection)
+    private static IServiceCollection AddCommandServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>, CreateCustomerCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>, CreateBookForAuthorCommandHandler>();
         return serviceCollection;
     }
 
-    private static IServiceCollection AddApplicationQueriesService(this IServiceCollection serviceCollection)
+    private static IServiceCollection AddQueryServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IQueryHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>, GetCustomersByQueryParametersQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
@@ -36,7 +38,7 @@ public static class IServiceCollectionExtensions
         return serviceCollection;
     }
 
-    private static IServiceCollection AddApplicationMappersServices(this IServiceCollection serviceCollection)
+    private static IServiceCollection AddMapperServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<IMapper<Customer, GetCustomerDto>, CustomerToGetCustomerDtoMapper>();
         serviceCollection.AddTransient<IMapper<Author, GetAuthorDto>, AuthorToGetAuthorDtoMapper>();
@@ -47,6 +49,13 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddTransient<IMapper<Customer?, GetCustomerThatRentedBookDto>, CustomerToGetCustomerThatRentedBookDtoMapper>();
         serviceCollection.AddTransient<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>, AuthorsToGetAuthorFromBookDtosMapper>();
         serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerToCustomerCreatedDtoMapper>();
+        return serviceCollection;
+    }
+
+    private static IServiceCollection AddSortParametersMapperServices(this IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddTransient<IMapper<AuthorSortParameters, string>, AuthorSortParametersMapper>();
+        serviceCollection.AddTransient<IMapper<BookSortParameters, string>, BookSortParametersMapper>();
         return serviceCollection;
     }
 }

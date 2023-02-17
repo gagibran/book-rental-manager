@@ -19,11 +19,16 @@ public sealed class CustomerController : ApiController
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             queryParameters.PageIndex,
             queryParameters.PageSize,
-            queryParameters.SearchQuery);
+            queryParameters.SearchQuery,
+            queryParameters.SortBy);
         Result<PaginatedList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<PaginatedList<GetCustomerDto>>(
             getCustomersByQueryParametersQuery,
             cancellationToken);
-        CreatePagingMetadata(nameof(GetCustomersByQueryParametersAsync), queryParameters.SearchQuery, getAllCustomersResult.Value!);
+        CreatePagingMetadata(
+            nameof(GetCustomersByQueryParametersAsync),
+            queryParameters.SearchQuery,
+            queryParameters.SortBy,
+            getAllCustomersResult.Value!);
         return Ok(getAllCustomersResult.Value);
     }
 

@@ -8,6 +8,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
     private readonly PaginatedList<Book> _paginatedBooks;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
+    private readonly Mock<IMapper<BookSortParameters, string>> _bookSortParametersMapperStub;
     private readonly GetBookDto _getBookDto;
     private readonly GetBooksByQueryParametersFromAuthorQueryHandler _getBooksByQueryParametersFromAuthorQueryHandler;
 
@@ -17,6 +18,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
         _bookToGetBookDtoMapperStub = new();
+        _bookSortParametersMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
         _paginatedBooks = new PaginatedList<Book>(new List<Book> { _book }, 1, 1, 1, 1);
         _getBookDto = new(
@@ -30,7 +32,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _getBooksByQueryParametersFromAuthorQueryHandler = new GetBooksByQueryParametersFromAuthorQueryHandler(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
-            _bookToGetBookDtoMapperStub.Object);
+            _bookToGetBookDtoMapperStub.Object,
+            _bookSortParametersMapperStub.Object);
         _bookToGetBookDtoMapperStub
             .Setup(_bookToGetBookDtoMapper => _bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
             .Returns(_getBookDto);
@@ -49,7 +52,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            "Name");
+            "Name",
+            "");
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
@@ -75,7 +79,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            _book.BookTitle);
+            _book.BookTitle,
+            "");
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
@@ -111,7 +116,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            searchParameter);
+            searchParameter,
+            "");
         var newBook = new Book(
             "Clean Code: A Handbook of Agile Software Craftsmanship",
             Edition.Create(1).Value,
@@ -142,7 +148,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             _author.Id,
             TestFixtures.PageIndex,
             TestFixtures.PageSize,
-            "Test");
+            "Test",
+            "");
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
