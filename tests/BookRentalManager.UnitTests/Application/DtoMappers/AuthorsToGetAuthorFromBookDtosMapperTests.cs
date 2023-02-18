@@ -1,4 +1,4 @@
-namespace BookRentalManager.UnitTests.Application.Mappers;
+namespace BookRentalManager.UnitTests.Application.DtoMappers;
 
 public sealed class AuthorsToGetAuthorFromBookDtosMapperTests
 {

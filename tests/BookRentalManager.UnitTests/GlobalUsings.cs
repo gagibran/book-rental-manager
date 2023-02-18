@@ -8,7 +8,7 @@ global using BookRentalManager.UnitTests.Common;
 global using BookRentalManager.Domain.Interfaces;
 global using BookRentalManager.Application.Dtos;
 global using BookRentalManager.Application.Interfaces;
-global using BookRentalManager.Application.Mappers;
+global using BookRentalManager.Application.DtoMappers;
 global using BookRentalManager.Application.Customers.Queries;
 global using BookRentalManager.Application.Customers.QueryHandlers;
 global using BookRentalManager.Domain.Specifications;

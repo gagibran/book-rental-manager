@@ -3,7 +3,7 @@ using BookRentalManager.Application.Books.QueryHandlers;
 using BookRentalManager.Application.Customers.CommandHandlers;
 using BookRentalManager.Application.Customers.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
-using BookRentalManager.Application.Mappers;
+using BookRentalManager.Application.DtoMappers;
 using BookRentalManager.Application.Books.CommandHandlers;
 using BookRentalManager.Application.SortParametersMappers;
 
