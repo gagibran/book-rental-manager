@@ -48,10 +48,10 @@ public sealed class AuthorsBySearchParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithAuthorsWithQuery_ReturnsTrue(string searchParameter, string sortParameter, Author author)
+    public void IsSatisfiedBy_WithAuthorsWithQuery_ReturnsTrue(string searchParameter, string sortParameters, Author author)
     {
         // Arrange:
-        var authorsWithSearchParameterSpecification = new AuthorsBySearchParameterSpecification(searchParameter, sortParameter);
+        var authorsWithSearchParameterSpecification = new AuthorsBySearchParameterSpecification(searchParameter, sortParameters);
 
         // Act:
         bool isSatisfiedBy = authorsWithSearchParameterSpecification.IsSatisfiedBy(author);
@@ -62,10 +62,10 @@ public sealed class AuthorsBySearchParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetFailureTestParameters))]
-    public void IsSatisfiedBy_WithoutAuthorsWithQuery_ReturnsFalse(string searchParameter, string sortParameter, Author author)
+    public void IsSatisfiedBy_WithoutAuthorsWithQuery_ReturnsFalse(string searchParameter, string sortParameters, Author author)
     {
         // Arrange:
-        var authorsWithSearchParameterSpecification = new AuthorsBySearchParameterSpecification(searchParameter, sortParameter);
+        var authorsWithSearchParameterSpecification = new AuthorsBySearchParameterSpecification(searchParameter, sortParameters);
 
         // Act:
         bool isSatisfiedBy = authorsWithSearchParameterSpecification.IsSatisfiedBy(author);
