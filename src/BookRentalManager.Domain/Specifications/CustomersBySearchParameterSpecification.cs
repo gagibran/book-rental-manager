@@ -2,7 +2,7 @@ namespace BookRentalManager.Domain.Specifications;
 
 public sealed class CustomersBySearchParameterSpecification : Specification<Customer>
 {
-    public CustomersBySearchParameterSpecification(string searchParameter)
+    public CustomersBySearchParameterSpecification(string searchParameter, string sortParameter)
     {
         var formattedSearchParameter = searchParameter.ToLower().Trim();
         var foundCustomerType = Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType)
@@ -14,5 +14,6 @@ public sealed class CustomersBySearchParameterSpecification : Specification<Cust
             || customer.PhoneNumber.CompletePhoneNumber.ToLower().Contains(formattedSearchParameter)
             || customer.CustomerStatus.CustomerType == foundCustomerType;
         IncludeExpressions.Add(customer => customer.Books);
+        OrderByPropertyName = sortParameter;
     }
 }

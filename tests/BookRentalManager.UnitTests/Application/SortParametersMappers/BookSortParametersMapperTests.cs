@@ -6,6 +6,9 @@ public sealed class BookSortParametersMapperTests
     [InlineData("", "")]
     [InlineData("  ", "")]
     [InlineData("NotExistingProperty,  , AnotherNotExistingOne", "")]
+    [InlineData("NotExistingProperty,BookTitle, AnotherNotExistingOne", "BookTitle")]
+    [InlineData("Isbn,IsAvailable,BookTitleDesc", "Isbn.IsbnValue,IsAvailable,BookTitleDesc")]
+    [InlineData("IsbnDesc,BookTitle,IsAvailable,EditionDesc", "Isbn.IsbnValueDesc,BookTitle,IsAvailable,Edition.EditionNumberDesc")]
     public void Map_WithInputData_ReturnsExpectedOutputData(string propertyNamesSeparatedByComma, string expectedResult)
     {
         // Arrange:

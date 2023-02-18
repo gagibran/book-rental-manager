@@ -7,11 +7,13 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "20020000",
+            "",
             TestFixtures.CreateDummyCustomer(),
         };
         yield return new object[]
         {
             "smith@email.",
+            "",
             new Customer(
                 FullName.Create("Sarah", "Smith").Value,
                 Email.Create("sarah.smith@email.com").Value,
@@ -20,6 +22,7 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "griffin",
+            "",
             new Customer(
                 FullName.Create("Peter", "Griffin").Value,
                 Email.Create("peter.grifin@email.com").Value,
@@ -32,11 +35,13 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "234",
+            "",
             TestFixtures.CreateDummyCustomer(),
         };
         yield return new object[]
         {
             "john@email.",
+            "",
             new Customer(
                 FullName.Create("Sarah", "Smith").Value,
                 Email.Create("sarah.smith@email.com").Value,
@@ -45,6 +50,7 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "smith",
+            "",
             new Customer(
                 FullName.Create("Peter", "Griffin").Value,
                 Email.Create("peter.grifin@email.com").Value,
@@ -54,10 +60,10 @@ public sealed class CustomersBySearchParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithCustomersWithQuery_ReturnsTrue(string searchParameter, Customer customer)
+    public void IsSatisfiedBy_WithCustomersWithQuery_ReturnsTrue(string searchParameter, string sortOrderParameters, Customer customer)
     {
         // Arrange:
-        var customersWithSearchParameterSpecification = new CustomersBySearchParameterSpecification(searchParameter);
+        var customersWithSearchParameterSpecification = new CustomersBySearchParameterSpecification(searchParameter, sortOrderParameters);
 
         // Act:
         bool isSatisfiedBy = customersWithSearchParameterSpecification.IsSatisfiedBy(customer);
@@ -68,10 +74,10 @@ public sealed class CustomersBySearchParameterSpecificationTests
 
     [Theory]
     [MemberData(nameof(GetFailureTestParameters))]
-    public void IsSatisfiedBy_WithoutCustomersWithQuery_ReturnsFalse(string searchParameter, Customer customer)
+    public void IsSatisfiedBy_WithoutCustomersWithQuery_ReturnsFalse(string searchParameter, string sortOrderParameters, Customer customer)
     {
         // Arrange:
-        var customersWithSearchParameterSpecification = new CustomersBySearchParameterSpecification(searchParameter);
+        var customersWithSearchParameterSpecification = new CustomersBySearchParameterSpecification(searchParameter, sortOrderParameters);
 
         // Act:
         bool isSatisfiedBy = customersWithSearchParameterSpecification.IsSatisfiedBy(customer);

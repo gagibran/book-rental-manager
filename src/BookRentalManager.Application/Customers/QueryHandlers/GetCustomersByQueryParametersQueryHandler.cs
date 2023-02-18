@@ -5,23 +5,31 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _customerToGetCustomerDtoMapper;
+    private readonly IMapper<CustomerSortParameters, string> _customerSortParametersMapper;
 
     public GetCustomersByQueryParametersQueryHandler(
         IRepository<Customer> customerRepository,
-        IMapper<Customer, GetCustomerDto> customerToGetCustomerDtoMapper)
+        IMapper<Customer, GetCustomerDto> customerToGetCustomerDtoMapper,
+        IMapper<CustomerSortParameters, string> customerSortParametersMapper)
     {
         _customerRepository = customerRepository;
         _customerToGetCustomerDtoMapper = customerToGetCustomerDtoMapper;
+        _customerSortParametersMapper = customerSortParametersMapper;
     }
 
     public async Task<Result<PaginatedList<GetCustomerDto>>> HandleAsync(
         GetCustomersByQueryParametersQuery getCustomersByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
+        string convertedSortParameters = _customerSortParametersMapper.Map(
+            new CustomerSortParameters(getCustomersByQueryParametersQuery.SortParameters));
+        var customersBySearchParameterSpecification = new CustomersBySearchParameterSpecification(
+            getCustomersByQueryParametersQuery.SearchParameter,
+            convertedSortParameters);
         PaginatedList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
             getCustomersByQueryParametersQuery.PageIndex,
             getCustomersByQueryParametersQuery.PageSize,
-            new CustomersBySearchParameterSpecification(getCustomersByQueryParametersQuery.SearchParameter),
+            customersBySearchParameterSpecification,
             cancellationToken);
         List<GetCustomerDto> getCustomerDtos = (from customer in customers
                                                 select _customerToGetCustomerDtoMapper.Map(customer)).ToList();

@@ -39,7 +39,7 @@ public abstract class ApiController : ControllerBase
                 PageIndex = paginatedList.PageIndex - 1,
                 PageSize = paginatedList.PageSize,
                 SearchQuery = searchQuery,
-                SortQuery = sortQuery
+                SortBy = sortQuery
             });
         }
         if (paginatedList.HasNextPage)
@@ -49,7 +49,7 @@ public abstract class ApiController : ControllerBase
                 PageIndex = paginatedList.PageIndex + 1,
                 PageSize = paginatedList.PageSize,
                 SearchQuery = searchQuery,
-                SortQuery = sortQuery
+                SortBy = sortQuery
             });
         }
         int totalAmountOfPages = paginatedList.TotalAmountOfPages == int.MinValue ? 0 : paginatedList.TotalAmountOfPages;

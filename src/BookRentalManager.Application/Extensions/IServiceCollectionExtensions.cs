@@ -56,6 +56,7 @@ public static class IServiceCollectionExtensions
     {
         serviceCollection.AddTransient<IMapper<AuthorSortParameters, string>, AuthorSortParametersMapper>();
         serviceCollection.AddTransient<IMapper<BookSortParameters, string>, BookSortParametersMapper>();
+        serviceCollection.AddTransient<IMapper<CustomerSortParameters, string>, CustomerSortParametersMapper>();
         return serviceCollection;
     }
 }
