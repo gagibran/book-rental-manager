@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
 public sealed class CustomersBySearchParameterSpecificationTests
@@ -7,13 +9,13 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "20020000",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyCustomer(),
         };
         yield return new object[]
         {
             "smith@email.",
-            "",
+            string.Empty,
             new Customer(
                 FullName.Create("Sarah", "Smith").Value,
                 Email.Create("sarah.smith@email.com").Value,
@@ -22,7 +24,7 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "griffin",
-            "",
+            string.Empty,
             new Customer(
                 FullName.Create("Peter", "Griffin").Value,
                 Email.Create("peter.grifin@email.com").Value,
@@ -35,13 +37,13 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "234",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyCustomer(),
         };
         yield return new object[]
         {
             "john@email.",
-            "",
+            string.Empty,
             new Customer(
                 FullName.Create("Sarah", "Smith").Value,
                 Email.Create("sarah.smith@email.com").Value,
@@ -50,7 +52,7 @@ public sealed class CustomersBySearchParameterSpecificationTests
         yield return new object[]
         {
             "smith",
-            "",
+            string.Empty,
             new Customer(
                 FullName.Create("Peter", "Griffin").Value,
                 Email.Create("peter.grifin@email.com").Value,

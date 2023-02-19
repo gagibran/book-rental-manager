@@ -7,19 +7,19 @@ public sealed class AuthorsBySearchParameterSpecificationTests
         yield return new object[]
         {
             "John",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor(),
         };
         yield return new object[]
         {
             "sarah smith",
-            "",
+            string.Empty,
             new Author(FullName.Create("Sarah", "Smith").Value)
         };
         yield return new object[]
         {
             "griffin",
-            "",
+            string.Empty,
             new Author(FullName.Create("Peter", "Griffin").Value)
         };
     }
@@ -29,19 +29,19 @@ public sealed class AuthorsBySearchParameterSpecificationTests
         yield return new object[]
         {
             "234",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor(),
         };
         yield return new object[]
         {
             "john@email.",
-            "",
+            string.Empty,
             new Author(FullName.Create("Sarah", "Smith").Value)
         };
         yield return new object[]
         {
             "smith",
-            "",
+            string.Empty,
             new Author(FullName.Create("Peter", "Griffin").Value)
         };
     }

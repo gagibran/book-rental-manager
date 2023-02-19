@@ -5,9 +5,11 @@ public sealed class CustomersBySearchParameterSpecification : Specification<Cust
     public CustomersBySearchParameterSpecification(string searchParameter, string sortParameters)
     {
         var formattedSearchParameter = searchParameter.ToLower().Trim();
-        var foundCustomerType = Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType)
-            ? customerType
-            : (CustomerType?)null;
+        var foundCustomerType = (CustomerType?)null;
+        if (Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType))
+        {
+            foundCustomerType = customerType;
+        }
         Where = customer =>
             customer.FullName.CompleteName.ToLower().Contains(formattedSearchParameter)
             || customer.Email.EmailAddress.ToLower().Contains(formattedSearchParameter)

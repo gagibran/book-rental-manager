@@ -7,25 +7,25 @@ public sealed class BooksBySearchParameterInBooksFromAuthorSpecificationTests
         yield return new object[]
         {
             "pragmatic Progr",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "1",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "0-201-616",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "false",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
     }
@@ -36,25 +36,25 @@ public sealed class BooksBySearchParameterInBooksFromAuthorSpecificationTests
         yield return new object[]
         {
             "1984",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "5",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "345-6",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "true",
-            "",
+            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
     }
