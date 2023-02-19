@@ -7,12 +7,10 @@ using Microsoft.EntityFrameworkCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container:
-builder.Services.AddControllers();
+builder.Services.AddControllers(configure => configure.ReturnHttpNotAcceptable = true);
 builder.Services.AddDbContext<BookRentalManagerDbContext>(dbContextOptionsBuilder =>
 {
-    dbContextOptionsBuilder.UseNpgsql(
-        builder.Configuration.GetConnectionString("BookRentalManagerConnectionString")
-    );
+    dbContextOptionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("BookRentalManagerConnectionString"));
 });
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
