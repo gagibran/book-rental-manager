@@ -24,6 +24,14 @@ public sealed class CustomerController : ApiController
         Result<PaginatedList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<PaginatedList<GetCustomerDto>>(
             getCustomersByQueryParametersQuery,
             cancellationToken);
+        if (!getAllCustomersResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(getAllCustomersResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                getAllCustomersResult.ErrorType,
+                getAllCustomersResult.ErrorMessage,
+                HttpStatusCode.BadRequest);
+        }
         CreatePagingMetadata(
             nameof(GetCustomersByQueryParametersAsync),
             queryParameters.SearchQuery,
@@ -42,7 +50,7 @@ public sealed class CustomerController : ApiController
         if (!getCustomerByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getCustomerByIdResult.ErrorMessage);
-            return CustomNotFound<GetCustomerDto>(getCustomerByIdResult.ErrorType, getCustomerByIdResult.ErrorMessage);
+            return CustomHttpErrorResponse(getCustomerByIdResult.ErrorType, getCustomerByIdResult.ErrorMessage, HttpStatusCode.NotFound);
         }
         return Ok(getCustomerByIdResult.Value);
     }
@@ -56,8 +64,11 @@ public sealed class CustomerController : ApiController
         if (!createCustomerResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
-            return CustomUnprocessableEntity(createCustomerResult.ErrorType, createCustomerResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                createCustomerResult.ErrorType,
+                createCustomerResult.ErrorMessage,
+                HttpStatusCode.UnprocessableEntity);
         }
-        return CreatedAtAction("Test", new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 }

@@ -5,12 +5,12 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _customerToGetCustomerDtoMapper;
-    private readonly IMapper<CustomerSortParameters, string> _customerSortParametersMapper;
+    private readonly IMapper<CustomerSortParameters, Result<string>> _customerSortParametersMapper;
 
     public GetCustomersByQueryParametersQueryHandler(
         IRepository<Customer> customerRepository,
         IMapper<Customer, GetCustomerDto> customerToGetCustomerDtoMapper,
-        IMapper<CustomerSortParameters, string> customerSortParametersMapper)
+        IMapper<CustomerSortParameters, Result<string>> customerSortParametersMapper)
     {
         _customerRepository = customerRepository;
         _customerToGetCustomerDtoMapper = customerToGetCustomerDtoMapper;
@@ -21,11 +21,17 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
         GetCustomersByQueryParametersQuery getCustomersByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        string convertedSortParameters = _customerSortParametersMapper.Map(
+        Result<string> convertedSortParametersResult = _customerSortParametersMapper.Map(
             new CustomerSortParameters(getCustomersByQueryParametersQuery.SortParameters));
+        if (!convertedSortParametersResult.IsSuccess)
+        {
+            return Result.Fail<PaginatedList<GetCustomerDto>>(
+                convertedSortParametersResult.ErrorType,
+                convertedSortParametersResult.ErrorMessage);
+        }
         var customersBySearchParameterSpecification = new CustomersBySearchParameterSpecification(
             getCustomersByQueryParametersQuery.SearchParameter,
-            convertedSortParameters);
+            convertedSortParametersResult.Value!);
         PaginatedList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
             getCustomersByQueryParametersQuery.PageIndex,
             getCustomersByQueryParametersQuery.PageSize,

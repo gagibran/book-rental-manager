@@ -5,12 +5,12 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper;
-    private readonly IMapper<AuthorSortParameters, string> _authorSortParametersMapper;
+    private readonly IMapper<AuthorSortParameters, Result<string>> _authorSortParametersMapper;
 
     public GetAuthorsByQueryParametersQueryHandler(
         IRepository<Author> authorRepository,
         IMapper<Author, GetAuthorDto> authorToGetAuthorDtoMapper,
-        IMapper<AuthorSortParameters, string> authorSortParametersMapper)
+        IMapper<AuthorSortParameters, Result<string>> authorSortParametersMapper)
     {
         _authorRepository = authorRepository;
         _authorToGetAuthorDtoMapper = authorToGetAuthorDtoMapper;
@@ -21,11 +21,17 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
         GetAuthorsByQueryParametersQuery getAuthorsByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        string convertedSorParameters = _authorSortParametersMapper.Map(
+        Result<string> convertedSorParametersResult = _authorSortParametersMapper.Map(
             new AuthorSortParameters(getAuthorsByQueryParametersQuery.SortParameters));
+        if (!convertedSorParametersResult.IsSuccess)
+        {
+            return Result.Fail<PaginatedList<GetAuthorDto>>(
+                convertedSorParametersResult.ErrorType,
+                convertedSorParametersResult.ErrorMessage);
+        }
         var authorsBySearchParameterSpecification = new AuthorsBySearchParameterSpecification(
             getAuthorsByQueryParametersQuery.SearchParameter,
-            convertedSorParameters);
+            convertedSorParametersResult.Value!);
         PaginatedList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
             getAuthorsByQueryParametersQuery.PageIndex,
             getAuthorsByQueryParametersQuery.PageSize,

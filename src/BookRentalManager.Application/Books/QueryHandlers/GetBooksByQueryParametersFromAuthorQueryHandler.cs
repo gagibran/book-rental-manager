@@ -6,13 +6,13 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
-    private readonly IMapper<BookSortParameters, string> _bookSortParametersMapper;
+    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper;
 
     public GetBooksByQueryParametersFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
         IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
-        IMapper<BookSortParameters, string> bookSortParametersMapper)
+        IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
     {
         _authorRepository = authorRepository;
         _bookRepository = bookRepository;
@@ -32,11 +32,18 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
                 "authorId",
                 $"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
-        string convertedSortParameters = _bookSortParametersMapper.Map(new BookSortParameters(getBooksByQueryParameterFromAuthor.SortParameters));
+        Result<string> convertedSortParametersResult = _bookSortParametersMapper.Map(
+            new BookSortParameters(getBooksByQueryParameterFromAuthor.SortParameters));
+        if (!convertedSortParametersResult.IsSuccess)
+        {
+            return Result.Fail<PaginatedList<GetBookDto>>(
+                convertedSortParametersResult.ErrorType,
+                convertedSortParametersResult.ErrorMessage);
+        }
         var booksInAuthorBooksAndQueryParameterSpecification = new BooksBySearchParameterInBooksFromAuthorSpecification(
             author.Books,
             getBooksByQueryParameterFromAuthor.SearchParameter,
-            convertedSortParameters);
+            convertedSortParametersResult.Value!);
         PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParameterFromAuthor.PageIndex,
             getBooksByQueryParameterFromAuthor.PageSize,

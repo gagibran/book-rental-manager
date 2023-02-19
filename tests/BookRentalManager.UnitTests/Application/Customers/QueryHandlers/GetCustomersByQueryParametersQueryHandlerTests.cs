@@ -5,7 +5,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
     private readonly GetCustomersByQueryParametersQuery _getCustomersByQueryParametersQuery;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _customerToGetCustomerDtoMapperStub;
-    private readonly Mock<IMapper<CustomerSortParameters, string>> _customerSortParametersMapperStub;
+    private readonly Mock<IMapper<CustomerSortParameters, Result<string>>> _customerSortParametersMapperStub;
     private readonly GetCustomersByQueryParametersQueryHandler _getCustomersByQueryParametersQueryHandler;
 
     public GetCustomersByQueryParametersQueryHandlerTests()
@@ -24,7 +24,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             _customerSortParametersMapperStub.Object);
         _customerSortParametersMapperStub
             .Setup(customerSortParametersMapper => customerSortParametersMapper.Map(It.IsAny<CustomerSortParameters>()))
-            .Returns(string.Empty);
+            .Returns(Result.Success<string>(string.Empty));
     }
 
     [Fact]

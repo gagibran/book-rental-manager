@@ -8,7 +8,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     private readonly GetAuthorsByQueryParametersQuery _getAuthorsByQueryParametersQuery;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IMapper<Author, GetAuthorDto>> _authorToGetAuthorDtoMapperStub;
-    private readonly Mock<IMapper<AuthorSortParameters, string>> _authorSortParametersMapperStub;
+    private readonly Mock<IMapper<AuthorSortParameters, Result<string>>> _authorSortParametersMapperStub;
     private readonly GetAuthorsByQueryParametersQueryHandler _getAuthorsByQueryParametersQueryHandler;
 
     public GetAuthorsByQueryParametersQueryHandlerTests()
@@ -27,7 +27,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             _authorSortParametersMapperStub.Object);
         _authorSortParametersMapperStub
             .Setup(authorSortParametersMapper => authorSortParametersMapper.Map(It.IsAny<AuthorSortParameters>()))
-            .Returns(string.Empty);
+            .Returns(Result.Success<string>(string.Empty));
     }
 
     [Fact]

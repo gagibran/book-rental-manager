@@ -1,8 +1,8 @@
 namespace BookRentalManager.Application.SortParametersMappers;
 
-internal sealed class CustomerSortParametersMapper : IMapper<CustomerSortParameters, string>
+internal sealed class CustomerSortParametersMapper : IMapper<CustomerSortParameters, Result<string>>
 {
-    public string Map(CustomerSortParameters authorSortParameters)
+    public Result<string> Map(CustomerSortParameters authorSortParameters)
     {
         string convertedPropertyNamesSeparatedByComma = string.Empty;
         string[] propertyNames = authorSortParameters.PropertyNamesSeparatedByComma.Split(',');
@@ -11,7 +11,9 @@ internal sealed class CustomerSortParametersMapper : IMapper<CustomerSortParamet
             var formattedPropertyName = propertyName.Trim();
             if (!authorSortParameters.ExpectedProperties.Contains(formattedPropertyName))
             {
-                continue;
+                return Result.Fail<string>(
+                    "invalidProperty",
+                    $"The property '{formattedPropertyName}' does not exist for '{nameof(GetCustomerDto)}'.");
             }
             if (formattedPropertyName.Contains("FullName"))
             {
@@ -31,6 +33,6 @@ internal sealed class CustomerSortParametersMapper : IMapper<CustomerSortParamet
             }
             convertedPropertyNamesSeparatedByComma += formattedPropertyName + ",";
         }
-        return convertedPropertyNamesSeparatedByComma.TrimEnd(',');
+        return Result.Success<string>(convertedPropertyNamesSeparatedByComma.TrimEnd(','));
     }
 }

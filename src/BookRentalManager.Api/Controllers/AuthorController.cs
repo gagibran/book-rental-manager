@@ -23,6 +23,11 @@ public sealed class AuthorController : ApiController
         Result<PaginatedList<GetAuthorDto>> getAllAuthorsResult = await _dispatcher.DispatchAsync<PaginatedList<GetAuthorDto>>(
                 getAuthorsByQueryParametersQuery,
                 cancellationToken);
+        if (!getAllAuthorsResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(getAllAuthorsResult.ErrorMessage);
+            return CustomHttpErrorResponse(getAllAuthorsResult.ErrorType, getAllAuthorsResult.ErrorMessage, HttpStatusCode.BadRequest);
+        }
         CreatePagingMetadata(
             nameof(GetAuthorsByQueryParametersAsync),
             queryParameters.SearchQuery,

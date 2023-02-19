@@ -26,10 +26,15 @@ public sealed class BookController : ApiController
         Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
                 getBooksBySearchParameterFromAuthor,
                 cancellationToken);
-        if (!getAllBooksResult.IsSuccess)
+        if (!getAllBooksResult.IsSuccess && getAllBooksResult.ErrorType.Equals("invalidProperty"))
         {
             _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return CustomNotFound<PaginatedList<GetBookDto>>(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage);
+            return CustomHttpErrorResponse(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage, HttpStatusCode.BadRequest);
+        }
+        else if (!getAllBooksResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
+            return CustomHttpErrorResponse(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage, HttpStatusCode.NotFound);
         }
         CreatePagingMetadata(
             nameof(GetBooksByQueryParametersFromAuthorAsync),
@@ -51,7 +56,7 @@ public sealed class BookController : ApiController
         if (!getBookByIdResult.IsSuccess)
         {
             _baseControllerLogger.LogError(getBookByIdResult.ErrorMessage);
-            return CustomNotFound<GetBookDto>(getBookByIdResult.ErrorType, getBookByIdResult.ErrorMessage);
+            return CustomHttpErrorResponse(getBookByIdResult.ErrorType, getBookByIdResult.ErrorMessage, HttpStatusCode.NotFound);
         }
         return Ok(getBookByIdResult.Value);
     }
@@ -70,7 +75,7 @@ public sealed class BookController : ApiController
         if (!createBookResult.IsSuccess)
         {
             _baseControllerLogger.LogError(createBookResult.ErrorMessage);
-            return CustomUnprocessableEntity(createBookResult.ErrorType, createBookResult.ErrorMessage);
+            return CustomHttpErrorResponse(createBookResult.ErrorType, createBookResult.ErrorMessage, HttpStatusCode.UnprocessableEntity);
         }
         return CreatedAtAction(
             nameof(GetBookByIdFromAuthorAsync),

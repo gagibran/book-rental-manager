@@ -7,7 +7,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
-    private readonly Mock<IMapper<BookSortParameters, string>> _bookSortParametersMapperStub;
+    private readonly Mock<IMapper<BookSortParameters, Result<string>>> _bookSortParametersMapperStub;
     private readonly GetBooksByQueryParametersFromAuthorQueryHandler _getBooksByQueryParametersFromAuthorQueryHandler;
 
     public GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery()
@@ -86,7 +86,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             .Returns(getBookDto);
         _bookSortParametersMapperStub
             .Setup(bookSortParametersMapper => bookSortParametersMapper.Map(It.IsAny<BookSortParameters>()))
-            .Returns(string.Empty);
+            .Returns(Result.Success<string>(string.Empty));
 
         // Act:
         Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(

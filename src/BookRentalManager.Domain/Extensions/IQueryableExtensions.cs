@@ -27,7 +27,7 @@ public static class IQueryableExtensions
     {
         if (string.IsNullOrWhiteSpace(propertyNamesSeparatedByComma))
         {
-            return query;
+            throw new ArgumentException($"{propertyNamesSeparatedByComma} cannot be null or empty.");
         }
         foreach (string propertyName in propertyNamesSeparatedByComma.Split(','))
         {

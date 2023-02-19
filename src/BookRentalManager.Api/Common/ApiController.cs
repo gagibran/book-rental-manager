@@ -70,15 +70,9 @@ public abstract class ApiController : ControllerBase
         Response.Headers.Add("X-Pagination", serializedMetadata);
     }
 
-    protected virtual ActionResult CustomUnprocessableEntity(string errorTypes, string errorMessages)
+    protected virtual ActionResult CustomHttpErrorResponse(string errorTypes, string errorMessages, HttpStatusCode httpStatusCode)
     {
         AddErrorsToModelError(errorTypes, errorMessages);
-        return ValidationProblem(modelStateDictionary: ModelState, statusCode: 422);
-    }
-
-    protected virtual ActionResult<TDto> CustomNotFound<TDto>(string errorTypes, string errorMessages)
-    {
-        AddErrorsToModelError(errorTypes, errorMessages);
-        return ValidationProblem(modelStateDictionary: ModelState, statusCode: 404);
+        return ValidationProblem(modelStateDictionary: ModelState, statusCode: (int)httpStatusCode);
     }
 }
