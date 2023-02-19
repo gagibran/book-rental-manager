@@ -58,7 +58,7 @@ public sealed class CreateCustomerCommandHandlerTests
                 customerRepository.GetFirstOrDefaultBySpecificationAsync(
                     It.IsAny<Specification<Customer>>(),
                     default))
-            .ReturnsAsync((Customer)null);
+            .ReturnsAsync((Customer)null!);
         _customerRepositoryStub
             .Setup(customerRepository =>
                 customerRepository.CreateAsync(

@@ -14,13 +14,13 @@ public sealed class AuthorsBySearchParameterSpecificationTests
         {
             "sarah smith",
             string.Empty,
-            new Author(FullName.Create("Sarah", "Smith").Value)
+            new Author(FullName.Create("Sarah", "Smith").Value!)
         };
         yield return new object[]
         {
             "griffin",
             string.Empty,
-            new Author(FullName.Create("Peter", "Griffin").Value)
+            new Author(FullName.Create("Peter", "Griffin").Value!)
         };
     }
 
@@ -36,13 +36,13 @@ public sealed class AuthorsBySearchParameterSpecificationTests
         {
             "john@email.",
             string.Empty,
-            new Author(FullName.Create("Sarah", "Smith").Value)
+            new Author(FullName.Create("Sarah", "Smith").Value!)
         };
         yield return new object[]
         {
             "smith",
             string.Empty,
-            new Author(FullName.Create("Peter", "Griffin").Value)
+            new Author(FullName.Create("Peter", "Griffin").Value!)
         };
     }
 

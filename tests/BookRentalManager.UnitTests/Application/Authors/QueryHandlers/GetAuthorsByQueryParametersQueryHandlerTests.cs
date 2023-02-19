@@ -50,7 +50,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             .Setup(authorToGetAuthorDtoMapper => authorToGetAuthorDtoMapper.Map(It.IsAny<Author>()))
             .Returns(new GetAuthorDto(
                 It.IsAny<Guid>(),
-                FullName.Create("John", "Doe").Value,
+                FullName.Create("John", "Doe").Value!,
                 It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>()));
 
         // Act:
@@ -59,7 +59,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Empty(handlerResult.Value);
+        Assert.Empty(handlerResult.Value!);
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert (maybe refactor this using FluentAssertions):
-        GetAuthorDto actualGetAuthorDto = handlerResult.Value.FirstOrDefault();
+        GetAuthorDto actualGetAuthorDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(expectedGetAuthorDto.Id, actualGetAuthorDto.Id);
         Assert.Equal(expectedGetAuthorDto.FullName, actualGetAuthorDto.FullName);
         Assert.Equal(expectedGetAuthorDto.Books, actualGetAuthorDto.Books);

@@ -35,7 +35,7 @@ public sealed class EmailTests
         Result<Email> emailResultRight = Email.Create(right);
 
         // Act:
-        bool isEqual = emailResultLeft.Value == emailResultRight.Value;
+        bool isEqual = emailResultLeft.Value! == emailResultRight.Value!;
 
         // Assert:
         Assert.True(isEqual);
@@ -51,7 +51,7 @@ public sealed class EmailTests
         Result<Email> emailResultRight = Email.Create(right);
 
         // Act:
-        bool isNotEqual = emailResultLeft.Value != emailResultRight.Value;
+        bool isNotEqual = emailResultLeft.Value! != emailResultRight.Value!;
 
         // Assert:
         Assert.True(isNotEqual);

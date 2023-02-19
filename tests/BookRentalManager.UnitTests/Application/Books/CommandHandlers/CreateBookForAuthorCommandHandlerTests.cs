@@ -49,7 +49,7 @@ public sealed class CreateBookForAuthorCommandHandlerTests
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync((Author)null);
+            .ReturnsAsync((Author)null!);
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
 
         // Act:
@@ -81,7 +81,7 @@ public sealed class CreateBookForAuthorCommandHandlerTests
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Book>>(),
                 default))
-            .ReturnsAsync((Book)null);
+            .ReturnsAsync((Book)null!);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.CreateAsync(It.IsAny<Book>(), default))
             .Verifiable();

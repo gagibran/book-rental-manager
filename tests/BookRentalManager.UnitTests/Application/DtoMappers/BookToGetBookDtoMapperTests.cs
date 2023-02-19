@@ -15,7 +15,9 @@ public sealed class BookToGetBookDtoMapperTests
         customerToGetCustomerThatRentedBookDtoMapperStub
             .Setup(customerToGetCustomerThatRentedBookDtoMapper => customerToGetCustomerThatRentedBookDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(new GetCustomerThatRentedBookDto());
-        var bookToGetBookDtoMapper = new BookToGetBookDtoMapper(authorsToGetAuthorFromBookDtosMapperStub.Object, customerToGetCustomerThatRentedBookDtoMapperStub.Object);
+        var bookToGetBookDtoMapper = new BookToGetBookDtoMapper(
+            authorsToGetAuthorFromBookDtosMapperStub.Object,
+            customerToGetCustomerThatRentedBookDtoMapperStub.Object!);
         var expectedGetBookDto = new GetBookDto(
             book.Id,
             book.BookTitle,

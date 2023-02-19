@@ -45,7 +45,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
             default);
 
         // Assert:
-        Assert.Equal(_getCustomerDto.Id, handlerResult.Value.Id);
+        Assert.Equal(_getCustomerDto.Id, handlerResult.Value!.Id);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Customer>>(),
                 default))
-            .ReturnsAsync((Customer)null);
+            .ReturnsAsync((Customer)null!);
 
         // Act:
         Result<GetCustomerDto> handlerResult = await _getCustomerByIdQueryHandler.HandleAsync(

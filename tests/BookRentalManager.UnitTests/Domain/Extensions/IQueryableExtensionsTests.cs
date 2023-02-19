@@ -16,12 +16,12 @@ public sealed class IQueryableExtensionsTests
         Book book1 = TestFixtures.CreateDummyBook();
         Book book2 = new Book(
             "Clean Code: A Handbook of Agile Software Craftsmanship",
-            Edition.Create(1).Value,
-            Isbn.Create("978-0132350884").Value);
+            Edition.Create(1).Value!,
+            Isbn.Create("978-0132350884").Value!);
         Book book3 = new Book(
             "Design Patterns: Elements of Reusable Object-Oriented Software",
-            Edition.Create(1).Value,
-            Isbn.Create("0-201-63361-2").Value);
+            Edition.Create(1).Value!,
+            Isbn.Create("0-201-63361-2").Value!);
         Customer customer = TestFixtures.CreateDummyCustomer();
         Author author = TestFixtures.CreateDummyAuthor();
         author.AddBook(book1);

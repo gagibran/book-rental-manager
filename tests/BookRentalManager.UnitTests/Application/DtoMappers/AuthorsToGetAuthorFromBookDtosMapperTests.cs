@@ -15,6 +15,6 @@ public sealed class AuthorsToGetAuthorFromBookDtosMapperTests
             new List<Author> { author });
 
         // Assert:
-        Assert.Equal(expectedGetBookFromAuthorDto.FullName, getAuthorFromBookDtos.FirstOrDefault().FullName);
+        Assert.Equal(expectedGetBookFromAuthorDto.FullName, getAuthorFromBookDtos.FirstOrDefault()!.FullName);
     }
 }

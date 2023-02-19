@@ -47,9 +47,9 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
             .Returns(new GetCustomerDto(
                 It.IsAny<Guid>(),
-                FullName.Create("John", "Doe").Value,
-                Email.Create("johndoe@email.com").Value,
-                PhoneNumber.Create(200, 2_000_000).Value,
+                FullName.Create("John", "Doe").Value!,
+                Email.Create("johndoe@email.com").Value!,
+                PhoneNumber.Create(200, 2_000_000).Value!,
                 It.IsAny<IReadOnlyList<GetBookRentedByCustomerDto>>(),
                 new CustomerStatus(CustomerType.Explorer),
                 It.IsAny<int>()));
@@ -60,7 +60,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Empty(handlerResult.Value);
+        Assert.Empty(handlerResult.Value!);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert (maybe refactor this using FluentAssertions):
-        GetCustomerDto actualGetCustomerDto = handlerResult.Value.FirstOrDefault();
+        GetCustomerDto actualGetCustomerDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(expectedGetCustomerDto.Id, actualGetCustomerDto.Id);
         Assert.Equal(expectedGetCustomerDto.FullName, actualGetCustomerDto.FullName);
         Assert.Equal(expectedGetCustomerDto.Email, actualGetCustomerDto.Email);

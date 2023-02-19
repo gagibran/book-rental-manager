@@ -9,8 +9,8 @@ public sealed class CustomerTests
     {
         _book = new(
             "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-            Edition.Create(1).Value,
-            Isbn.Create("978-0321125217").Value);
+            Edition.Create(1).Value!,
+            Isbn.Create("978-0321125217").Value!);
         _customer = TestFixtures.CreateDummyCustomer();
     }
 
@@ -31,12 +31,12 @@ public sealed class CustomerTests
         var expectedErrorMessage = "You've reached the maximum amount of books per customer category (Explorer: 2).";
         var book2 = new Book(
             "Design Patterns: Elements of Reusable Object-Oriented Software",
-            Edition.Create(1).Value,
-            Isbn.Create("978-0201633610 ").Value);
+            Edition.Create(1).Value!,
+            Isbn.Create("978-0201633610 ").Value!);
         var book3 = new Book(
             "Introduction to Algorithms",
-            Edition.Create(3).Value,
-            Isbn.Create("978-0262033848").Value);
+            Edition.Create(3).Value!,
+            Isbn.Create("978-0262033848").Value!);
         _customer.RentBook(_book);
         _customer.RentBook(book2);
 

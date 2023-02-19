@@ -39,7 +39,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Author)null);
+            .ReturnsAsync((Author)null!);
 
         // Act:
         Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
@@ -94,7 +94,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             It.IsAny<CancellationToken>());
 
         // Assert (maybe refactor this using FluentAssertions):
-        GetBookDto actualGetBookDto = handlerResult.Value.FirstOrDefault();
+        GetBookDto actualGetBookDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(getBookDto.Id, actualGetBookDto.Id);
         Assert.Equal(getBookDto.BookTitle, actualGetBookDto.BookTitle);
         Assert.Equal(getBookDto.Authors, actualGetBookDto.Authors);

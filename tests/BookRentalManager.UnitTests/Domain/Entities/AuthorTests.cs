@@ -7,11 +7,11 @@ public sealed class AuthorTests
 
     public AuthorTests()
     {
-        _author = new(FullName.Create("Eric", "Evans").Value);
+        _author = new(FullName.Create("Eric", "Evans").Value!);
         _book = new(
             "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-            Edition.Create(1).Value,
-            Isbn.Create("978-0321125217").Value);
+            Edition.Create(1).Value!,
+            Isbn.Create("978-0321125217").Value!);
     }
 
     [Fact]

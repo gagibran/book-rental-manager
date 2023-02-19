@@ -56,7 +56,7 @@ public sealed class GetBookByIdFromAuthorQueryHandlerTests
             default);
 
         // Assert:
-        Assert.Equal(_getBookDto.Id, handlerResult.Value.Id);
+        Assert.Equal(_getBookDto.Id, handlerResult.Value!.Id);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public sealed class GetBookByIdFromAuthorQueryHandlerTests
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Book>>(),
                 default))
-            .ReturnsAsync((Book)null);
+            .ReturnsAsync((Book)null!);
 
         // Act:
         Result<GetBookDto> handlerResult = await _getBookByIdFromAuthorQueryHandler.HandleAsync(
@@ -88,7 +88,7 @@ public sealed class GetBookByIdFromAuthorQueryHandlerTests
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Author>>(),
                 default))
-            .ReturnsAsync((Author)null);
+            .ReturnsAsync((Author)null!);
 
         // Act:
         Result<GetBookDto> handlerResult = await _getBookByIdFromAuthorQueryHandler.HandleAsync(

@@ -17,18 +17,18 @@ public sealed class CustomersBySearchParameterSpecificationTests
             "smith@email.",
             string.Empty,
             new Customer(
-                FullName.Create("Sarah", "Smith").Value,
-                Email.Create("sarah.smith@email.com").Value,
-                PhoneNumber.Create(345, 6_453_243).Value)
+                FullName.Create("Sarah", "Smith").Value!,
+                Email.Create("sarah.smith@email.com").Value!,
+                PhoneNumber.Create(345, 6_453_243).Value!)
         };
         yield return new object[]
         {
             "griffin",
             string.Empty,
             new Customer(
-                FullName.Create("Peter", "Griffin").Value,
-                Email.Create("peter.grifin@email.com").Value,
-                PhoneNumber.Create(546, 4_056_780).Value)
+                FullName.Create("Peter", "Griffin").Value!,
+                Email.Create("peter.grifin@email.com").Value!,
+                PhoneNumber.Create(546, 4_056_780).Value!)
         };
     }
 
@@ -45,18 +45,18 @@ public sealed class CustomersBySearchParameterSpecificationTests
             "john@email.",
             string.Empty,
             new Customer(
-                FullName.Create("Sarah", "Smith").Value,
-                Email.Create("sarah.smith@email.com").Value,
-                PhoneNumber.Create(345, 6_453_243).Value)
+                FullName.Create("Sarah", "Smith").Value!,
+                Email.Create("sarah.smith@email.com").Value!,
+                PhoneNumber.Create(345, 6_453_243).Value!)
         };
         yield return new object[]
         {
             "smith",
             string.Empty,
             new Customer(
-                FullName.Create("Peter", "Griffin").Value,
-                Email.Create("peter.grifin@email.com").Value,
-                PhoneNumber.Create(546, 4_056_780).Value)
+                FullName.Create("Peter", "Griffin").Value!,
+                Email.Create("peter.grifin@email.com").Value!,
+                PhoneNumber.Create(546, 4_056_780).Value!)
         };
     }
 
