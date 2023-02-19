@@ -10,7 +10,7 @@ public sealed class PhoneNumberTests
     [InlineData(3432, 3345679, ExpectedAreaCodeErrorMessage)]
     [InlineData(564, 33456, ExpectedPrefixAndLineNumberErrorMessage)]
     [InlineData(564, 34533456, ExpectedPrefixAndLineNumberErrorMessage)]
-    public void Create_WithInvalidPhoneNumber_ReturnErrorMessage(
+    public void Create_WithInvalidPhoneNumber_ReturnsErrorMessage(
         int areaCode,
         int prefixAndLineNumber,
         string expectedErrorMessage)

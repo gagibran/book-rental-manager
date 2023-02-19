@@ -2,26 +2,19 @@ namespace BookRentalManager.UnitTests.Application.Customers.QueryHandlers;
 
 public sealed class GetCustomersByQueryParametersQueryHandlerTests
 {
-    private readonly Customer _customer;
+    private readonly GetCustomersByQueryParametersQuery _getCustomersByQueryParametersQuery;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IMapper<Customer, GetCustomerDto>> _customerToGetCustomerDtoMapperStub;
     private readonly Mock<IMapper<CustomerSortParameters, string>> _customerSortParametersMapperStub;
     private readonly GetCustomersByQueryParametersQueryHandler _getCustomersByQueryParametersQueryHandler;
-    private readonly GetCustomerDto _getCustomerDto;
-    private readonly PaginatedList<Customer> _paginatedCustomers;
 
     public GetCustomersByQueryParametersQueryHandlerTests()
     {
-        _customer = TestFixtures.CreateDummyCustomer();
-        _paginatedCustomers = new PaginatedList<Customer>(new List<Customer> { _customer }, 1, 1, 1, 1);
-        _getCustomerDto = new(
-            Guid.NewGuid(),
-            _customer.FullName,
-            _customer.Email,
-            _customer.PhoneNumber,
-            new List<GetBookRentedByCustomerDto>(),
-            _customer.CustomerStatus,
-            _customer.CustomerPoints);
+        _getCustomersByQueryParametersQuery = new(
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            string.Empty,
+            It.IsAny<string>());
         _customerToGetCustomerDtoMapperStub = new();
         _customerSortParametersMapperStub = new();
         _customerRepositoryStub = new();
@@ -29,92 +22,90 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             _customerRepositoryStub.Object,
             _customerToGetCustomerDtoMapperStub.Object,
             _customerSortParametersMapperStub.Object);
+        _customerSortParametersMapperStub
+            .Setup(customerSortParametersMapper => customerSortParametersMapper.Map(It.IsAny<CustomerSortParameters>()))
+            .Returns(string.Empty);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithoutCustomers_ReturnsEmptyList()
+    {
+        // Arrange:
+        _customerRepositoryStub
+            .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Specification<Customer>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new PaginatedList<Customer>(
+                new List<Customer>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<int>()));
         _customerToGetCustomerDtoMapperStub
             .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(_getCustomerDto);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WithAtLeastOneCustomerWithSearchParameter_ReturnsListWithMatchingCustomer()
-    {
-        // Arrange:
-        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
-            TestFixtures.PageIndex,
-            TestFixtures.PageSize,
-            _customer.Email.EmailAddress,
-            "");
-        _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Specification<Customer>>(),
-                default))
-            .ReturnsAsync(_paginatedCustomers);
+            .Returns(new GetCustomerDto(
+                It.IsAny<Guid>(),
+                FullName.Create("John", "Doe").Value,
+                Email.Create("johndoe@email.com").Value,
+                PhoneNumber.Create(200, 2_000_000).Value,
+                It.IsAny<IReadOnlyList<GetBookRentedByCustomerDto>>(),
+                new CustomerStatus(CustomerType.Explorer),
+                It.IsAny<int>()));
 
         // Act:
         Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
-            getCustomersByQueryParametersQuery,
-            default);
-
-        // Assert:
-        Assert.Equal(_getCustomerDto, handlerResult.Value.FirstOrDefault());
-    }
-
-    [Fact]
-    public async Task HandleAsync_WithoutAnyCustomerWithSearchParameter_ReturnsEmptyList()
-    {
-        // Arrange:
-        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
-            TestFixtures.PageIndex,
-            TestFixtures.PageSize,
-            "test@email.com",
-            "");
-        _customerRepositoryStub
-            .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Specification<Customer>>(),
-                default))
-            .ReturnsAsync(new PaginatedList<Customer>(new List<Customer>(), 1, 1, 1, 1));
-
-        // Act:
-        Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
-            getCustomersByQueryParametersQuery,
-            default);
+            _getCustomersByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
 
         // Assert:
         Assert.Empty(handlerResult.Value);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(" ")]
-    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers(string searchParam)
+    [Fact]
+    public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers()
     {
         // Arrange:
-        var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
-            TestFixtures.PageIndex,
-            TestFixtures.PageSize,
-            searchParam,
-            "");
-        _paginatedCustomers.Add(new Customer(
-            FullName.Create("Sarah", "Smith").Value,
-            Email.Create("sarah.smith@email.com").Value,
-            PhoneNumber.Create(200, 3_454_763).Value));
+        Customer customer = TestFixtures.CreateDummyCustomer();
+        var expectedGetCustomerDto = new GetCustomerDto(
+            Guid.NewGuid(),
+            customer.FullName,
+            customer.Email,
+            customer.PhoneNumber,
+            new List<GetBookRentedByCustomerDto>(),
+            customer.CustomerStatus,
+            customer.CustomerPoints);
+        var paginatedCustomers = new PaginatedList<Customer>(
+            new List<Customer> { customer },
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<int>(),
+            It.IsAny<int>());
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<Specification<Customer>>(),
-                default))
-            .ReturnsAsync(_paginatedCustomers);
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(paginatedCustomers);
+        _customerToGetCustomerDtoMapperStub
+            .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
+            .Returns(expectedGetCustomerDto);
 
         // Act:
         Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
-            getCustomersByQueryParametersQuery,
-            default);
+            _getCustomersByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
 
-        // Assert:
-        Assert.Equal(2, handlerResult.Value.Count);
+        // Assert (maybe refactor this using FluentAssertions):
+        GetCustomerDto actualGetCustomerDto = handlerResult.Value.FirstOrDefault();
+        Assert.Equal(expectedGetCustomerDto.Id, actualGetCustomerDto.Id);
+        Assert.Equal(expectedGetCustomerDto.FullName, actualGetCustomerDto.FullName);
+        Assert.Equal(expectedGetCustomerDto.Email, actualGetCustomerDto.Email);
+        Assert.Equal(expectedGetCustomerDto.PhoneNumber, actualGetCustomerDto.PhoneNumber);
+        Assert.Equal(expectedGetCustomerDto.Books, actualGetCustomerDto.Books);
+        Assert.Equal(expectedGetCustomerDto.CustomerStatus, actualGetCustomerDto.CustomerStatus);
+        Assert.Equal(expectedGetCustomerDto.CustomerPoints, actualGetCustomerDto.CustomerPoints);
     }
 }
