@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using BookRentalManager.Application.DtoMappers;
 using BookRentalManager.Application.Books.CommandHandlers;
 using BookRentalManager.Application.SortParametersMappers;
+using BookRentalManager.Application.Authors.CommandHandlers;
 
 namespace BookRentalManager.Application.Extensions;
 
@@ -16,7 +17,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<IDispatcher, Dispatcher>();
         serviceCollection.AddCommandServices();
         serviceCollection.AddQueryServices();
-        serviceCollection.AddMapperServices();
+        serviceCollection.AddDtoMapperServices();
         serviceCollection.AddSortParametersMapperServices();
         return serviceCollection;
     }
@@ -25,6 +26,7 @@ public static class IServiceCollectionExtensions
     {
         serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>, CreateCustomerCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>, CreateBookForAuthorCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<CreateAuthorCommand, AuthorCreatedDto>, CreateAuthorCommandHandler>();
         return serviceCollection;
     }
 
@@ -38,7 +40,7 @@ public static class IServiceCollectionExtensions
         return serviceCollection;
     }
 
-    private static IServiceCollection AddMapperServices(this IServiceCollection serviceCollection)
+    private static IServiceCollection AddDtoMapperServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddTransient<IMapper<Customer, GetCustomerDto>, CustomerToGetCustomerDtoMapper>();
         serviceCollection.AddTransient<IMapper<Author, GetAuthorDto>, AuthorToGetAuthorDtoMapper>();
@@ -49,6 +51,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddTransient<IMapper<Customer?, GetCustomerThatRentedBookDto>, CustomerToGetCustomerThatRentedBookDtoMapper>();
         serviceCollection.AddTransient<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>, AuthorsToGetAuthorFromBookDtosMapper>();
         serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerToCustomerCreatedDtoMapper>();
+        serviceCollection.AddTransient<IMapper<Author, AuthorCreatedDto>, AuthorToAuthorCreatedDtoMapper>();
         return serviceCollection;
     }
 

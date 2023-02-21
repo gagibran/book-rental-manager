@@ -13,10 +13,10 @@ public sealed class BookByIdSpecificationTests
     public void IsSatisfiedBy_WithExistingId_ReturnsTrue()
     {
         // Arrange:
-        var bookWithBooksByIdSpecification = new BookByIdSpecification(_book.Id);
+        var bookByIdSpecification = new BookByIdSpecification(_book.Id);
 
         // Act:
-        bool isSatisfiedBy = bookWithBooksByIdSpecification.IsSatisfiedBy(_book);
+        bool isSatisfiedBy = bookByIdSpecification.IsSatisfiedBy(_book);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -26,10 +26,10 @@ public sealed class BookByIdSpecificationTests
     public void IsSatisfiedBy_WithNonexistingId_ReturnsFalse()
     {
         // Arrange:
-        var bookWithBooksByIdSpecification = new BookByIdSpecification(Guid.NewGuid());
+        var bookByIdSpecification = new BookByIdSpecification(Guid.NewGuid());
 
         // Act:
-        bool isSatisfiedBy = bookWithBooksByIdSpecification.IsSatisfiedBy(_book);
+        bool isSatisfiedBy = bookByIdSpecification.IsSatisfiedBy(_book);
 
         // Assert:
         Assert.False(isSatisfiedBy);

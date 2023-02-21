@@ -9,33 +9,29 @@ public sealed class CreateBookForAuthorCommandHandlerTests
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, BookCreatedForAuthorDto>> _bookToBookCreatedForAuthorDtoMapperStub;
     private readonly BookCreatedForAuthorDto _bookCreatedForAuthorDto;
+    private readonly Book _book;
     private readonly Author _author;
     private readonly CreateBookForAuthorCommand _createBookForAuthorCommand;
     private readonly CreateBookForAuthorCommandHandler _createBookForAuthorCommandHandler;
 
     public CreateBookForAuthorCommandHandlerTests()
     {
-        Book book = TestFixtures.CreateDummyBook();
+        _book = TestFixtures.CreateDummyBook();
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
         _bookToBookCreatedForAuthorDtoMapperStub = new();
-        _bookCreatedForAuthorDto = new(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
+        _bookCreatedForAuthorDto = new(_book.Id, _book.BookTitle, _book.Edition.EditionNumber, _book.Isbn.IsbnValue);
         _author = TestFixtures.CreateDummyAuthor();
-        _createBookForAuthorCommand = new(_author.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.IsbnValue);
+        _createBookForAuthorCommand = new(_author.Id, _book.BookTitle, _book.Edition.EditionNumber, _book.Isbn.IsbnValue);
         _createBookForAuthorCommandHandler = new(
             _bookRepositoryStub.Object,
             _authorRepositoryStub.Object,
             _bookToBookCreatedForAuthorDtoMapperStub.Object);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<Author>>(),
-                default))
+                It.IsAny<AuthorByIdSpecification>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(_author);
-        _bookRepositoryStub
-            .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<Book>>(),
-                default))
-            .ReturnsAsync(book);
         _bookToBookCreatedForAuthorDtoMapperStub
             .Setup(bookToBookCreatedForAuthorDtoMapper => bookToBookCreatedForAuthorDtoMapper.Map(It.IsAny<Book>()))
             .Returns(_bookCreatedForAuthorDto);
@@ -47,8 +43,8 @@ public sealed class CreateBookForAuthorCommandHandlerTests
         // Arrange:
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<Author>>(),
-                default))
+                It.IsAny<AuthorByIdSpecification>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((Author)null!);
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
 
@@ -63,8 +59,12 @@ public sealed class CreateBookForAuthorCommandHandlerTests
     public async Task HandleAsync_WithExistingBookTitle_ReturnsErrorMessage()
     {
         // Arrange:
-        _author.AddBook(TestFixtures.CreateDummyBook());
-        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' has already been added to this author.";
+        _bookRepositoryStub
+            .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<BooksByIsbnsSpecification>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_book);
+        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' already exists.";
 
         // Act:
         Result handleResult = await _createBookForAuthorCommandHandler.HandleAsync(_createBookForAuthorCommand, default);
@@ -79,8 +79,8 @@ public sealed class CreateBookForAuthorCommandHandlerTests
         // Arrange:
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<Specification<Book>>(),
-                default))
+                It.IsAny<BooksByIsbnsSpecification>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync((Book)null!);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.CreateAsync(It.IsAny<Book>(), default))

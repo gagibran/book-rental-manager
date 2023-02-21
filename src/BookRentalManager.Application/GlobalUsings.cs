@@ -12,3 +12,4 @@ global using BookRentalManager.Application.Books.Queries;
 global using BookRentalManager.Application.Books.Commands;
 global using BookRentalManager.Application.Common;
 global using BookRentalManager.Application.SortParameters;
+global using BookRentalManager.Application.Authors.Commands;

@@ -1,3 +1,4 @@
+using BookRentalManager.Application.Authors.Commands;
 using BookRentalManager.Application.Authors.Queries;
 
 namespace BookRentalManager.Api.Controllers;
@@ -34,5 +35,23 @@ public sealed class AuthorController : ApiController
             queryParameters.SortBy,
             getAllAuthorsResult.Value!);
         return Ok(getAllAuthorsResult.Value);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
+    {
+        Result<AuthorCreatedDto> createAuthorResult = await _dispatcher.DispatchAsync<AuthorCreatedDto>(
+            createAuthorCommand,
+            cancellationToken);
+        if (!createAuthorResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(createAuthorResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                createAuthorResult.ErrorType,
+                createAuthorResult.ErrorMessage,
+                HttpStatusCode.UnprocessableEntity);
+        }
+        return Ok(createAuthorResult.Value!);
+        // return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 }

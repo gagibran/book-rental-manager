@@ -68,7 +68,8 @@ public sealed class BookController : ApiController
         CancellationToken cancellationToken)
     {
         var createBookForAuthorCommand = new CreateBookForAuthorCommand(
-            authorId, createBookForAuthorDto.BookTitle,
+            authorId,
+            createBookForAuthorDto.BookTitle,
             createBookForAuthorDto.Edition,
             createBookForAuthorDto.Isbn);
         Result<BookCreatedForAuthorDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedForAuthorDto>(createBookForAuthorCommand, cancellationToken);
