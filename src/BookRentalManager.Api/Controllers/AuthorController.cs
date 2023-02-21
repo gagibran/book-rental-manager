@@ -11,7 +11,7 @@ public sealed class AuthorController : ApiController
     {
     }
 
-    [HttpGet(Name = nameof(GetAuthorsByQueryParametersAsync))]
+    [HttpGet]
     public async Task<ActionResult<PaginatedList<GetAuthorDto>>> GetAuthorsByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
@@ -37,6 +37,21 @@ public sealed class AuthorController : ApiController
         return Ok(getAllAuthorsResult.Value);
     }
 
+    [HttpGet("{id}")]
+    [ActionName(nameof(GetAuthorByIdAsync))]
+    public async Task<ActionResult<GetAuthorDto>> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync<GetAuthorDto>(
+            new GetAuthorByIdQuery(id),
+            cancellationToken);
+        if (!getAuthorByIdResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(getAuthorByIdResult.ErrorMessage);
+            return CustomHttpErrorResponse(getAuthorByIdResult.ErrorType, getAuthorByIdResult.ErrorMessage, HttpStatusCode.NotFound);
+        }
+        return Ok(getAuthorByIdResult.Value);
+    }
+
     [HttpPost]
     public async Task<ActionResult> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
     {
@@ -51,7 +66,6 @@ public sealed class AuthorController : ApiController
                 createAuthorResult.ErrorMessage,
                 HttpStatusCode.UnprocessableEntity);
         }
-        return Ok(createAuthorResult.Value!);
-        // return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
+        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 }

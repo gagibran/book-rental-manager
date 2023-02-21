@@ -17,3 +17,5 @@ global using BookRentalManager.Application.Books.Queries;
 global using BookRentalManager.Domain.Exceptions;
 global using BookRentalManager.Application.SortParametersMappers;
 global using BookRentalManager.Application.SortParameters;
+global using BookRentalManager.Application.Authors.QueryHandlers;
+global using BookRentalManager.Application.Authors.Queries;
