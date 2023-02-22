@@ -34,8 +34,8 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
         {
             return Result.Fail<BookCreatedForAuthorDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
-        var booksByIsbnsSpecification = new BooksByIsbnsSpecification(new List<string> { createBookForAuthorCommand.Isbn.Trim() });
-        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(booksByIsbnsSpecification);
+        var bookByIsbnSpecification = new BookByIsbnSpecification(createBookForAuthorCommand.Isbn);
+        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookByIsbnSpecification);
         if (existingBook is not null)
         {
             return Result.Fail<BookCreatedForAuthorDto>(

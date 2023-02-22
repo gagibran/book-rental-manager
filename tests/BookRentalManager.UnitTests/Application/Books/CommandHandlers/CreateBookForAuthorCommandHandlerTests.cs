@@ -61,7 +61,7 @@ public sealed class CreateBookForAuthorCommandHandlerTests
         // Arrange:
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<BooksByIsbnsSpecification>(),
+                It.IsAny<BookByIsbnSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_book);
         var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' already exists.";
@@ -79,7 +79,7 @@ public sealed class CreateBookForAuthorCommandHandlerTests
         // Arrange:
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<BooksByIsbnsSpecification>(),
+                It.IsAny<BookByIsbnSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Book)null!);
         _bookRepositoryStub
