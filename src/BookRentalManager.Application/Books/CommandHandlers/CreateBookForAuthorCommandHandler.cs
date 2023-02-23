@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>
+internal sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>
 {
     private readonly IRepository<Book> _bookRepository;
     private readonly IRepository<Author> _authorRepository;

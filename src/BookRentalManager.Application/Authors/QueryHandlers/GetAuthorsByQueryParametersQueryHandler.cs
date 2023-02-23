@@ -29,13 +29,13 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
                 convertedSorParametersResult.ErrorType,
                 convertedSorParametersResult.ErrorMessage);
         }
-        var authorsBySearchParameterSpecification = new AuthorsBySearchParameterSpecification(
+        var authorsBySearchParameterWithBooksSpecification = new AuthorsBySearchParameterWithBooksSpecification(
             getAuthorsByQueryParametersQuery.SearchParameter,
             convertedSorParametersResult.Value!);
         PaginatedList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
             getAuthorsByQueryParametersQuery.PageIndex,
             getAuthorsByQueryParametersQuery.PageSize,
-            authorsBySearchParameterSpecification,
+            authorsBySearchParameterWithBooksSpecification,
             cancellationToken);
         List<GetAuthorDto> getAuthorDtos = (from author in authors
                                             select _authorToGetAuthorDtoMapper.Map(author)).ToList();

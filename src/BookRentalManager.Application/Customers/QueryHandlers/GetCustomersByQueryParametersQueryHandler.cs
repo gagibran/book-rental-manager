@@ -29,13 +29,13 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
                 convertedSortParametersResult.ErrorType,
                 convertedSortParametersResult.ErrorMessage);
         }
-        var customersBySearchParameterSpecification = new CustomersBySearchParameterSpecification(
+        var customersBySearchParameterWithBooksSpecification = new CustomersBySearchParameterWithBooksSpecification(
             getCustomersByQueryParametersQuery.SearchParameter,
             convertedSortParametersResult.Value!);
         PaginatedList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
             getCustomersByQueryParametersQuery.PageIndex,
             getCustomersByQueryParametersQuery.PageSize,
-            customersBySearchParameterSpecification,
+            customersBySearchParameterWithBooksSpecification,
             cancellationToken);
         List<GetCustomerDto> getCustomerDtos = (from customer in customers
                                                 select _customerToGetCustomerDtoMapper.Map(customer)).ToList();

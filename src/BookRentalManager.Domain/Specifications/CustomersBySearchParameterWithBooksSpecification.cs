@@ -1,8 +1,8 @@
 namespace BookRentalManager.Domain.Specifications;
 
-public sealed class CustomersBySearchParameterSpecification : Specification<Customer>
+public sealed class CustomersBySearchParameterWithBooksSpecification : Specification<Customer>
 {
-    public CustomersBySearchParameterSpecification(string searchParameter, string sortParameters)
+    public CustomersBySearchParameterWithBooksSpecification(string searchParameter, string sortParameters)
     {
         var formattedSearchParameter = searchParameter.ToLower().Trim();
         var foundCustomerType = (CustomerType?)null;

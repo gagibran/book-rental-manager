@@ -31,8 +31,8 @@ internal sealed class GetBookByIdFromAuthorQueryHandler : IQueryHandler<GetBookB
         {
             return Result.Fail<GetBookDto>("bookId", $"No book with the ID of '{getBookByIdFromAuthorQuery.Id}' was found for this author.");
         }
-        var bookByIdSpecification = new BookByIdSpecification(bookId);
-        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookByIdSpecification, cancellationToken);
+        var bookByIdWithAuthorsAndCustomersSpecification = new BookByIdWithAuthorsAndCustomersSpecification(bookId);
+        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookByIdWithAuthorsAndCustomersSpecification, cancellationToken);
         return Result.Success<GetBookDto>(_bookToGetBookDtoMapper.Map(existingBook!));
     }
 }

@@ -1,10 +1,10 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class CustomerByIdSpecificationTests
+public sealed class CustomerByIdWithBooksSpecificationTests
 {
     private readonly Customer _customer;
 
-    public CustomerByIdSpecificationTests()
+    public CustomerByIdWithBooksSpecificationTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
     }
@@ -13,7 +13,7 @@ public sealed class CustomerByIdSpecificationTests
     public void IsSatisfiedBy_WithExistingId_ReturnsTrue()
     {
         // Arrange:
-        var customerWithBooksByIdSpecification = new CustomerByIdSpecification(_customer.Id);
+        var customerWithBooksByIdSpecification = new CustomerByIdWithBooksSpecification(_customer.Id);
 
         // Act:
         bool isSatisfiedBy = customerWithBooksByIdSpecification.IsSatisfiedBy(_customer);
@@ -26,7 +26,7 @@ public sealed class CustomerByIdSpecificationTests
     public void IsSatisfiedBy_WithNonexistingId_ReturnsFalse()
     {
         // Arrange:
-        var customerWithBooksByIdSpecification = new CustomerByIdSpecification(Guid.NewGuid());
+        var customerWithBooksByIdSpecification = new CustomerByIdWithBooksSpecification(Guid.NewGuid());
 
         // Act:
         bool isSatisfiedBy = customerWithBooksByIdSpecification.IsSatisfiedBy(_customer);

@@ -40,14 +40,14 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
                 convertedSortParametersResult.ErrorType,
                 convertedSortParametersResult.ErrorMessage);
         }
-        var booksInAuthorBooksAndQueryParameterSpecification = new BooksBySearchParameterInBooksFromAuthorSpecification(
+        var booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
             author.Books,
             getBooksByQueryParameterFromAuthor.SearchParameter,
             convertedSortParametersResult.Value!);
         PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParameterFromAuthor.PageIndex,
             getBooksByQueryParameterFromAuthor.PageSize,
-            booksInAuthorBooksAndQueryParameterSpecification,
+            booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification,
             cancellationToken);
         List<GetBookDto> getBookDtos = (from book in books
                                         select _bookToGetBookDtoMapper.Map(book)).ToList();

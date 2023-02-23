@@ -1,10 +1,10 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class CustomerByEmailSpecificationTests
+public sealed class CustomerByEmailWithBooksSpecificationTests
 {
     private readonly Customer _customer;
 
-    public CustomerByEmailSpecificationTests()
+    public CustomerByEmailWithBooksSpecificationTests()
     {
         _customer = TestFixtures.CreateDummyCustomer();
     }
@@ -13,10 +13,10 @@ public sealed class CustomerByEmailSpecificationTests
     public void IsSatisfiedBy_WithExistingEmail_ReturnsTrue()
     {
         // Arrange:
-        var customerByIdSpecification = new CustomerByEmailSpecification("john.doe@email.com");
+        var customerByIdWithBooksSpecification = new CustomerByEmailWithBooksSpecification("john.doe@email.com");
 
         // Act:
-        bool isSatisfiedBy = customerByIdSpecification.IsSatisfiedBy(_customer);
+        bool isSatisfiedBy = customerByIdWithBooksSpecification.IsSatisfiedBy(_customer);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -26,10 +26,10 @@ public sealed class CustomerByEmailSpecificationTests
     public void IsSatisfiedBy_WithNonexistingEmail_ReturnsFalse()
     {
         // Arrange:
-        var customerByIdSpecification = new CustomerByEmailSpecification("john.doe2@email.com");
+        var customerByIdWithBooksSpecification = new CustomerByEmailWithBooksSpecification("john.doe2@email.com");
 
         // Act:
-        bool isSatisfiedBy = customerByIdSpecification.IsSatisfiedBy(_customer);
+        bool isSatisfiedBy = customerByIdWithBooksSpecification.IsSatisfiedBy(_customer);
 
         // Assert:
         Assert.False(isSatisfiedBy);

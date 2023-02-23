@@ -1,8 +1,11 @@
 namespace BookRentalManager.Domain.Specifications;
 
-public sealed class BooksBySearchParameterInBooksFromAuthorSpecification : Specification<Book>
+public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification : Specification<Book>
 {
-    public BooksBySearchParameterInBooksFromAuthorSpecification(IReadOnlyList<Book> books, string searchParameter, string sortParameters)
+    public BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+        IReadOnlyList<Book> books,
+        string searchParameter,
+        string sortParameters)
     {
         string formattedSearchParameter = searchParameter.Trim().ToLower();
         Where = book => books.Contains(book)

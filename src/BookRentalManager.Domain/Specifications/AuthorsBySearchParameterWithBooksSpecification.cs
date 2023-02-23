@@ -1,8 +1,8 @@
 namespace BookRentalManager.Domain.Specifications;
 
-public sealed class AuthorsBySearchParameterSpecification : Specification<Author>
+public sealed class AuthorsBySearchParameterWithBooksSpecification : Specification<Author>
 {
-    public AuthorsBySearchParameterSpecification(string searchParameter, string sortParameters)
+    public AuthorsBySearchParameterWithBooksSpecification(string searchParameter, string sortParameters)
     {
         Where = author => author.FullName.CompleteName.ToLower().Contains(searchParameter.Trim().ToLower());
         IncludeExpressions.Add(author => author.Books);
