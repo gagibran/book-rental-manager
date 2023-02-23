@@ -11,7 +11,33 @@ public sealed class BookController : ApiController
     {
     }
 
-    [HttpGet]
+    [HttpGet("/api/[controller]", Name = nameof(GetBooksByQueryParametersAsync))]
+    public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersAsync(
+        [FromQuery] GetAllItemsQueryParameters queryParameters,
+        CancellationToken cancellationToken)
+    {
+        var getBooksByQueryParametersQuery = new GetBooksByQueryParametersQuery(
+            queryParameters.PageIndex,
+            queryParameters.PageSize,
+            queryParameters.SearchQuery,
+            queryParameters.SortBy);
+        Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
+                getBooksByQueryParametersQuery,
+                cancellationToken);
+        if (!getAllBooksResult.IsSuccess)
+        {
+            _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
+            return CustomHttpErrorResponse(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage, HttpStatusCode.BadRequest);
+        }
+        CreatePagingMetadata(
+            nameof(GetBooksByQueryParametersAsync),
+            queryParameters.SearchQuery,
+            queryParameters.SortBy,
+            getAllBooksResult.Value!);
+        return Ok(getAllBooksResult.Value);
+    }
+
+    [HttpGet(Name = nameof(GetBooksByQueryParametersFromAuthorAsync))]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
         Guid authorId,
         [FromQuery] GetAllItemsQueryParameters queryParameters,

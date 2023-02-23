@@ -11,7 +11,7 @@ public sealed class CustomerController : ApiController
     {
     }
 
-    [HttpGet]
+    [HttpGet(Name = nameof(GetCustomersByQueryParametersAsync))]
     public async Task<ActionResult<PaginatedList<GetCustomerDto>>> GetCustomersByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)

@@ -39,6 +39,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersFromAuthorQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetBookByIdFromAuthorQuery, GetBookDto>, GetBookByIdFromAuthorQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetAuthorByIdQuery, GetAuthorDto>, GetAuthorByIdQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersQueryHandler>();
         return serviceCollection;
     }
 

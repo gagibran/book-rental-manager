@@ -11,7 +11,7 @@ public sealed class AuthorController : ApiController
     {
     }
 
-    [HttpGet]
+    [HttpGet(Name = nameof(GetAuthorsByQueryParametersAsync))]
     public async Task<ActionResult<PaginatedList<GetAuthorDto>>> GetAuthorsByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)

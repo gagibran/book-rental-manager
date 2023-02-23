@@ -68,13 +68,13 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuth
         var customer = TestFixtures.CreateDummyCustomer();
         author.AddBook(book);
         customer.RentBook(book);
-        var booksWithSearchParameterSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+        var booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
             author.Books,
             searchParameter,
             sortParameters);
 
         // Act:
-        bool isSatisfiedBy = booksWithSearchParameterSpecification.IsSatisfiedBy(book);
+        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification.IsSatisfiedBy(book);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -89,13 +89,13 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuth
         var customer = TestFixtures.CreateDummyCustomer();
         author.AddBook(book);
         customer.RentBook(book);
-        var booksWithSearchParameterSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+        var booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
             author.Books,
             searchParameter,
             sortParameters);
 
         // Act:
-        bool isSatisfiedBy = booksWithSearchParameterSpecification.IsSatisfiedBy(book);
+        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification.IsSatisfiedBy(book);
 
         // Assert:
         Assert.False(isSatisfiedBy);
