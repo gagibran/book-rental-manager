@@ -71,4 +71,28 @@ public sealed class CustomerController : ApiController
         }
         return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var deleteCustomerByIdCommand = new DeleteCustomerByIdCommand(id);
+        Result deleteCustomerByIdResult = await _dispatcher.DispatchAsync(deleteCustomerByIdCommand, cancellationToken);
+        if (!deleteCustomerByIdResult.IsSuccess && deleteCustomerByIdResult.ErrorType.Equals("customerId"))
+        {
+            _baseControllerLogger.LogError(deleteCustomerByIdResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                deleteCustomerByIdResult.ErrorType,
+                deleteCustomerByIdResult.ErrorMessage,
+                HttpStatusCode.NotFound);
+        }
+        else if (!deleteCustomerByIdResult.IsSuccess && !deleteCustomerByIdResult.ErrorType.Equals("customerId"))
+        {
+            _baseControllerLogger.LogError(deleteCustomerByIdResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                deleteCustomerByIdResult.ErrorType,
+                deleteCustomerByIdResult.ErrorMessage,
+                HttpStatusCode.UnprocessableEntity);
+        }
+        return NoContent();
+    }
 }

@@ -21,3 +21,5 @@ global using BookRentalManager.Application.Authors.QueryHandlers;
 global using BookRentalManager.Application.Authors.Queries;
 global using BookRentalManager.Application.Authors.CommandHandlers;
 global using BookRentalManager.Application.Authors.Commands;
+global using BookRentalManager.Application.Customers.Commands;
+global using BookRentalManager.Application.Customers.CommandHandlers;

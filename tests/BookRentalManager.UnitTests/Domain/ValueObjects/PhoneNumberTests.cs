@@ -23,7 +23,7 @@ public sealed class PhoneNumberTests
     }
 
     [Fact]
-    public void Create_WithValidData_ReturnSuccess()
+    public void Create_WithValidData_ReturnsSuccess()
     {
         // Act:
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(564, 3345679);
