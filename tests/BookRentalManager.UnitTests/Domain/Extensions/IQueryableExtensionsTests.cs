@@ -109,9 +109,7 @@ public sealed class IQueryableExtensionsTests
             .OrderByPropertyName(propertyNamesSeparatedByComma)
             .ToList();
 
-        // Assert (maybe refactor this using FluentAssertions):
-        Assert.Equal(expectedSortedBooks.ElementAt(0), actualSortedBooks.ElementAt(0));
-        Assert.Equal(expectedSortedBooks.ElementAt(1), actualSortedBooks.ElementAt(1));
-        Assert.Equal(expectedSortedBooks.ElementAt(2), actualSortedBooks.ElementAt(2));
+        // Assert:
+        Assert.True(expectedSortedBooks.SequenceEqual(actualSortedBooks));
     }
 }

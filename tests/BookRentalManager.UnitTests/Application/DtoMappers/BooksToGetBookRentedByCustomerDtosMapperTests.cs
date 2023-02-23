@@ -18,8 +18,9 @@ public sealed class BooksToGetBookRentedByCustomerDtosMapperTests
         IReadOnlyList<GetBookRentedByCustomerDto> getBookRentedByCustomerDtos = booksToGetBookRentedByCustomerDtosMapper.Map(new List<Book> { book });
 
         // Assert (maybe refactor this using FluentAssertions):
-        Assert.Equal(expectedGetBookRentedByCustomerDto.BookTitle, getBookRentedByCustomerDtos.FirstOrDefault()!.BookTitle);
-        Assert.Equal(expectedGetBookRentedByCustomerDto.Edition, getBookRentedByCustomerDtos.FirstOrDefault()!.Edition);
-        Assert.Equal(expectedGetBookRentedByCustomerDto.Isbn, getBookRentedByCustomerDtos.FirstOrDefault()!.Isbn);
+        GetBookRentedByCustomerDto actualGetBookRentedByCustomerDtos = getBookRentedByCustomerDtos.FirstOrDefault()!;
+        Assert.Equal(expectedGetBookRentedByCustomerDto.BookTitle, actualGetBookRentedByCustomerDtos.BookTitle);
+        Assert.Equal(expectedGetBookRentedByCustomerDto.Edition, actualGetBookRentedByCustomerDtos.Edition);
+        Assert.Equal(expectedGetBookRentedByCustomerDto.Isbn, actualGetBookRentedByCustomerDtos.Isbn);
     }
 }
