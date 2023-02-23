@@ -1,10 +1,10 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class AuthorByIdSpecificationTests
+public sealed class AuthorByIdWithBooksSpecificationTests
 {
     private readonly Author _author;
 
-    public AuthorByIdSpecificationTests()
+    public AuthorByIdWithBooksSpecificationTests()
     {
         _author = TestFixtures.CreateDummyAuthor();
     }
@@ -13,7 +13,7 @@ public sealed class AuthorByIdSpecificationTests
     public void IsSatisfiedBy_WithExistingId_ReturnsTrue()
     {
         // Arrange:
-        var authorWithAuthorsByIdSpecification = new AuthorByIdSpecification(_author.Id);
+        var authorWithAuthorsByIdSpecification = new AuthorByIdWithBooksSpecification(_author.Id);
 
         // Act:
         bool isSatisfiedBy = authorWithAuthorsByIdSpecification.IsSatisfiedBy(_author);
@@ -26,7 +26,7 @@ public sealed class AuthorByIdSpecificationTests
     public void IsSatisfiedBy_WithNonexistingId_ReturnsFalse()
     {
         // Arrange:
-        var authorWithAuthorsByIdSpecification = new AuthorByIdSpecification(Guid.NewGuid());
+        var authorWithAuthorsByIdSpecification = new AuthorByIdWithBooksSpecification(Guid.NewGuid());
 
         // Act:
         bool isSatisfiedBy = authorWithAuthorsByIdSpecification.IsSatisfiedBy(_author);

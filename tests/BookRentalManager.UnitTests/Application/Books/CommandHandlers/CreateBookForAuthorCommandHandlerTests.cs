@@ -29,7 +29,7 @@ public sealed class CreateBookForAuthorCommandHandlerTests
             _bookToBookCreatedForAuthorDtoMapperStub.Object);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<AuthorByIdSpecification>(),
+                It.IsAny<AuthorByIdWithBooksSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_author);
         _bookToBookCreatedForAuthorDtoMapperStub
@@ -43,7 +43,7 @@ public sealed class CreateBookForAuthorCommandHandlerTests
         // Arrange:
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<AuthorByIdSpecification>(),
+                It.IsAny<AuthorByIdWithBooksSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Author)null!);
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";

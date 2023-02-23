@@ -19,3 +19,5 @@ global using BookRentalManager.Application.SortParametersMappers;
 global using BookRentalManager.Application.SortParameters;
 global using BookRentalManager.Application.Authors.QueryHandlers;
 global using BookRentalManager.Application.Authors.Queries;
+global using BookRentalManager.Application.Authors.CommandHandlers;
+global using BookRentalManager.Application.Authors.Commands;

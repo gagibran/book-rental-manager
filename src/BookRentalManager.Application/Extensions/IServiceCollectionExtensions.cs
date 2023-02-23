@@ -27,6 +27,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>, CreateCustomerCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>, CreateBookForAuthorCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<CreateAuthorCommand, AuthorCreatedDto>, CreateAuthorCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<UpdateAuthorBooksCommand>, UpdateAuthorBooksCommandHandler>();
         return serviceCollection;
     }
 

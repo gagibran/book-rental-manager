@@ -13,10 +13,10 @@ public sealed class AuthorByFullNameSpecificationTests
     public void IsSatisfiedBy_WithExistingAuthorWithFullName_ReturnsTrue()
     {
         // Arrange:
-        var authorByIdSpecification = new AuthorByFullNameSpecification(_author.FullName.CompleteName);
+        var authorByFullNameSpecification = new AuthorByFullNameSpecification(_author.FullName.CompleteName);
 
         // Act:
-        bool isSatisfiedBy = authorByIdSpecification.IsSatisfiedBy(_author);
+        bool isSatisfiedBy = authorByFullNameSpecification.IsSatisfiedBy(_author);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -26,10 +26,10 @@ public sealed class AuthorByFullNameSpecificationTests
     public void IsSatisfiedBy_WithNonexistingAuthorWithFullName_ReturnsFalse()
     {
         // Arrange:
-        var authorByIdSpecification = new AuthorByFullNameSpecification("Sarah Smith");
+        var authorByFullNameSpecification = new AuthorByFullNameSpecification("Sarah Smith");
 
         // Act:
-        bool isSatisfiedBy = authorByIdSpecification.IsSatisfiedBy(_author);
+        bool isSatisfiedBy = authorByFullNameSpecification.IsSatisfiedBy(_author);
 
         // Assert:
         Assert.False(isSatisfiedBy);

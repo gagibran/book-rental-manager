@@ -68,4 +68,25 @@ public sealed class AuthorController : ApiController
         }
         return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult> AddExistingBooksToAuthor(Guid id, UpdateAuthorBooksDto updateAuthorBooksDto, CancellationToken cancellationToken)
+    {
+        var updateAuthorBooksCommand = new UpdateAuthorBooksCommand(id, updateAuthorBooksDto.BookIds);
+        Result updateAuthorBooksResult = await _dispatcher.DispatchAsync(updateAuthorBooksCommand, cancellationToken);
+        if (!updateAuthorBooksResult.IsSuccess && !updateAuthorBooksResult.ErrorType.Equals("bookIsbn"))
+        {
+            _baseControllerLogger.LogError(updateAuthorBooksResult.ErrorMessage);
+            return CustomHttpErrorResponse(updateAuthorBooksResult.ErrorType, updateAuthorBooksResult.ErrorMessage, HttpStatusCode.NotFound);
+        }
+        else if (!updateAuthorBooksResult.IsSuccess && updateAuthorBooksResult.ErrorType.Equals("bookIsbn"))
+        {
+            _baseControllerLogger.LogError(updateAuthorBooksResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                updateAuthorBooksResult.ErrorType,
+                updateAuthorBooksResult.ErrorMessage,
+                HttpStatusCode.UnprocessableEntity);
+        }
+        return NoContent();
+    }
 }

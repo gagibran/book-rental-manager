@@ -24,8 +24,8 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
         GetBooksByQueryParametersFromAuthorQuery getBooksByQueryParameterFromAuthor,
         CancellationToken cancellationToken)
     {
-        var authorByIdSpecification = new AuthorByIdSpecification(getBooksByQueryParameterFromAuthor.AuthorId);
-        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
+        var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(getBooksByQueryParameterFromAuthor.AuthorId);
+        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification);
         if (author is null)
         {
             return Result.Fail<PaginatedList<GetBookDto>>(

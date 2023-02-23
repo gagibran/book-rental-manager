@@ -20,8 +20,8 @@ public sealed class CreateBookForAuthorCommandHandler : ICommandHandler<CreateBo
         CreateBookForAuthorCommand createBookForAuthorCommand,
         CancellationToken cancellationToken)
     {
-        var authorByIdSpecification = new AuthorByIdSpecification(createBookForAuthorCommand.AuthorId);
-        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
+        var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(createBookForAuthorCommand.AuthorId);
+        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification);
         Result existingAuthorResult = Result.Success();
         if (existingAuthor is null)
         {

@@ -13,6 +13,14 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         _dbSet = bookRentalManagerDbContext.Set<TEntity>();
     }
 
+    public async Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
+        Specification<TEntity> specification,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await ApplySpecification(_dbSet, specification).ToListAsync(cancellationToken);
+        return items.AsReadOnly();
+    }
+
     public async Task<PaginatedList<TEntity>> GetAllBySpecificationAsync(
         int pageIndex,
         int pageSize,

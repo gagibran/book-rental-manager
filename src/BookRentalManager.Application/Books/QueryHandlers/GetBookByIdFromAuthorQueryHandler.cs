@@ -18,8 +18,8 @@ internal sealed class GetBookByIdFromAuthorQueryHandler : IQueryHandler<GetBookB
 
     public async Task<Result<GetBookDto>> HandleAsync(GetBookByIdFromAuthorQuery getBookByIdFromAuthorQuery, CancellationToken cancellationToken)
     {
-        var authorByIdSpecification = new AuthorByIdSpecification(getBookByIdFromAuthorQuery.AuthorId);
-        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdSpecification);
+        var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(getBookByIdFromAuthorQuery.AuthorId);
+        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification);
         if (author is null)
         {
             return Result.Fail<GetBookDto>("authorId", $"No author with the ID of '{getBookByIdFromAuthorQuery.AuthorId}' was found.");

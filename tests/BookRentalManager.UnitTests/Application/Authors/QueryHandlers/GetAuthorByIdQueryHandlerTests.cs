@@ -31,7 +31,7 @@ public sealed class GetAuthorByIdQueryHandlerTests
         // Arrange:
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<AuthorByIdSpecification>(),
+                It.IsAny<AuthorByIdWithBooksSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_author);
 
@@ -51,7 +51,7 @@ public sealed class GetAuthorByIdQueryHandlerTests
         var expectedErrorMessage = $"No author with the ID of '{_author.Id}' was found.";
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<AuthorByIdSpecification>(),
+                It.IsAny<AuthorByIdWithBooksSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Author)null!);
 

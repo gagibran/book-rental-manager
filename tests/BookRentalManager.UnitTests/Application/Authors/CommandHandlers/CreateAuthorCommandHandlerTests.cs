@@ -1,6 +1,3 @@
-using BookRentalManager.Application.Authors.CommandHandlers;
-using BookRentalManager.Application.Authors.Commands;
-
 namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
 
 public sealed class CreateAuthorCommandHandlerTests
