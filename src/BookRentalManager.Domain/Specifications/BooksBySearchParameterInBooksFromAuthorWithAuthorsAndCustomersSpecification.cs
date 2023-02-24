@@ -13,7 +13,8 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuth
                 || book.Edition.EditionNumber.ToString().Contains(formattedSearchParameter)
                 || book.Isbn.IsbnValue.ToLower().Contains(formattedSearchParameter)
                 || book.IsAvailable.ToString().ToLower().Contains(formattedSearchParameter)
-                || book.Customer!.FullName.CompleteName.ToLower().Contains(searchParameter)
+                || book.Customer!.FullName.FirstName.ToLower().Contains(searchParameter)
+                || book.Customer!.FullName.LastName.ToLower().Contains(searchParameter)
                 || book.Customer.Email.EmailAddress.ToLower().Contains(searchParameter));
         IncludeExpressions.Add(book => book.Authors);
         IncludeExpressions.Add(book => book.Customer!);

@@ -5,16 +5,10 @@ public sealed class CustomersBySearchParameterWithBooksSpecification : Specifica
     public CustomersBySearchParameterWithBooksSpecification(string searchParameter, string sortParameters)
     {
         var formattedSearchParameter = searchParameter.ToLower().Trim();
-        var foundCustomerType = (CustomerType?)null;
-        if (Enum.TryParse<CustomerType>(formattedSearchParameter, true, out CustomerType customerType))
-        {
-            foundCustomerType = customerType;
-        }
         Where = customer =>
-            customer.FullName.CompleteName.ToLower().Contains(formattedSearchParameter)
-            || customer.Email.EmailAddress.ToLower().Contains(formattedSearchParameter)
-            || customer.PhoneNumber.CompletePhoneNumber.ToLower().Contains(formattedSearchParameter)
-            || customer.CustomerStatus.CustomerType == foundCustomerType;
+            customer.FullName.FirstName.ToLower().Contains(formattedSearchParameter)
+            || customer.FullName.LastName.ToLower().Contains(formattedSearchParameter)
+            || customer.Email.EmailAddress.ToLower().Contains(formattedSearchParameter);
         IncludeExpressions.Add(customer => customer.Books);
         OrderByPropertyName = sortParameters;
     }

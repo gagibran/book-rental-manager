@@ -17,7 +17,7 @@ internal sealed class CustomerSortParametersMapper : IMapper<CustomerSortParamet
             }
             if (formattedPropertyName.Contains("FullName"))
             {
-                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "FullName.CompleteNameDesc" : "FullName.CompleteName";
+                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "FullName.FirstNameDesc,FullName.LastNameDesc" : "FullName.FirstName,FullName.LastName";
             }
             else if (formattedPropertyName.Contains("Email"))
             {
@@ -25,7 +25,7 @@ internal sealed class CustomerSortParametersMapper : IMapper<CustomerSortParamet
             }
             else if (formattedPropertyName.Contains("PhoneNumber"))
             {
-                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "PhoneNumber.CompletePhoneNumberDesc" : "PhoneNumber.CompletePhoneNumber";
+                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "PhoneNumber.AreaCodeDesc,PhoneNumber.PrefixAndLineNumberDesc" : "PhoneNumber.AreaCode,PhoneNumber.PrefixAndLineNumber";
             }
             else if (formattedPropertyName.Contains("CustomerStatus"))
             {

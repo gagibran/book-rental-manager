@@ -9,8 +9,13 @@ public sealed class AuthorEntityBuilder : IEntityTypeConfiguration<Author>
             .HasKey(author => author.Id);
         authorBuilder
             .OwnsOne(author => author.FullName)
-            .Property(fullName => fullName.CompleteName)
-            .HasColumnName("FullName")
+            .Property(fullName => fullName.FirstName)
+            .HasColumnName("FirstName")
+            .IsRequired();
+        authorBuilder
+            .OwnsOne(author => author.FullName)
+            .Property(fullName => fullName.LastName)
+            .HasColumnName("LastName")
             .IsRequired();
         authorBuilder
             .HasMany(author => author.Books)

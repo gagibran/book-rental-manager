@@ -2,20 +2,19 @@ namespace CustomerRentalManager.UnitTests.Application.SortParametersMappers;
 
 public sealed class CustomerSortParametersMapperTests
 {
-    [Theory]
-    [InlineData("EmailDesc,PhoneNumber,CustomerPointsDesc,CustomerStatusDesc,FullName",
-        "Email.EmailAddressDesc,PhoneNumber.CompletePhoneNumber,CustomerPointsDesc,CustomerStatus.CustomerTypeDesc,FullName.CompleteName")]
-    public void Map_WithInputData_ReturnsExpectedOutputData(string propertyNamesSeparatedByComma, string expectedResult)
+    [Fact]
+    public void Map_WithInputData_ReturnsExpectedOutputData()
     {
         // Arrange:
+        var expectedQuery = "Email.EmailAddressDesc,PhoneNumber.AreaCode,PhoneNumber.PrefixAndLineNumber,CustomerPointsDesc,CustomerStatus.CustomerTypeDesc,FullName.FirstName,FullName.LastName";
         var customerSortParametersMapper = new CustomerSortParametersMapper();
-        var customerSortParameters = new CustomerSortParameters(propertyNamesSeparatedByComma);
+        var customerSortParameters = new CustomerSortParameters("EmailDesc,PhoneNumber,CustomerPointsDesc,CustomerStatusDesc,FullName");
 
         // Act:
         Result<string> actualResult = customerSortParametersMapper.Map(customerSortParameters);
 
         // Assert:
-        Assert.Equal(expectedResult, actualResult.Value);
+        Assert.Equal(expectedQuery, actualResult.Value);
     }
 
     [Theory]

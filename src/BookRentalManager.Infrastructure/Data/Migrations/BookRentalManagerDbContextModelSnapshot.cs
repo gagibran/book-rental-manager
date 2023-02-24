@@ -17,7 +17,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -124,10 +124,15 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                             b1.Property<Guid>("AuthorId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("CompleteName")
+                            b1.Property<string>("FirstName")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("FullName");
+                                .HasColumnName("FirstName");
+
+                            b1.Property<string>("LastName")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("LastName");
 
                             b1.HasKey("AuthorId");
 
@@ -199,10 +204,15 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("CompleteName")
+                            b1.Property<string>("FirstName")
                                 .IsRequired()
                                 .HasColumnType("text")
-                                .HasColumnName("FullName");
+                                .HasColumnName("FirstName");
+
+                            b1.Property<string>("LastName")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("LastName");
 
                             b1.HasKey("CustomerId");
 
@@ -253,11 +263,16 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("CompletePhoneNumber")
-                                .IsRequired()
+                            b1.Property<int>("AreaCode")
                                 .HasMaxLength(12)
-                                .HasColumnType("character(12)")
-                                .HasColumnName("PhoneNumber")
+                                .HasColumnType("integer")
+                                .HasColumnName("AreaCode")
+                                .IsFixedLength();
+
+                            b1.Property<int>("PrefixAndLineNumber")
+                                .HasMaxLength(12)
+                                .HasColumnType("integer")
+                                .HasColumnName("PrefixAndLineNumber")
                                 .IsFixedLength();
 
                             b1.HasKey("CustomerId");

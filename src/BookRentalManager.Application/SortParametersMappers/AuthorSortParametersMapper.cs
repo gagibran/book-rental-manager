@@ -17,7 +17,7 @@ internal sealed class AuthorSortParametersMapper : IMapper<AuthorSortParameters,
             }
             if (formattedPropertyName.Contains("FullName"))
             {
-                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "FullName.CompleteNameDesc" : "FullName.CompleteName";
+                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "FullName.FirstNameDesc,FullName.LastNameDesc" : "FullName.FirstName,FullName.LastName";
             }
             convertedPropertyNamesSeparatedByComma += formattedPropertyName + ",";
         }

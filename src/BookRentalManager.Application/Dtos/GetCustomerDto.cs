@@ -20,9 +20,9 @@ public sealed class GetCustomerDto
         int customerPoints)
     {
         Id = id;
-        FullName = fullName.CompleteName;
+        FullName = fullName.GetFullName();
         Email = email.EmailAddress;
-        PhoneNumber = phoneNumber.CompletePhoneNumber;
+        PhoneNumber = phoneNumber.GetCompletePhoneNumber();
         Books = books;
         CustomerStatus = customerStatus.CustomerType.ToString();
         CustomerPoints = customerPoints;

@@ -28,7 +28,7 @@ public sealed class CreateAuthorCommandHandlerTests
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_author);
-        var expectedErrorMessage = $"An author named '{_author.FullName.CompleteName}' already exists.";
+        var expectedErrorMessage = $"An author named '{_author.FullName.GetFullName()}' already exists.";
 
         // Act:
         Result handleResult = await _createAuthorCommandHandler.HandleAsync(_createAuthorCommand, default);
@@ -41,7 +41,7 @@ public sealed class CreateAuthorCommandHandlerTests
     public async Task HandleAsync_WithNonexistingAuthor_ReturnsSuccess()
     {
         // Arrange:
-        var expectedAuthorCreatedDto = new AuthorCreatedDto(_author.Id, _author.FullName.CompleteName);
+        var expectedAuthorCreatedDto = new AuthorCreatedDto(_author.Id, _author.FullName.FirstName, _author.FullName.LastName);
         _authorToAuthorCreatedDtoMapperStub
             .Setup(authorToAuthorCreatedDtoMapper => authorToAuthorCreatedDtoMapper.Map(It.IsAny<Author>()))
             .Returns(expectedAuthorCreatedDto);
@@ -51,6 +51,7 @@ public sealed class CreateAuthorCommandHandlerTests
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedAuthorCreatedDto.Id, handleResult.Value!.Id);
-        Assert.Equal(expectedAuthorCreatedDto.FullName, handleResult.Value!.FullName);
+        Assert.Equal(expectedAuthorCreatedDto.FirstName, handleResult.Value!.FirstName);
+        Assert.Equal(expectedAuthorCreatedDto.LastName, handleResult.Value!.LastName);
     }
 }

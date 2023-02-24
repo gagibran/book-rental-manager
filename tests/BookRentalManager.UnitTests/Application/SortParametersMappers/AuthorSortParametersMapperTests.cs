@@ -3,10 +3,10 @@ namespace BookRentalManager.UnitTests.Application.SortParametersMappers;
 public sealed class AuthorSortParametersMapperTests
 {
     [Theory]
-    [InlineData("FullName", "FullName.CompleteName")]
-    [InlineData("FullNameDesc", "FullName.CompleteNameDesc")]
-    [InlineData("FullNameDesc,CreatedAt", "FullName.CompleteNameDesc,CreatedAt")]
-    [InlineData("CreatedAtDesc,FullNameDesc", "CreatedAtDesc,FullName.CompleteNameDesc")]
+    [InlineData("FullName", "FullName.FirstName,FullName.LastName")]
+    [InlineData("FullNameDesc", "FullName.FirstNameDesc,FullName.LastNameDesc")]
+    [InlineData("FullNameDesc,CreatedAt", "FullName.FirstNameDesc,FullName.LastNameDesc,CreatedAt")]
+    [InlineData("CreatedAtDesc,FullNameDesc", "CreatedAtDesc,FullName.FirstNameDesc,FullName.LastNameDesc")]
     public void Map_WithValidInputData_ReturnsSuccessWithExpectedOutputData(string propertyNamesSeparatedByComma, string expectedResult)
     {
         // Arrange:

@@ -11,8 +11,13 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .HasKey(customer => customer.Id);
         customerBuilder
             .OwnsOne(customer => customer.FullName)
-            .Property(fullName => fullName.CompleteName)
-            .HasColumnName("FullName")
+            .Property(fullName => fullName.FirstName)
+            .HasColumnName("FirstName")
+            .IsRequired();
+        customerBuilder
+            .OwnsOne(customer => customer.FullName)
+            .Property(fullName => fullName.LastName)
+            .HasColumnName("LastName")
             .IsRequired();
         customerBuilder
             .OwnsOne(customer => customer.Email)
@@ -21,8 +26,15 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .IsRequired();
         customerBuilder
             .OwnsOne(customer => customer.PhoneNumber)
-            .Property(phoneNumber => phoneNumber.CompletePhoneNumber)
-            .HasColumnName("PhoneNumber")
+            .Property(phoneNumber => phoneNumber.AreaCode)
+            .HasColumnName("AreaCode")
+            .HasMaxLength(12)
+            .IsFixedLength()
+            .IsRequired();
+        customerBuilder
+            .OwnsOne(customer => customer.PhoneNumber)
+            .Property(phoneNumber => phoneNumber.PrefixAndLineNumber)
+            .HasColumnName("PrefixAndLineNumber")
             .HasMaxLength(12)
             .IsFixedLength()
             .IsRequired();
@@ -35,8 +47,7 @@ public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
             .HasColumnName("CustomerStatus")
             .HasConversion(
                 customerType => customerType.ToString(),
-                customerType => (CustomerType)Enum.Parse(typeof(CustomerType), customerType)
-            )
+                customerType => (CustomerType)Enum.Parse(typeof(CustomerType), customerType))
             .IsRequired();
         customerBuilder
             .Property(customer => customer.CustomerPoints)

@@ -7,16 +7,17 @@ public sealed class PhoneNumber : ValueObject
     private const int MinPrefixAndLineNumber = 2_000_000;
     private const int MaxPrefixAndLineNumber = 9_999_999;
 
-    public string CompletePhoneNumber { get; }
+    public int AreaCode { get; }
+    public int PrefixAndLineNumber { get; }
 
     private PhoneNumber()
     {
-        CompletePhoneNumber = string.Empty;
     }
 
     private PhoneNumber(int areaCode, int prefixAndLineNumber)
     {
-        CompletePhoneNumber = $"+1{areaCode}{prefixAndLineNumber}";
+        AreaCode = areaCode;
+        PrefixAndLineNumber = prefixAndLineNumber;
     }
 
     public static Result<PhoneNumber> Create(int areaCode, int prefixAndLineNumber)
@@ -37,8 +38,14 @@ public sealed class PhoneNumber : ValueObject
         return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, prefixAndLineNumber));
     }
 
+    public string GetCompletePhoneNumber()
+    {
+        return $"+1{AreaCode}{PrefixAndLineNumber}";
+    }
+
     public override IEnumerable<object> GetEqualityComponents()
     {
-        yield return CompletePhoneNumber;
+        yield return AreaCode;
+        yield return PrefixAndLineNumber;
     }
 }

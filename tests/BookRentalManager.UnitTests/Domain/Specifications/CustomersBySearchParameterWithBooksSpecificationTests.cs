@@ -6,7 +6,7 @@ public sealed class CustomersBySearchParameterWithBooksSpecificationTests
     {
         yield return new object[]
         {
-            "20020000",
+            "jOhn",
             string.Empty,
             TestFixtures.CreateDummyCustomer(),
         };

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedInitialTables : Migration
+    public partial class AddedFirstTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FullName = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -29,9 +30,11 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FullName = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "character(12)", fixedLength: true, maxLength: 12, nullable: false),
+                    AreaCode = table.Column<int>(type: "integer", fixedLength: true, maxLength: 12, nullable: false),
+                    PrefixAndLineNumber = table.Column<int>(type: "integer", fixedLength: true, maxLength: 12, nullable: false),
                     CustomerStatus = table.Column<string>(type: "text", nullable: false),
                     CustomerPoints = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)

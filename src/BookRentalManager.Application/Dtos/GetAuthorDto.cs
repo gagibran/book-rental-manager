@@ -9,7 +9,7 @@ public sealed class GetAuthorDto
     public GetAuthorDto(Guid id, FullName fullName, IReadOnlyList<GetBookFromAuthorDto> books)
     {
         Id = id;
-        FullName = fullName.CompleteName;
+        FullName = fullName.GetFullName();
         Books = books;
     }
 }

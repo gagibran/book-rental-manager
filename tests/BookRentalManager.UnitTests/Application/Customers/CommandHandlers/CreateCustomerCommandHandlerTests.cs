@@ -16,9 +16,11 @@ public sealed class CreateCustomerCommandHandlerTests
         _createCustomerCommand = new("John", "Doe", "john.doe@email.com", new PhoneNumberDto(200, 2_000_000));
         _customerCreatedDto = new(
             customer.Id,
-            customer.FullName.CompleteName,
+            customer.FullName.FirstName,
+            customer.FullName.LastName,
             customer.Email.EmailAddress,
-            customer.PhoneNumber.CompletePhoneNumber,
+            customer.PhoneNumber.AreaCode,
+            customer.PhoneNumber.PrefixAndLineNumber,
             customer.CustomerStatus.CustomerType.ToString(),
             customer.CustomerPoints);
         _createCustomerCommandHandler = new(_customerRepositoryStub.Object, _customerToCustomerCreatedDtoMapperStub.Object);

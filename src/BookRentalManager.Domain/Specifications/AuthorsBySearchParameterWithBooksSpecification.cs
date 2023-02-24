@@ -4,7 +4,9 @@ public sealed class AuthorsBySearchParameterWithBooksSpecification : Specificati
 {
     public AuthorsBySearchParameterWithBooksSpecification(string searchParameter, string sortParameters)
     {
-        Where = author => author.FullName.CompleteName.ToLower().Contains(searchParameter.Trim().ToLower());
+        var formattedSearchParameters = searchParameter.Trim().ToLower();
+        Where = author => author.FullName.FirstName.ToLower().Contains(formattedSearchParameters)
+            || author.FullName.LastName.ToLower().Contains(formattedSearchParameters);
         IncludeExpressions.Add(author => author.Books);
         OrderByPropertyName = sortParameters;
     }

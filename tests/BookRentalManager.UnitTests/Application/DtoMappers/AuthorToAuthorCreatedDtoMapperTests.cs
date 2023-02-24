@@ -7,7 +7,7 @@ public sealed class AuthorToAuthorCreatedDtoMapperTests
     {
         // Arrange:
         Author author = TestFixtures.CreateDummyAuthor();
-        var expectedAuthorCreatedDto = new AuthorCreatedDto(author.Id, author.FullName.CompleteName);
+        var expectedAuthorCreatedDto = new AuthorCreatedDto(author.Id, author.FullName.FirstName, author.FullName.LastName);
         var authorsToGetAuthorFromBookDtosMapper = new AuthorToAuthorCreatedDtoMapper();
 
         // Act:
@@ -15,6 +15,7 @@ public sealed class AuthorToAuthorCreatedDtoMapperTests
 
         // Assert (maybe refactor this using FluentAssertions):
         Assert.Equal(expectedAuthorCreatedDto.Id, actualAuthorCreatedDto.Id);
-        Assert.Equal(expectedAuthorCreatedDto.FullName, actualAuthorCreatedDto.FullName);
+        Assert.Equal(expectedAuthorCreatedDto.FirstName, actualAuthorCreatedDto.FirstName);
+        Assert.Equal(expectedAuthorCreatedDto.LastName, actualAuthorCreatedDto.LastName);
     }
 }

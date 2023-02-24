@@ -12,7 +12,7 @@ public sealed class AuthorsBySearchParameterWithBooksSpecificationTests
         };
         yield return new object[]
         {
-            "sarah smith",
+            "sarah",
             string.Empty,
             new Author(FullName.Create("Sarah", "Smith").Value!)
         };

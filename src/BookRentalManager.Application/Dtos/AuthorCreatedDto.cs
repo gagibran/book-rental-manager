@@ -4,11 +4,13 @@ public sealed class AuthorCreatedDto
 {
     public Guid Id { get; }
 
-    public string FullName { get; }
+    public string FirstName { get; }
+    public string LastName { get; }
 
-    public AuthorCreatedDto(Guid id, string fullName)
+    public AuthorCreatedDto(Guid id, string firstName, string lastName)
     {
         Id = id;
-        FullName = fullName;
+        FirstName = firstName;
+        LastName = lastName;
     }
 }

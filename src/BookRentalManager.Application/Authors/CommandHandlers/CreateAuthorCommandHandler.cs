@@ -17,15 +17,14 @@ internal sealed class CreateAuthorCommandHandler : ICommandHandler<CreateAuthorC
         CreateAuthorCommand createAuthorCommand,
         CancellationToken cancellationToken)
     {
-        FullName authorFullName = FullName.Create(createAuthorCommand.FirstName, createAuthorCommand.LastName).Value!;
-        var authorByFullNameSpecification = new AuthorByFullNameSpecification(authorFullName.CompleteName);
+        var authorByFullNameSpecification = new AuthorByFullNameSpecification(createAuthorCommand.FirstName, createAuthorCommand.LastName);
         Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification);
         Result existingAuthorResult = Result.Success();
         if (existingAuthor is not null)
         {
             existingAuthorResult = Result.Fail(
                 "authorAlreadyExists",
-                $"An author named '{existingAuthor.FullName.CompleteName}' already exists.");
+                $"An author named '{existingAuthor.FullName.GetFullName()}' already exists.");
         }
         Result<FullName> authorFullNameResult = FullName.Create(createAuthorCommand.FirstName, createAuthorCommand.LastName);
         Result combinedResults = Result.Combine(existingAuthorResult, authorFullNameResult);

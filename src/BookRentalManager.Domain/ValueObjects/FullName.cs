@@ -2,16 +2,19 @@ namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class FullName : ValueObject
 {
-    public string CompleteName { get; }
+    public string FirstName { get; }
+    public string LastName { get; }
 
     private FullName()
     {
-        CompleteName = string.Empty;
+        FirstName = default!;
+        LastName = default!;
     }
 
-    private FullName(string completeName)
+    private FullName(string firstName, string lastName)
     {
-        CompleteName = completeName;
+        FirstName = firstName;
+        LastName = lastName;
     }
 
     public static Result<FullName> Create(string firstName, string lastName)
@@ -29,11 +32,17 @@ public sealed class FullName : ValueObject
         {
             return Result.Fail<FullName>(finalResult.ErrorType, finalResult.ErrorMessage);
         }
-        return Result.Success<FullName>(new FullName(firstName.Trim() + " " + lastName.Trim()));
+        return Result.Success<FullName>(new FullName(firstName.Trim(), lastName.Trim()));
+    }
+
+    public string GetFullName()
+    {
+        return FirstName + " " + LastName;
     }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
-        yield return CompleteName;
+        yield return FirstName;
+        yield return LastName;
     }
 }
