@@ -1,5 +1,6 @@
 using BookRentalManager.Application.Customers.Commands;
 using BookRentalManager.Application.Customers.Queries;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace BookRentalManager.Api.Controllers;
 
@@ -70,6 +71,33 @@ public sealed class CustomerController : ApiController
                 HttpStatusCode.UnprocessableEntity);
         }
         return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
+    }
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult> PatchCustomerNameAndPhoneNumberAsync(
+        Guid id,
+        JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> patchCustomerNameAndPhoneNumberDtoPatchDocument,
+        CancellationToken cancellationToken)
+    {
+        var patchCustomerNameAndPhoneNumberCommand = new PatchCustomerNameAndPhoneNumberCommand(id, patchCustomerNameAndPhoneNumberDtoPatchDocument);
+        Result patchCustomerNameAndPhoneNumberResult = await _dispatcher.DispatchAsync(patchCustomerNameAndPhoneNumberCommand, cancellationToken);
+        if (!patchCustomerNameAndPhoneNumberResult.IsSuccess && patchCustomerNameAndPhoneNumberResult.ErrorType.Equals("customerId"))
+        {
+            _baseControllerLogger.LogError(patchCustomerNameAndPhoneNumberResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                patchCustomerNameAndPhoneNumberResult.ErrorType,
+                patchCustomerNameAndPhoneNumberResult.ErrorMessage,
+                HttpStatusCode.NotFound);
+        }
+        else if (!patchCustomerNameAndPhoneNumberResult.IsSuccess && !patchCustomerNameAndPhoneNumberResult.ErrorType.Equals("customerId"))
+        {
+            _baseControllerLogger.LogError(patchCustomerNameAndPhoneNumberResult.ErrorMessage);
+            return CustomHttpErrorResponse(
+                patchCustomerNameAndPhoneNumberResult.ErrorType,
+                patchCustomerNameAndPhoneNumberResult.ErrorMessage,
+                HttpStatusCode.BadRequest);
+        }
+        return NoContent();
     }
 
     [HttpDelete("{id}")]

@@ -29,6 +29,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<ICommandHandler<CreateAuthorCommand, AuthorCreatedDto>, CreateAuthorCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<UpdateAuthorBooksCommand>, UpdateAuthorBooksCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteCustomerByIdCommand>, DeleteCustomerByIdCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<PatchCustomerNameAndPhoneNumberCommand>, PatchCustomerNameAndPhoneNumberCommandHandler>();
         return serviceCollection;
     }
 
@@ -56,6 +57,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddTransient<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>, AuthorsToGetAuthorFromBookDtosMapper>();
         serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerToCustomerCreatedDtoMapper>();
         serviceCollection.AddTransient<IMapper<Author, AuthorCreatedDto>, AuthorToAuthorCreatedDtoMapper>();
+        serviceCollection.AddTransient<IMapper<Customer, PatchCustomerNameAndPhoneNumberDto>, CustomerToPatchCustomerNameAndPhoneNumberDtoMapper>();
         return serviceCollection;
     }
 

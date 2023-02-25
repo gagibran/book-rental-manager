@@ -23,3 +23,6 @@ global using BookRentalManager.Application.Authors.CommandHandlers;
 global using BookRentalManager.Application.Authors.Commands;
 global using BookRentalManager.Application.Customers.Commands;
 global using BookRentalManager.Application.Customers.CommandHandlers;
+global using Microsoft.AspNetCore.JsonPatch;
+global using Microsoft.AspNetCore.JsonPatch.Operations;
+global using Newtonsoft.Json.Serialization;

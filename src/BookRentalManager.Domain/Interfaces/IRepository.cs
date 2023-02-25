@@ -7,11 +7,11 @@ public interface IRepository<TEntity> where TEntity : Entity
         int pageIndex,
         int pageSize,
         Specification<TEntity> specification,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
     Task<TEntity?> GetFirstOrDefaultBySpecificationAsync(Specification<TEntity> specification, CancellationToken cancellationToken = default);
-    Task CreateAsync(TEntity entity, CancellationToken cancellationToken);
-    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken);
-    Task DeleteAsync(TEntity entity, CancellationToken cancellationToken);
-    Task SaveAsync(CancellationToken cancellationToken);
+    Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task SaveAsync(CancellationToken cancellationToken = default);
     IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification);
 }
