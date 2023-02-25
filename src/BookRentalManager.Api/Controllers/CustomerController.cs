@@ -13,6 +13,7 @@ public sealed class CustomerController : ApiController
     }
 
     [HttpGet(Name = nameof(GetCustomersByQueryParametersAsync))]
+    [HttpHead]
     public async Task<ActionResult<PaginatedList<GetCustomerDto>>> GetCustomersByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
@@ -42,6 +43,7 @@ public sealed class CustomerController : ApiController
     }
 
     [HttpGet("{id}")]
+    [HttpHead("{id}")]
     [ActionName(nameof(GetCustomerByIdAsync))]
     public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -122,5 +124,12 @@ public sealed class CustomerController : ApiController
                 HttpStatusCode.UnprocessableEntity);
         }
         return NoContent();
+    }
+
+    [HttpOptions]
+    public ActionResult GetCustomerOptions()
+    {
+        Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
+        return Ok();
     }
 }
