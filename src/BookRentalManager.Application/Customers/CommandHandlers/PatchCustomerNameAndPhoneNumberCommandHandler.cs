@@ -24,7 +24,10 @@ internal sealed class PatchCustomerNameAndPhoneNumberCommandHandler : ICommandHa
             return Result.Fail("customerId", $"No customer with the ID of '{patchCustomerNameAndPhoneNumberCommand.Id}' was found.");
         }
         PatchCustomerNameAndPhoneNumberDto patchCustomerNameAndPhoneNumberDto = _customerToPatchCustomerNameAndPhoneNumberDtoMapper.Map(customer);
-        Result patchAppliedResult = JsonPatchDocumentExtensions.ApplyTo(patchCustomerNameAndPhoneNumberCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument, patchCustomerNameAndPhoneNumberDto);
+        Result patchAppliedResult = JsonPatchDocumentExtensions.ApplyTo(
+            patchCustomerNameAndPhoneNumberCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument,
+            patchCustomerNameAndPhoneNumberDto,
+            new string[] { "add", "remove" });
         Result<FullName> fullNameResult = FullName.Create(patchCustomerNameAndPhoneNumberDto.FirstName, patchCustomerNameAndPhoneNumberDto.LastName);
         Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
             patchCustomerNameAndPhoneNumberDto.AreaCode,

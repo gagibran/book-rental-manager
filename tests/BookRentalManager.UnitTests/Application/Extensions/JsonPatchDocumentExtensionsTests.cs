@@ -19,8 +19,10 @@ public sealed class JsonPatchDocumentExtensionsTests
     [Theory]
     [InlineData("nonexistingOperation", "/areaCode", "Invalid JsonPatch operation 'nonexistingOperation'.")]
     [InlineData("replace", "/nonexistingPath", "The target location specified by path segment 'nonexistingPath' was not found.")]
-    [InlineData(" ", "/areaCode", "'Operation' cannot be empty.")]
-    [InlineData("replace", "", "'Path' cannot be empty.")]
+    [InlineData(" ", "/areaCode", "'operation' cannot be empty.")]
+    [InlineData("replace", "", "'path' cannot be empty.")]
+    [InlineData("add", "/areaCode", "'add' operation not allowed in this context.")]
+    [InlineData("remove", "/areaCode", "'remove' operation not allowed in this context.")]
     public void ApplyToResult_WithIncorrectOperationOrPath_ReturnsErrorMessage(string operation, string path, string expectedErrorMessage)
     {
         // Arrange:
@@ -33,7 +35,10 @@ public sealed class JsonPatchDocumentExtensionsTests
             new DefaultContractResolver());
 
         // Act:
-        Result applyToResult = JsonPatchDocumentExtensions.ApplyTo(patchCustomerNameAndPhoneNumberDtoJsonPatchDocument, _patchCustomerNameAndPhoneNumberDto);
+        Result applyToResult = JsonPatchDocumentExtensions.ApplyTo(
+            patchCustomerNameAndPhoneNumberDtoJsonPatchDocument,
+            _patchCustomerNameAndPhoneNumberDto,
+            new string[] { "add", "remove" });
 
         // Assert:
         Assert.Equal(expectedErrorMessage, applyToResult.ErrorMessage);
