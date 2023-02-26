@@ -12,6 +12,7 @@ public sealed class BookController : ApiController
     }
 
     [HttpGet("/api/[controller]", Name = nameof(GetBooksByQueryParametersAsync))]
+    [HttpHead("/api/[controller]")]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
@@ -38,6 +39,7 @@ public sealed class BookController : ApiController
     }
 
     [HttpGet(Name = nameof(GetBooksByQueryParametersFromAuthorAsync))]
+    [HttpHead]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
         Guid authorId,
         [FromQuery] GetAllItemsQueryParameters queryParameters,
@@ -71,6 +73,7 @@ public sealed class BookController : ApiController
     }
 
     [HttpGet("{id}")]
+    [HttpHead("{id}")]
     [ActionName(nameof(GetBookByIdFromAuthorAsync))]
     public async Task<ActionResult<GetBookDto>> GetBookByIdFromAuthorAsync(
         Guid authorId,
