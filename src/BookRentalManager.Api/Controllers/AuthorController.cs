@@ -71,22 +71,25 @@ public sealed class AuthorController : ApiController
         return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult> AddExistingBooksToAuthor(Guid id, UpdateAuthorBooksDto updateAuthorBooksDto, CancellationToken cancellationToken)
+    [HttpPatch("{id}")]
+    public async Task<ActionResult> AddExistingBooksToAuthor(
+        Guid id,
+        JsonPatchDocument<PatchAuthorBooksDto> patchAuthorBooksDtoPatchDocument,
+        CancellationToken cancellationToken)
     {
-        var updateAuthorBooksCommand = new UpdateAuthorBooksCommand(id, updateAuthorBooksDto.BookIds);
-        Result updateAuthorBooksResult = await _dispatcher.DispatchAsync(updateAuthorBooksCommand, cancellationToken);
-        if (!updateAuthorBooksResult.IsSuccess && !updateAuthorBooksResult.ErrorType.Equals("bookIsbn"))
+        var patchAuthorBooksCommand = new PatchAuthorBooksCommand(id, patchAuthorBooksDtoPatchDocument);
+        Result patchAuthorBooksResult = await _dispatcher.DispatchAsync(patchAuthorBooksCommand, cancellationToken);
+        if (!patchAuthorBooksResult.IsSuccess && !patchAuthorBooksResult.ErrorType.Equals("bookIsbn"))
         {
-            _baseControllerLogger.LogError(updateAuthorBooksResult.ErrorMessage);
-            return CustomHttpErrorResponse(updateAuthorBooksResult.ErrorType, updateAuthorBooksResult.ErrorMessage, HttpStatusCode.NotFound);
+            _baseControllerLogger.LogError(patchAuthorBooksResult.ErrorMessage);
+            return CustomHttpErrorResponse(patchAuthorBooksResult.ErrorType, patchAuthorBooksResult.ErrorMessage, HttpStatusCode.NotFound);
         }
-        else if (!updateAuthorBooksResult.IsSuccess && updateAuthorBooksResult.ErrorType.Equals("bookIsbn"))
+        else if (!patchAuthorBooksResult.IsSuccess && patchAuthorBooksResult.ErrorType.Equals("bookIsbn"))
         {
-            _baseControllerLogger.LogError(updateAuthorBooksResult.ErrorMessage);
+            _baseControllerLogger.LogError(patchAuthorBooksResult.ErrorMessage);
             return CustomHttpErrorResponse(
-                updateAuthorBooksResult.ErrorType,
-                updateAuthorBooksResult.ErrorMessage,
+                patchAuthorBooksResult.ErrorType,
+                patchAuthorBooksResult.ErrorMessage,
                 HttpStatusCode.UnprocessableEntity);
         }
         return NoContent();

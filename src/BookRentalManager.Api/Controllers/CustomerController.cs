@@ -1,6 +1,5 @@
 using BookRentalManager.Application.Customers.Commands;
 using BookRentalManager.Application.Customers.Queries;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace BookRentalManager.Api.Controllers;
 

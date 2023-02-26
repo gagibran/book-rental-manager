@@ -1,5 +1,3 @@
-using BookRentalManager.Application.Extensions;
-
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
 internal sealed class PatchCustomerNameAndPhoneNumberCommandHandler : ICommandHandler<PatchCustomerNameAndPhoneNumberCommand>

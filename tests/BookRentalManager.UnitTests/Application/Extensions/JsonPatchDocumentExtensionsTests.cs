@@ -45,6 +45,28 @@ public sealed class JsonPatchDocumentExtensionsTests
     }
 
     [Fact]
+    public void ApplyToResult_WithNullValue_ReturnsErrorMessage()
+    {
+        // Arrange:
+        var expectedErrorMessage = "'value' cannot be empty.";
+        var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
+        {
+            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", "/areaCode", It.IsAny<string>(), null)
+        };
+        var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
+            operations,
+            new DefaultContractResolver());
+
+        // Act:
+        Result applyToResult = JsonPatchDocumentExtensions.ApplyTo(
+            patchCustomerNameAndPhoneNumberDtoJsonPatchDocument,
+            _patchCustomerNameAndPhoneNumberDto);
+
+        // Assert:
+        Assert.Equal(expectedErrorMessage, applyToResult.ErrorMessage);
+    }
+
+    [Fact]
     public void ApplyToResult_WithValidOperationOrPath_ReturnsSuccess()
     {
         // Arrange:

@@ -19,6 +19,10 @@ public static class JsonPatchDocumentExtensions
             {
                 return Result.Fail("jsonPatch", "'path' cannot be empty.");
             }
+            if (operation.value is null)
+            {
+                return Result.Fail("jsonPatch", "'value' cannot be empty.");
+            }
             if (operationsToExclude is not null && operationsToExclude.Contains(operation.op))
             {
                 return Result.Fail("jsonPatch", $"'{operation.op}' operation not allowed in this context.");
