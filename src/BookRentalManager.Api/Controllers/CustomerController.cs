@@ -27,11 +27,7 @@ public sealed class CustomerController : ApiController
             cancellationToken);
         if (!getAllCustomersResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getAllCustomersResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                getAllCustomersResult.ErrorType,
-                getAllCustomersResult.ErrorMessage,
-                HttpStatusCode.BadRequest);
+            return HandleError(getAllCustomersResult);
         }
         CreatePagingMetadata(
             nameof(GetCustomersByQueryParametersAsync),
@@ -51,8 +47,7 @@ public sealed class CustomerController : ApiController
             cancellationToken);
         if (!getCustomerByIdResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getCustomerByIdResult.ErrorMessage);
-            return CustomHttpErrorResponse(getCustomerByIdResult.ErrorType, getCustomerByIdResult.ErrorMessage, HttpStatusCode.NotFound);
+            return HandleError(getCustomerByIdResult);
         }
         return Ok(getCustomerByIdResult.Value);
     }
@@ -65,11 +60,7 @@ public sealed class CustomerController : ApiController
             cancellationToken);
         if (!createCustomerResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(createCustomerResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                createCustomerResult.ErrorType,
-                createCustomerResult.ErrorMessage,
-                HttpStatusCode.UnprocessableEntity);
+            return HandleError(createCustomerResult);
         }
         return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
@@ -82,21 +73,24 @@ public sealed class CustomerController : ApiController
     {
         var patchCustomerNameAndPhoneNumberCommand = new PatchCustomerNameAndPhoneNumberCommand(id, patchCustomerNameAndPhoneNumberDtoPatchDocument);
         Result patchCustomerNameAndPhoneNumberResult = await _dispatcher.DispatchAsync(patchCustomerNameAndPhoneNumberCommand, cancellationToken);
-        if (!patchCustomerNameAndPhoneNumberResult.IsSuccess && patchCustomerNameAndPhoneNumberResult.ErrorType.Equals("customerId"))
+        if (!patchCustomerNameAndPhoneNumberResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(patchCustomerNameAndPhoneNumberResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                patchCustomerNameAndPhoneNumberResult.ErrorType,
-                patchCustomerNameAndPhoneNumberResult.ErrorMessage,
-                HttpStatusCode.NotFound);
+            return HandleError(patchCustomerNameAndPhoneNumberResult);
         }
-        else if (!patchCustomerNameAndPhoneNumberResult.IsSuccess && !patchCustomerNameAndPhoneNumberResult.ErrorType.Equals("customerId"))
+        return NoContent();
+    }
+
+    [HttpPatch("{id}/returnBooks")]
+    public async Task<ActionResult> ReturnBooksByBookIds(
+        Guid id,
+        JsonPatchDocument<ReturnCustomerBookByIdDto> returnCustomerBookByIdDtoPatchDocument,
+        CancellationToken cancellationToken)
+    {
+        var returnBooksByBookIdsCommand = new ReturnBooksByBookIdsCommand(id, returnCustomerBookByIdDtoPatchDocument);
+        Result returnBookByBookIdResult = await _dispatcher.DispatchAsync(returnBooksByBookIdsCommand, cancellationToken);
+        if (!returnBookByBookIdResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(patchCustomerNameAndPhoneNumberResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                patchCustomerNameAndPhoneNumberResult.ErrorType,
-                patchCustomerNameAndPhoneNumberResult.ErrorMessage,
-                HttpStatusCode.BadRequest);
+            return HandleError(returnBookByBookIdResult);
         }
         return NoContent();
     }
@@ -106,21 +100,9 @@ public sealed class CustomerController : ApiController
     {
         var deleteCustomerByIdCommand = new DeleteCustomerByIdCommand(id);
         Result deleteCustomerByIdResult = await _dispatcher.DispatchAsync(deleteCustomerByIdCommand, cancellationToken);
-        if (!deleteCustomerByIdResult.IsSuccess && deleteCustomerByIdResult.ErrorType.Equals("customerId"))
+        if (!deleteCustomerByIdResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(deleteCustomerByIdResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                deleteCustomerByIdResult.ErrorType,
-                deleteCustomerByIdResult.ErrorMessage,
-                HttpStatusCode.NotFound);
-        }
-        else if (!deleteCustomerByIdResult.IsSuccess && !deleteCustomerByIdResult.ErrorType.Equals("customerId"))
-        {
-            _baseControllerLogger.LogError(deleteCustomerByIdResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                deleteCustomerByIdResult.ErrorType,
-                deleteCustomerByIdResult.ErrorMessage,
-                HttpStatusCode.UnprocessableEntity);
+            return HandleError(deleteCustomerByIdResult);
         }
         return NoContent();
     }
@@ -130,5 +112,27 @@ public sealed class CustomerController : ApiController
     {
         Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
         return Ok();
+    }
+
+    [HttpOptions("{id}/returnBooks")]
+    public ActionResult GetCustomerReturnBooksOptions()
+    {
+        Response.Headers.Add("Allow", "PATCH, OPTIONS");
+        return Ok();
+    }
+
+    protected override ActionResult HandleError(Result result)
+    {
+        _baseControllerLogger.LogError(result.ErrorMessage);
+        switch (result.ErrorType)
+        {
+            case "customerId":
+            case "bookIds":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
+            case "jsonPatch":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
+            default:
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
+        }
     }
 }

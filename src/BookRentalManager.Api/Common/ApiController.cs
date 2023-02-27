@@ -70,9 +70,11 @@ public abstract class ApiController : ControllerBase
         Response.Headers.Add("X-Pagination", serializedMetadata);
     }
 
-    protected virtual ActionResult CustomHttpErrorResponse(string errorTypes, string errorMessages, HttpStatusCode httpStatusCode)
+    protected ActionResult CustomHttpErrorResponse(string errorTypes, string errorMessages, HttpStatusCode httpStatusCode)
     {
         AddErrorsToModelError(errorTypes, errorMessages);
         return ValidationProblem(modelStateDictionary: ModelState, statusCode: (int)httpStatusCode);
     }
+
+    protected abstract ActionResult HandleError(Result result);
 }

@@ -92,7 +92,7 @@ public sealed class CustomerTests
     public void ReturnBook_WithNonexistingBook_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = "You don't have the book 'Domain-Driven Design: Tackling Complexity in the Heart of Software'.";
+        var expectedErrorMessage = "The book 'Domain-Driven Design: Tackling Complexity in the Heart of Software' does not exist for this customer.";
 
         // Act:
         Result availabilityResult = _customer.ReturnBook(_book);

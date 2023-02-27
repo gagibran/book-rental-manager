@@ -27,8 +27,7 @@ public sealed class AuthorController : ApiController
                 cancellationToken);
         if (!getAllAuthorsResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getAllAuthorsResult.ErrorMessage);
-            return CustomHttpErrorResponse(getAllAuthorsResult.ErrorType, getAllAuthorsResult.ErrorMessage, HttpStatusCode.BadRequest);
+            return HandleError(getAllAuthorsResult);
         }
         CreatePagingMetadata(
             nameof(GetAuthorsByQueryParametersAsync),
@@ -48,8 +47,7 @@ public sealed class AuthorController : ApiController
             cancellationToken);
         if (!getAuthorByIdResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getAuthorByIdResult.ErrorMessage);
-            return CustomHttpErrorResponse(getAuthorByIdResult.ErrorType, getAuthorByIdResult.ErrorMessage, HttpStatusCode.NotFound);
+            return HandleError(getAuthorByIdResult);
         }
         return Ok(getAuthorByIdResult.Value);
     }
@@ -62,16 +60,12 @@ public sealed class AuthorController : ApiController
             cancellationToken);
         if (!createAuthorResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(createAuthorResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                createAuthorResult.ErrorType,
-                createAuthorResult.ErrorMessage,
-                HttpStatusCode.UnprocessableEntity);
+            return HandleError(createAuthorResult);
         }
         return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 
-    [HttpPatch("{id}")]
+    [HttpPatch("{id}/addBooks")]
     public async Task<ActionResult> AddExistingBooksToAuthor(
         Guid id,
         JsonPatchDocument<PatchAuthorBooksDto> patchAuthorBooksDtoPatchDocument,
@@ -79,19 +73,25 @@ public sealed class AuthorController : ApiController
     {
         var patchAuthorBooksCommand = new PatchAuthorBooksCommand(id, patchAuthorBooksDtoPatchDocument);
         Result patchAuthorBooksResult = await _dispatcher.DispatchAsync(patchAuthorBooksCommand, cancellationToken);
-        if (!patchAuthorBooksResult.IsSuccess && !patchAuthorBooksResult.ErrorType.Equals("bookIsbn"))
+        if (!patchAuthorBooksResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(patchAuthorBooksResult.ErrorMessage);
-            return CustomHttpErrorResponse(patchAuthorBooksResult.ErrorType, patchAuthorBooksResult.ErrorMessage, HttpStatusCode.NotFound);
-        }
-        else if (!patchAuthorBooksResult.IsSuccess && patchAuthorBooksResult.ErrorType.Equals("bookIsbn"))
-        {
-            _baseControllerLogger.LogError(patchAuthorBooksResult.ErrorMessage);
-            return CustomHttpErrorResponse(
-                patchAuthorBooksResult.ErrorType,
-                patchAuthorBooksResult.ErrorMessage,
-                HttpStatusCode.UnprocessableEntity);
+            return HandleError(patchAuthorBooksResult);
         }
         return NoContent();
+    }
+
+    protected override ActionResult HandleError(Result result)
+    {
+        _baseControllerLogger.LogError(result.ErrorMessage);
+        switch (result.ErrorType)
+        {
+            case "authorId":
+            case "bookIds":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
+            case "jsonPatch":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
+            default:
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
+        }
     }
 }

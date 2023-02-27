@@ -27,8 +27,7 @@ public sealed class BookController : ApiController
                 cancellationToken);
         if (!getAllBooksResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return CustomHttpErrorResponse(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage, HttpStatusCode.BadRequest);
+            return HandleError(getAllBooksResult);
         }
         CreatePagingMetadata(
             nameof(GetBooksByQueryParametersAsync),
@@ -54,15 +53,9 @@ public sealed class BookController : ApiController
         Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
                 getBooksBySearchParameterFromAuthor,
                 cancellationToken);
-        if (!getAllBooksResult.IsSuccess && getAllBooksResult.ErrorType.Equals("invalidProperty"))
+        if (!getAllBooksResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return CustomHttpErrorResponse(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage, HttpStatusCode.BadRequest);
-        }
-        else if (!getAllBooksResult.IsSuccess)
-        {
-            _baseControllerLogger.LogError(getAllBooksResult.ErrorMessage);
-            return CustomHttpErrorResponse(getAllBooksResult.ErrorType, getAllBooksResult.ErrorMessage, HttpStatusCode.NotFound);
+            return HandleError(getAllBooksResult);
         }
         CreatePagingMetadata(
             nameof(GetBooksByQueryParametersFromAuthorAsync),
@@ -84,8 +77,7 @@ public sealed class BookController : ApiController
         Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdFromAuthorQuery, cancellationToken);
         if (!getBookByIdResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(getBookByIdResult.ErrorMessage);
-            return CustomHttpErrorResponse(getBookByIdResult.ErrorType, getBookByIdResult.ErrorMessage, HttpStatusCode.NotFound);
+            return HandleError(getBookByIdResult);
         }
         return Ok(getBookByIdResult.Value);
     }
@@ -104,12 +96,26 @@ public sealed class BookController : ApiController
         Result<BookCreatedForAuthorDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedForAuthorDto>(createBookForAuthorCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
-            _baseControllerLogger.LogError(createBookResult.ErrorMessage);
-            return CustomHttpErrorResponse(createBookResult.ErrorType, createBookResult.ErrorMessage, HttpStatusCode.UnprocessableEntity);
+            return HandleError(createBookResult);
         }
         return CreatedAtAction(
             nameof(GetBookByIdFromAuthorAsync),
             new { authorId, id = createBookResult.Value!.Id },
             createBookResult.Value);
+    }
+
+    protected override ActionResult HandleError(Result result)
+    {
+        _baseControllerLogger.LogError(result.ErrorMessage);
+        switch (result.ErrorType)
+        {
+            case "bookId":
+            case "authorId":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
+            case "jsonPatch":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
+            default:
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
+        }
     }
 }

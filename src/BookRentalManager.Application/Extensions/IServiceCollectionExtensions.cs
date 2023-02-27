@@ -30,6 +30,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<ICommandHandler<PatchAuthorBooksCommand>, PatchAuthorBooksCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteCustomerByIdCommand>, DeleteCustomerByIdCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<PatchCustomerNameAndPhoneNumberCommand>, PatchCustomerNameAndPhoneNumberCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<ReturnBooksByBookIdsCommand>, ReturnBooksByBookIdsCommandHandler>();
         return serviceCollection;
     }
 

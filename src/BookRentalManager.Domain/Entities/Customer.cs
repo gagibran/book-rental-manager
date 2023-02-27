@@ -68,10 +68,10 @@ public sealed class Customer : Entity
     {
         if (!Books.Contains(book))
         {
-            return Result.Fail("noBook", $"You don't have the book '{book.BookTitle}'.");
+            return Result.Fail("noBook", $"The book '{book.BookTitle}' does not exist for this customer.");
         }
-        _books.Remove(book);
         book.IsAvailable = true;
+        _books.Remove(book);
         return Result.Success();
     }
 

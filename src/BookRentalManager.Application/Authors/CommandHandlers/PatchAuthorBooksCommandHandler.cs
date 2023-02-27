@@ -29,7 +29,7 @@ internal sealed class PatchAuthorBooksCommandHandler : ICommandHandler<PatchAuth
         }
         var booksByIdsSpecification = new BooksByIdsSpecification(patchAuthorBooksDto.BookIds);
         IReadOnlyList<Book> booksToAdd = await _bookRepository.GetAllBySpecificationAsync(booksByIdsSpecification, cancellationToken);
-        if (!booksToAdd.Select(bookToAdd => bookToAdd.Id).SequenceEqual(patchAuthorBooksDto.BookIds))
+        if (booksToAdd.Count() != patchAuthorBooksDto.BookIds.Count())
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }
