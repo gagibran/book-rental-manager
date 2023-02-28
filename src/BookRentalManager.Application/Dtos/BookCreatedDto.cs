@@ -1,13 +1,13 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class BookCreatedForAuthorDto
+public sealed class BookCreatedDto
 {
     public Guid Id { get; }
     public string BookTitle { get; }
     public int Edition { get; }
     public string Isbn { get; }
 
-    public BookCreatedForAuthorDto(Guid id, string bookTitle, int edition, string isbn)
+    public BookCreatedDto(Guid id, string bookTitle, int edition, string isbn)
     {
         Id = id;
         BookTitle = bookTitle;

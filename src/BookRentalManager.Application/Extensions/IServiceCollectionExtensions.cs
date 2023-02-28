@@ -25,7 +25,7 @@ public static class IServiceCollectionExtensions
     private static IServiceCollection AddCommandServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>, CreateCustomerCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<CreateBookForAuthorCommand, BookCreatedForAuthorDto>, CreateBookForAuthorCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<CreateBookCommand, BookCreatedDto>, CreateBookCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<CreateAuthorCommand, AuthorCreatedDto>, CreateAuthorCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<PatchAuthorBooksCommand>, PatchAuthorBooksCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteCustomerByIdCommand>, DeleteCustomerByIdCommandHandler>();
@@ -40,8 +40,8 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<IQueryHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>, GetCustomersByQueryParametersQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>, GetAuthorsByQueryParametersQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersFromAuthorQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBookByIdFromAuthorQuery, GetBookDto>, GetBookByIdFromAuthorQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersExcludingFromAuthorQueryHandler>();
+        serviceCollection.AddScoped<IQueryHandler<GetBookByIdQuery, GetBookDto>, GetBookByIdQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetAuthorByIdQuery, GetAuthorDto>, GetAuthorByIdQueryHandler>();
         serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersQueryHandler>();
         return serviceCollection;
@@ -54,7 +54,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookRentedByCustomerDto>>, BooksToGetBookRentedByCustomerDtosMapper>();
         serviceCollection.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookFromAuthorDto>>, BooksToGetBookFromAuthorDtosMapper>();
         serviceCollection.AddTransient<IMapper<Book, GetBookDto>, BookToGetBookDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Book, BookCreatedForAuthorDto>, BookToBookCreatedForAuthorDtoMapper>();
+        serviceCollection.AddTransient<IMapper<Book, BookCreatedDto>, BookToBookCreatedDtoMapper>();
         serviceCollection.AddTransient<IMapper<Customer?, GetCustomerThatRentedBookDto>, CustomerToGetCustomerThatRentedBookDtoMapper>();
         serviceCollection.AddTransient<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>, AuthorsToGetAuthorFromBookDtosMapper>();
         serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerToCustomerCreatedDtoMapper>();

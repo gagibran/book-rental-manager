@@ -1,31 +1,39 @@
 namespace BookRentalManager.UnitTests.Domain.Specifications;
 
-public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecificationTests
+public sealed class BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecificationTests
 {
+    private readonly Author _author;
+    private readonly Book _book;
+    private readonly Customer _customer;
+
+    public BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecificationTests()
+    {
+        _author = TestFixtures.CreateDummyAuthor();
+        _book = TestFixtures.CreateDummyBook();
+        _customer = TestFixtures.CreateDummyCustomer();
+        _customer.RentBook(_book);
+    }
+
     public static IEnumerable<object[]> GetSuccessfulTestParameters()
     {
         yield return new object[]
         {
             "pragmatic Progr",
-            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "1",
-            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "0-201-616",
-            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
         yield return new object[]
         {
             "false",
-            string.Empty,
             TestFixtures.CreateDummyAuthor()
         };
     }
@@ -61,20 +69,16 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuth
 
     [Theory]
     [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter, string sortParameters, Author author)
+    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter, Author author)
     {
         // Arrange:
-        var book = TestFixtures.CreateDummyBook();
-        var customer = TestFixtures.CreateDummyCustomer();
-        author.AddBook(book);
-        customer.RentBook(book);
-        var booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+        var booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification(
             author.Books,
             searchParameter,
-            sortParameters);
+            string.Empty);
 
         // Act:
-        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification.IsSatisfiedBy(book);
+        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification.IsSatisfiedBy(_book);
 
         // Assert:
         Assert.True(isSatisfiedBy);
@@ -85,17 +89,14 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuth
     public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter, string sortParameters, Author author)
     {
         // Arrange:
-        var book = TestFixtures.CreateDummyBook();
-        var customer = TestFixtures.CreateDummyCustomer();
-        author.AddBook(book);
-        customer.RentBook(book);
-        var booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+        _author.AddBook(_book);
+        var booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification(
             author.Books,
             searchParameter,
             sortParameters);
 
         // Act:
-        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification.IsSatisfiedBy(book);
+        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification.IsSatisfiedBy(_book);
 
         // Assert:
         Assert.False(isSatisfiedBy);

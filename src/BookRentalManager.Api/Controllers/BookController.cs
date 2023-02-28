@@ -3,7 +3,7 @@ using BookRentalManager.Application.Books.Queries;
 
 namespace BookRentalManager.Api.Controllers;
 
-[Route("api/author/{authorId}/[controller]")]
+[Route("api/[controller]")]
 public sealed class BookController : ApiController
 {
     public BookController(IDispatcher dispatcher, ILogger<BookController> authorControllerLogger)
@@ -11,8 +11,8 @@ public sealed class BookController : ApiController
     {
     }
 
-    [HttpGet("/api/[controller]", Name = nameof(GetBooksByQueryParametersAsync))]
-    [HttpHead("/api/[controller]")]
+    [HttpGet(Name = nameof(GetBooksByQueryParametersAsync))]
+    [HttpHead]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
@@ -37,14 +37,14 @@ public sealed class BookController : ApiController
         return Ok(getAllBooksResult.Value);
     }
 
-    [HttpGet(Name = nameof(GetBooksByQueryParametersFromAuthorAsync))]
-    [HttpHead]
-    public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersFromAuthorAsync(
+    [HttpGet("excludingAuthor/{authorId}", Name = nameof(GetBooksByQueryParametersExcludingFromAuthorAsync))]
+    [HttpHead("excludingAuthor/{authorId}")]
+    public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersExcludingFromAuthorAsync(
         Guid authorId,
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         CancellationToken cancellationToken)
     {
-        var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParametersFromAuthorQuery(
+        var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParametersExcludingFromAuthorQuery(
             authorId,
             queryParameters.PageIndex,
             queryParameters.PageSize,
@@ -58,7 +58,7 @@ public sealed class BookController : ApiController
             return HandleError(getAllBooksResult);
         }
         CreatePagingMetadata(
-            nameof(GetBooksByQueryParametersFromAuthorAsync),
+            nameof(GetBooksByQueryParametersExcludingFromAuthorAsync),
             queryParameters.SearchQuery,
             queryParameters.SortBy,
             getAllBooksResult.Value!);
@@ -67,14 +67,14 @@ public sealed class BookController : ApiController
 
     [HttpGet("{id}")]
     [HttpHead("{id}")]
-    [ActionName(nameof(GetBookByIdFromAuthorAsync))]
-    public async Task<ActionResult<GetBookDto>> GetBookByIdFromAuthorAsync(
+    [ActionName(nameof(GetBookByIdAsync))]
+    public async Task<ActionResult<GetBookDto>> GetBookByIdAsync(
         Guid authorId,
         Guid id,
         CancellationToken cancellationToken)
     {
-        var getBookByIdFromAuthorQuery = new GetBookByIdFromAuthorQuery(authorId, id);
-        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdFromAuthorQuery, cancellationToken);
+        var getBookByIdQuery = new GetBookByIdQuery(id);
+        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdQuery, cancellationToken);
         if (!getBookByIdResult.IsSuccess)
         {
             return HandleError(getBookByIdResult);
@@ -83,25 +83,16 @@ public sealed class BookController : ApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateBookForAuthorAsync(
-        Guid authorId,
-        CreateBookForAuthorDto createBookForAuthorDto,
+    public async Task<ActionResult> CreateBookAsync(
+        CreateBookCommand createBookCommand,
         CancellationToken cancellationToken)
     {
-        var createBookForAuthorCommand = new CreateBookForAuthorCommand(
-            authorId,
-            createBookForAuthorDto.BookTitle,
-            createBookForAuthorDto.Edition,
-            createBookForAuthorDto.Isbn);
-        Result<BookCreatedForAuthorDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedForAuthorDto>(createBookForAuthorCommand, cancellationToken);
+        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             return HandleError(createBookResult);
         }
-        return CreatedAtAction(
-            nameof(GetBookByIdFromAuthorAsync),
-            new { authorId, id = createBookResult.Value!.Id },
-            createBookResult.Value);
+        return CreatedAtAction(nameof(GetBookByIdAsync), new { Id = createBookResult.Value!.Id }, createBookResult.Value);
     }
 
     protected override ActionResult HandleError(Result result)
@@ -111,6 +102,7 @@ public sealed class BookController : ApiController
         {
             case "bookId":
             case "authorId":
+            case "authorIds":
                 return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
             case "jsonPatch":
                 return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);

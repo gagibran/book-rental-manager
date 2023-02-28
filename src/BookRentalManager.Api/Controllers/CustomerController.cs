@@ -62,7 +62,7 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(createCustomerResult);
         }
-        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { Id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 
     [HttpPatch("{id}")]

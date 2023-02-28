@@ -1,19 +1,19 @@
 namespace BookRentalManager.UnitTests.Application.Books.QueryHandlers;
 
-public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
+public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTestsQuery
 {
-    private readonly GetBooksByQueryParametersFromAuthorQuery _getBooksByQueryParametersFromAuthorQuery;
+    private readonly GetBooksByQueryParametersExcludingFromAuthorQuery _getBooksByQueryParametersExcludingFromAuthorQuery;
     private readonly Author _author;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
     private readonly Mock<IMapper<BookSortParameters, Result<string>>> _bookSortParametersMapperStub;
-    private readonly GetBooksByQueryParametersFromAuthorQueryHandler _getBooksByQueryParametersFromAuthorQueryHandler;
+    private readonly GetBooksByQueryParametersExcludingFromAuthorQueryHandler _getBooksByQueryParametersExcludingFromAuthorQueryHandler;
 
-    public GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery()
+    public GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTestsQuery()
     {
         _author = TestFixtures.CreateDummyAuthor();
-        _getBooksByQueryParametersFromAuthorQuery = new(
+        _getBooksByQueryParametersExcludingFromAuthorQuery = new(
             _author.Id,
             It.IsAny<int>(),
             It.IsAny<int>(),
@@ -23,7 +23,7 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
         _bookRepositoryStub = new();
         _bookToGetBookDtoMapperStub = new();
         _bookSortParametersMapperStub = new();
-        _getBooksByQueryParametersFromAuthorQueryHandler = new GetBooksByQueryParametersFromAuthorQueryHandler(
+        _getBooksByQueryParametersExcludingFromAuthorQueryHandler = new GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
             _bookToGetBookDtoMapperStub.Object,
@@ -42,8 +42,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             .ReturnsAsync((Author)null!);
 
         // Act:
-        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
-            _getBooksByQueryParametersFromAuthorQuery,
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersExcludingFromAuthorQueryHandler.HandleAsync(
+            _getBooksByQueryParametersExcludingFromAuthorQuery,
             It.IsAny<CancellationToken>());
 
         // Assert:
@@ -89,8 +89,8 @@ public sealed class GetBooksByQueryParametersFromAuthorQueryHandlerTestsQuery
             .Returns(Result.Success<string>(string.Empty));
 
         // Act:
-        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersFromAuthorQueryHandler.HandleAsync(
-            _getBooksByQueryParametersFromAuthorQuery,
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersExcludingFromAuthorQueryHandler.HandleAsync(
+            _getBooksByQueryParametersExcludingFromAuthorQuery,
             It.IsAny<CancellationToken>());
 
         // Assert (maybe refactor this using FluentAssertions):

@@ -62,7 +62,7 @@ public sealed class AuthorController : ApiController
         {
             return HandleError(createAuthorResult);
         }
-        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
+        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { Id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 
     [HttpPatch("{id}/addBooks")]

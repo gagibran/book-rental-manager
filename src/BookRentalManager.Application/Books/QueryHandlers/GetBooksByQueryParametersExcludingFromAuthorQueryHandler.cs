@@ -1,14 +1,14 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
-    : IQueryHandler<GetBooksByQueryParametersFromAuthorQuery, PaginatedList<GetBookDto>>
+internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler
+    : IQueryHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
     private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper;
 
-    public GetBooksByQueryParametersFromAuthorQueryHandler(
+    public GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
         IRepository<Author> authorRepository,
         IRepository<Book> bookRepository,
         IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
@@ -21,7 +21,7 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
     }
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
-        GetBooksByQueryParametersFromAuthorQuery getBooksByQueryParameterFromAuthor,
+        GetBooksByQueryParametersExcludingFromAuthorQuery getBooksByQueryParameterFromAuthor,
         CancellationToken cancellationToken)
     {
         var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(getBooksByQueryParameterFromAuthor.AuthorId);
@@ -40,14 +40,14 @@ internal sealed class GetBooksByQueryParametersFromAuthorQueryHandler
                 convertedSortParametersResult.ErrorType,
                 convertedSortParametersResult.ErrorMessage);
         }
-        var booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+        var booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification(
             author.Books,
             getBooksByQueryParameterFromAuthor.SearchParameter,
             convertedSortParametersResult.Value!);
         PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParameterFromAuthor.PageIndex,
             getBooksByQueryParameterFromAuthor.PageSize,
-            booksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification,
+            booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification,
             cancellationToken);
         List<GetBookDto> getBookDtos = (from book in books
                                         select _bookToGetBookDtoMapper.Map(book)).ToList();

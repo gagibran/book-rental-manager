@@ -1,14 +1,14 @@
 namespace BookRentalManager.Domain.Specifications;
 
-public sealed class BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification : Specification<Book>
+public sealed class BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification : Specification<Book>
 {
-    public BooksBySearchParameterWithAuthorsAndCustomersInBooksFromAuthorSpecification(
+    public BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification(
         IReadOnlyList<Book> books,
         string searchParameter,
         string sortParameters)
     {
         string formattedSearchParameter = searchParameter.Trim().ToLower();
-        Where = book => books.Contains(book)
+        Where = book => !books.Contains(book)
             && (book.BookTitle.ToLower().Contains(formattedSearchParameter)
                 || book.Edition.EditionNumber.ToString().Contains(formattedSearchParameter)
                 || book.Isbn.IsbnValue.ToLower().Contains(formattedSearchParameter)
