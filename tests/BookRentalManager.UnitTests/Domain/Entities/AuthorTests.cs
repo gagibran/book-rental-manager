@@ -7,19 +7,15 @@ public sealed class AuthorTests
 
     public AuthorTests()
     {
-        _author = new(FullName.Create("Eric", "Evans").Value!);
-        _book = new(
-            "Domain-Driven Design: Tackling Complexity in the Heart of Software",
-            Edition.Create(1).Value!,
-            Isbn.Create("978-0321125217").Value!);
+        _author = TestFixtures.CreateDummyAuthor();
+        _book = TestFixtures.CreateDummyBook();
     }
 
     [Fact]
-    public void AddBook_WithExistingBookWithIsbn_ReturnsErrorMessage()
+    public void AddBook_WithExistingBook_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = "A book with the ISBN '978-0321125217' has already been added to this author.";
-
+        var expectedErrorMessage = $"A book with the ID '{_book.Id}' has already been added to this author.";
         _author.AddBook(_book);
 
         // Act:

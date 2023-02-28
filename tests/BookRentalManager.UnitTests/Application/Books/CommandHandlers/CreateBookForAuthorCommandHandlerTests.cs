@@ -56,36 +56,8 @@ public sealed class CreateBookForAuthorCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithExistingBookTitle_ReturnsErrorMessage()
-    {
-        // Arrange:
-        _bookRepositoryStub
-            .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<BookByIsbnSpecification>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync(_book);
-        var expectedErrorMessage = "A book with the ISBN '0-201-61622-X' already exists.";
-
-        // Act:
-        Result handleResult = await _createBookForAuthorCommandHandler.HandleAsync(_createBookForAuthorCommand, default);
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, handleResult.ErrorMessage);
-    }
-
-    [Fact]
     public async Task HandleAsync_WithNonExistingBookTitle_ReturnsSuccess()
     {
-        // Arrange:
-        _bookRepositoryStub
-            .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
-                It.IsAny<BookByIsbnSpecification>(),
-                It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Book)null!);
-        _bookRepositoryStub
-            .Setup(bookRepository => bookRepository.CreateAsync(It.IsAny<Book>(), default))
-            .Verifiable();
-
         // Act:
         Result handleResult = await _createBookForAuthorCommandHandler.HandleAsync(_createBookForAuthorCommand, default);
 

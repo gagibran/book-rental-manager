@@ -34,14 +34,6 @@ internal sealed class CreateBookForAuthorCommandHandler : ICommandHandler<Create
         {
             return Result.Fail<BookCreatedForAuthorDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
-        var bookByIsbnSpecification = new BookByIsbnSpecification(createBookForAuthorCommand.Isbn);
-        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookByIsbnSpecification);
-        if (existingBook is not null)
-        {
-            return Result.Fail<BookCreatedForAuthorDto>(
-                "bookAlreadyExists",
-                $"A book with the ISBN '{existingBook.Isbn.IsbnValue}' already exists.");
-        }
         var newBook = new Book(createBookForAuthorCommand.BookTitle, editionResult.Value!, isbnResult.Value!);
         existingAuthor!.AddBook(newBook);
         await _bookRepository.CreateAsync(newBook, cancellationToken);

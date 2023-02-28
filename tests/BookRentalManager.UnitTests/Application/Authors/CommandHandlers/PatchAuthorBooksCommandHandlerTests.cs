@@ -128,7 +128,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
     public async Task HandleAsync_WithAuthorWithBookAlreadyRegistered_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = $"A book with the ISBN '{_book.Isbn.IsbnValue}' has already been added to this author.";
+        var expectedErrorMessage = $"A book with the ID '{_book.Id}' has already been added to this author.";
         _author.AddBook(_book);
 
         // Act:

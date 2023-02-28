@@ -21,10 +21,9 @@ public sealed class Author : Entity
 
     public Result AddBook(Book book)
     {
-        Book? existingBook = _books.FirstOrDefault(currentBook => currentBook.Isbn.Equals(book.Isbn));
-        if (existingBook is not null)
+        if (_books.Select(book => book.Id).Contains(book.Id))
         {
-            return Result.Fail("bookIsbn", $"A book with the ISBN '{book.Isbn.IsbnValue}' has already been added to this author.");
+            return Result.Fail("book", $"A book with the ID '{book.Id}' has already been added to this author.");
         }
         book.AddAuthor(this);
         _books.Add(book);
