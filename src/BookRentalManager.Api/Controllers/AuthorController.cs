@@ -80,6 +80,31 @@ public sealed class AuthorController : ApiController
         return NoContent();
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        Result deleteAuthorByIdResult = await _dispatcher.DispatchAsync(new DeleteAuthorByIdCommand(id), cancellationToken);
+        if (!deleteAuthorByIdResult.IsSuccess)
+        {
+            return HandleError(deleteAuthorByIdResult);
+        }
+        return NoContent();
+    }
+
+    [HttpOptions("{id}/addBooks")]
+    public ActionResult GetAuthorAddBooksOptions()
+    {
+        Response.Headers.Add("Allow", "PATCH, OPTIONS");
+        return Ok();
+    }
+
+    [HttpOptions]
+    public ActionResult GetAuthorOptions()
+    {
+        Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
+        return Ok();
+    }
+
     protected override ActionResult HandleError(Result result)
     {
         _baseControllerLogger.LogError(result.ErrorMessage);
