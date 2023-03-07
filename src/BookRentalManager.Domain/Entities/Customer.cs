@@ -30,38 +30,29 @@ public sealed class Customer : Entity
         FullName = fullName;
         Email = email;
         PhoneNumber = phoneNumber;
-        CustomerStatus = new CustomerStatus(CustomerType.Explorer);
         CustomerPoints = 0;
+        CustomerStatus = CustomerStatus.Create(CustomerPoints);
     }
 
     public Result RentBook(Book book)
     {
-        Result availabilityResult = CheckBookAvailability(book);
-        if (!string.IsNullOrWhiteSpace(availabilityResult.ErrorMessage))
+        Result checkRentPossibilityByCustomerBooksResult = CheckRentPossibilityByCustomerBooks(book);
+        if (!checkRentPossibilityByCustomerBooksResult.IsSuccess)
         {
-            return Result.Fail(availabilityResult.ErrorType, availabilityResult.ErrorMessage);
+            return checkRentPossibilityByCustomerBooksResult;
         }
-        book.IsAvailable = false;
+        Result checkRentPossibilityByCustomerTypeResult = CustomerStatus.CheckRentPossibilityByCustomerType(Books.Count());
+        if (!checkRentPossibilityByCustomerTypeResult.IsSuccess)
+        {
+            return checkRentPossibilityByCustomerTypeResult;
+        }
+        book.RentedAt = DateTime.UtcNow;
+        book.DueDate = GetReturnDueDate();
         _books.Add(book);
         book.SetRentedBy(this);
         CustomerPoints++;
-        CustomerStatus = CustomerStatus.PromoteCustomerStatus(CustomerPoints);
+        CustomerStatus = CustomerStatus.Create(CustomerPoints);
         return Result.Success();
-    }
-
-    public Result CheckBookAvailability(Book book)
-    {
-        Result bookAvailabilityResult = Result.Success();
-        if (!book.IsAvailable)
-        {
-            bookAvailabilityResult = Result.Fail("bookNotAvailable", $"The book '{book.BookTitle}' is not available.");
-        }
-        Result<CustomerStatus> customerStatusResult = CustomerStatus.CheckCustomerTypeBookAvailability(Books.Count());
-        if (!string.IsNullOrWhiteSpace(customerStatusResult.ErrorMessage))
-        {
-            customerStatusResult = Result.Fail<CustomerStatus>(customerStatusResult.ErrorType, customerStatusResult.ErrorMessage);
-        }
-        return Result.Combine(bookAvailabilityResult, customerStatusResult);
     }
 
     public Result ReturnBook(Book book)
@@ -70,7 +61,13 @@ public sealed class Customer : Entity
         {
             return Result.Fail("noBook", $"The book '{book.BookTitle}' does not exist for this customer.");
         }
-        book.IsAvailable = true;
+        if (DateTime.UtcNow > book.DueDate && CustomerPoints > 0)
+        {
+            CustomerPoints--;
+            CustomerStatus = CustomerStatus.Create(CustomerPoints);
+        }
+        book.RentedAt = null;
+        book.DueDate = null;
         _books.Remove(book);
         return Result.Success();
     }
@@ -93,5 +90,43 @@ public sealed class Customer : Entity
         }
         PhoneNumber = phoneNumber;
         return Result.Success();
+    }
+
+    private Result CheckRentPossibilityByCustomerBooks(Book book)
+    {
+        if (book.Customer is not null)
+        {
+            return Result.Fail(
+                "bookNotAvailable", $"The book '{book.BookTitle}' is unavailable at the moment. Return due date: {book.DueDate}.");
+        }
+        Result bookPastDueDateResult = Result.Success();
+        foreach (Book customerBook in Books)
+        {
+            if (customerBook.DueDate.HasValue && DateTime.UtcNow > customerBook.DueDate)
+            {
+                Result currentBookPastDueDateResult = Result.Fail(
+                    "dueDate",
+                    $"The book '{customerBook.BookTitle}' is past its return due date ({customerBook.DueDate}) and it needs to be returned before renting another one.");
+                bookPastDueDateResult = Result.Combine(bookPastDueDateResult, currentBookPastDueDateResult);
+            }
+        }
+        if (!bookPastDueDateResult.IsSuccess)
+        {
+            return bookPastDueDateResult;
+        }
+        return Result.Success();
+    }
+
+    private DateTime GetReturnDueDate()
+    {
+        switch (CustomerStatus.CustomerType)
+        {
+            case CustomerType.Adventurer:
+                return DateTime.UtcNow.AddDays(16);
+            case CustomerType.Master:
+                return DateTime.UtcNow.AddDays(30);
+            default:
+                return DateTime.UtcNow.AddDays(7);
+        }
     }
 }

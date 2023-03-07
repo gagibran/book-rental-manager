@@ -15,8 +15,10 @@ public sealed class BookSortParameters
             "EditionDesc",
             "Isbn",
             "IsbnDesc",
-            "IsAvailable",
-            "IsAvailableDesc",
+            "RentedAt",
+            "RentedAtDesc",
+            "DueDate",
+            "DueDateDesc",
             "CreatedAt",
             "CreatedAtDesc"
         };

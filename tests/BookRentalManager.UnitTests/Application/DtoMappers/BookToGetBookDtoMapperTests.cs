@@ -24,7 +24,8 @@ public sealed class BookToGetBookDtoMapperTests
             new List<GetAuthorFromBookDto>(),
             book.Edition,
             book.Isbn,
-            book.IsAvailable,
+            book.RentedAt,
+            book.DueDate,
             new GetCustomerThatRentedBookDto());
 
         // Act:
@@ -35,7 +36,8 @@ public sealed class BookToGetBookDtoMapperTests
         Assert.Equal(expectedGetBookDto.Authors, actualGetBookDto.Authors);
         Assert.Equal(expectedGetBookDto.Edition, actualGetBookDto.Edition);
         Assert.Equal(expectedGetBookDto.Isbn, actualGetBookDto.Isbn);
-        Assert.Equal(expectedGetBookDto.IsAvailable, actualGetBookDto.IsAvailable);
+        Assert.Equal(expectedGetBookDto.RentedAt, actualGetBookDto.RentedAt);
+        Assert.Equal(expectedGetBookDto.DueDate, actualGetBookDto.DueDate);
         Assert.Equal(expectedGetBookDto.RentedBy.FullName, actualGetBookDto.RentedBy.FullName);
         Assert.Equal(expectedGetBookDto.RentedBy.Email, actualGetBookDto.RentedBy.Email);
     }

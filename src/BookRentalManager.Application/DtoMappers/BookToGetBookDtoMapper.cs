@@ -21,7 +21,8 @@ internal sealed class BookToGetBookDtoMapper : IMapper<Book, GetBookDto>
             _authorsToGetAuthorFromBookDtosMapper.Map(book.Authors),
             book.Edition,
             book.Isbn,
-            book.IsAvailable,
+            book.RentedAt,
+            book.DueDate,
             _customerToGetCustomerThatRentedBookDtoMapper.Map(book.Customer));
     }
 }

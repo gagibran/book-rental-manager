@@ -7,7 +7,8 @@ public sealed class GetBookDto
     public IReadOnlyList<GetAuthorFromBookDto> Authors { get; }
     public int Edition { get; }
     public string Isbn { get; }
-    public bool IsAvailable { get; internal set; }
+    public DateTime? RentedAt { get; internal set; }
+    public DateTime? DueDate { get; internal set; }
     public GetCustomerThatRentedBookDto RentedBy { get; }
 
     public GetBookDto(
@@ -16,7 +17,8 @@ public sealed class GetBookDto
         IReadOnlyList<GetAuthorFromBookDto> authors,
         Edition edition,
         Isbn isbn,
-        bool isAvailable,
+        DateTime? rentedAt,
+        DateTime? dueDate,
         GetCustomerThatRentedBookDto rentedBy)
     {
         Id = id;
@@ -24,7 +26,8 @@ public sealed class GetBookDto
         Authors = authors;
         Edition = edition.EditionNumber;
         Isbn = isbn.IsbnValue;
-        IsAvailable = isAvailable;
+        RentedAt = rentedAt;
+        DueDate = dueDate;
         RentedBy = rentedBy;
     }
 }

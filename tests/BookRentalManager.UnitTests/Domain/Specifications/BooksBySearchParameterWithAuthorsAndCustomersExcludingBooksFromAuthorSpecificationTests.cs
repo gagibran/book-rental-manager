@@ -14,66 +14,16 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksF
         _customer.RentBook(_book);
     }
 
-    public static IEnumerable<object[]> GetSuccessfulTestParameters()
-    {
-        yield return new object[]
-        {
-            "pragmatic Progr",
-            TestFixtures.CreateDummyAuthor()
-        };
-        yield return new object[]
-        {
-            "1",
-            TestFixtures.CreateDummyAuthor()
-        };
-        yield return new object[]
-        {
-            "0-201-616",
-            TestFixtures.CreateDummyAuthor()
-        };
-        yield return new object[]
-        {
-            "false",
-            TestFixtures.CreateDummyAuthor()
-        };
-    }
-
-    public static IEnumerable<object[]> GetFailureTestParameters()
-    {
-
-        yield return new object[]
-        {
-            "1984",
-            string.Empty,
-            TestFixtures.CreateDummyAuthor()
-        };
-        yield return new object[]
-        {
-            "5",
-            string.Empty,
-            TestFixtures.CreateDummyAuthor()
-        };
-        yield return new object[]
-        {
-            "345-6",
-            string.Empty,
-            TestFixtures.CreateDummyAuthor()
-        };
-        yield return new object[]
-        {
-            "true",
-            string.Empty,
-            TestFixtures.CreateDummyAuthor()
-        };
-    }
-
     [Theory]
-    [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter, Author author)
+    [InlineData("pragmatic Progr")]
+    [InlineData("1")]
+    [InlineData("0-201-616")]
+    [InlineData("2")]
+    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter)
     {
         // Arrange:
         var booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification(
-            author.Books,
+            _author.Books,
             searchParameter,
             string.Empty);
 
@@ -85,15 +35,18 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksF
     }
 
     [Theory]
-    [MemberData(nameof(GetFailureTestParameters))]
-    public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter, string sortParameters, Author author)
+    [InlineData("1984")]
+    [InlineData("23453")]
+    [InlineData("345-6")]
+    [InlineData("3/4/2023")]
+    public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter)
     {
         // Arrange:
         _author.AddBook(_book);
         var booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification = new BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification(
-            author.Books,
+            _author.Books,
             searchParameter,
-            sortParameters);
+            string.Empty);
 
         // Act:
         bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification.IsSatisfiedBy(_book);

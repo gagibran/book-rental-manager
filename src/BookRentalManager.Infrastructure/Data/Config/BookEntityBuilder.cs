@@ -33,9 +33,11 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
             .HasMaxLength(20)
             .IsRequired();
         bookBuilder
-            .Property(book => book.IsAvailable)
-            .HasColumnName("IsAvailable")
-            .IsRequired();
+            .Property(book => book.RentedAt)
+            .HasColumnName("RentedAt");
+        bookBuilder
+            .Property(book => book.DueDate)
+            .HasColumnName("DueDate");
         bookBuilder
             .HasOne(book => book.Customer)
             .WithMany(customer => customer.Books);

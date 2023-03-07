@@ -8,7 +8,8 @@ internal sealed class BooksToGetBookRentedByCustomerDtosMapper : IMapper<IReadOn
                 select new GetBookRentedByCustomerDto(
                     book.BookTitle,
                     book.Edition,
-                    book.Isbn)
-                ).ToList();
+                    book.Isbn,
+                    book.RentedAt!.Value,
+                    book.DueDate!.Value)).ToList();
     }
 }

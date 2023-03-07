@@ -2,88 +2,49 @@ namespace BookRentalManager.UnitTests.Domain.Specifications;
 
 public sealed class BooksBySearchParameterWithAuthorsAndCustomersSpecificationTests
 {
-    public static IEnumerable<object[]> GetSuccessfulTestParameters()
-    {
-        yield return new object[]
-        {
-            "pragmatic Progr",
-            string.Empty
-        };
-        yield return new object[]
-        {
-            "1",
-            string.Empty
-        };
-        yield return new object[]
-        {
-            "0-201-616",
-            string.Empty
-        };
-        yield return new object[]
-        {
-            "false",
-            string.Empty
-        };
-    }
+    private readonly Book _book;
+    private readonly Customer _customer;
 
-    public static IEnumerable<object[]> GetFailureTestParameters()
+    public BooksBySearchParameterWithAuthorsAndCustomersSpecificationTests()
     {
-
-        yield return new object[]
-        {
-            "1984",
-            string.Empty
-        };
-        yield return new object[]
-        {
-            "5",
-            string.Empty
-        };
-        yield return new object[]
-        {
-            "345-6",
-            string.Empty
-        };
-        yield return new object[]
-        {
-            "true",
-            string.Empty
-        };
+        _book = TestFixtures.CreateDummyBook();
+        _customer = TestFixtures.CreateDummyCustomer();
+        _customer.RentBook(_book);
     }
 
     [Theory]
-    [MemberData(nameof(GetSuccessfulTestParameters))]
-    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter, string sortParameters)
+    [InlineData("pragmatic Progr")]
+    [InlineData("1")]
+    [InlineData("0-201-616")]
+    [InlineData("2")]
+    public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter)
     {
         // Arrange:
-        var book = TestFixtures.CreateDummyBook();
-        var customer = TestFixtures.CreateDummyCustomer();
-        customer.RentBook(book);
         var booksBySearchParameterWithAuthorsAndCustomersSpecification = new BooksBySearchParameterWithAuthorsAndCustomersSpecification(
             searchParameter,
-            sortParameters);
+            string.Empty);
 
         // Act:
-        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersSpecification.IsSatisfiedBy(book);
+        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersSpecification.IsSatisfiedBy(_book);
 
         // Assert:
         Assert.True(isSatisfiedBy);
     }
 
     [Theory]
-    [MemberData(nameof(GetFailureTestParameters))]
-    public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter, string sortParameters)
+    [InlineData("1984")]
+    [InlineData("23453")]
+    [InlineData("345-6")]
+    [InlineData("3/4/2023")]
+    public void IsSatisfiedBy_WithoutBooksWithQuery_ReturnsFalse(string searchParameter)
     {
         // Arrange:
-        var book = TestFixtures.CreateDummyBook();
-        var customer = TestFixtures.CreateDummyCustomer();
-        customer.RentBook(book);
         var booksBySearchParameterWithAuthorsAndCustomersSpecification = new BooksBySearchParameterWithAuthorsAndCustomersSpecification(
             searchParameter,
-            sortParameters);
+            string.Empty);
 
         // Act:
-        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersSpecification.IsSatisfiedBy(book);
+        bool isSatisfiedBy = booksBySearchParameterWithAuthorsAndCustomersSpecification.IsSatisfiedBy(_book);
 
         // Assert:
         Assert.False(isSatisfiedBy);

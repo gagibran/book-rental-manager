@@ -41,7 +41,8 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
             new List<GetAuthorFromBookDto>(),
             book.Edition,
             book.Isbn,
-            book.IsAvailable,
+            book.RentedAt,
+            book.DueDate,
             new GetCustomerThatRentedBookDto());
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
@@ -69,7 +70,8 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
         Assert.Equal(getBookDto.Authors, actualGetBookDto.Authors);
         Assert.Equal(getBookDto.Edition, actualGetBookDto.Edition);
         Assert.Equal(getBookDto.Isbn, actualGetBookDto.Isbn);
-        Assert.Equal(getBookDto.IsAvailable, actualGetBookDto.IsAvailable);
+        Assert.Equal(getBookDto.RentedAt, actualGetBookDto.RentedAt);
+        Assert.Equal(getBookDto.DueDate, actualGetBookDto.DueDate);
         Assert.Equal(getBookDto.RentedBy, actualGetBookDto.RentedBy);
     }
 }

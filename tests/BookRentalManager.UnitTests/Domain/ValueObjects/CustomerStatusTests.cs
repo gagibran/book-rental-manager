@@ -2,22 +2,22 @@ namespace BookRentalManager.UnitTests.Domain.ValueObjects;
 
 public sealed class CustomerStatusTests
 {
-    private const string AvailabilityErrorMessage = "You've reached the maximum amount of books per customer category";
+    private const string AvailabilityErrorMessage = "The customer has reached the maximum amount of books per customer category";
 
     [Theory]
-    [InlineData(CustomerType.Explorer, 2, AvailabilityErrorMessage + " (Explorer: 2).")]
-    [InlineData(CustomerType.Adventurer, 5, AvailabilityErrorMessage + " (Adventurer: 5).")]
-    [InlineData(CustomerType.Master, 7, AvailabilityErrorMessage + " (Master: 7).")]
+    [InlineData(0, 2, AvailabilityErrorMessage + " (Explorer: 2).")]
+    [InlineData(11, 5, AvailabilityErrorMessage + " (Adventurer: 5).")]
+    [InlineData(51, 7, AvailabilityErrorMessage + " (Master: 7).")]
     public void CheckCustomerTypeBookAvailability_WithCustomerStatusAndItsMaxAmount_ReturnsErrorMessage(
-        CustomerType customerType,
+        int customerPoints,
         int customerBookCount,
         string expectedErrorMessage)
     {
         // Arrange:
-        var customerStatus = new CustomerStatus(customerType);
+        var customerStatus = CustomerStatus.Create(customerPoints);
 
         // Act:
-        Result customerTypeAvailability = customerStatus.CheckCustomerTypeBookAvailability(customerBookCount);
+        Result customerTypeAvailability = customerStatus.CheckRentPossibilityByCustomerType(customerBookCount);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, customerTypeAvailability.ErrorMessage);
@@ -32,7 +32,7 @@ public sealed class CustomerStatusTests
         CustomerType customerType)
     {
         // Act:
-        CustomerStatus newCustomerStatus = CustomerStatus.PromoteCustomerStatus(customerPoints);
+        CustomerStatus newCustomerStatus = CustomerStatus.Create(customerPoints);
 
         // Assert:
         Assert.Equal(customerType, newCustomerStatus.CustomerType);

@@ -3,8 +3,9 @@ namespace BookRentalManager.UnitTests.Application.SortParametersMappers;
 public sealed class BookSortParametersMapperTests
 {
     [Theory]
-    [InlineData("Isbn,IsAvailable,BookTitleDesc", "Isbn.IsbnValue,IsAvailable,BookTitleDesc")]
-    [InlineData("IsbnDesc,BookTitle,IsAvailable,EditionDesc", "Isbn.IsbnValueDesc,BookTitle,IsAvailable,Edition.EditionNumberDesc")]
+    [InlineData("Isbn,RentedAt,BookTitleDesc", "Isbn.IsbnValue,RentedAt,BookTitleDesc")]
+    [InlineData("Isbn,DueDate,BookTitleDesc", "Isbn.IsbnValue,DueDate,BookTitleDesc")]
+    [InlineData("IsbnDesc,BookTitle,RentedAt,EditionDesc", "Isbn.IsbnValueDesc,BookTitle,RentedAt,Edition.EditionNumberDesc")]
     public void Map_WithInputData_ReturnsExpectedOutputData(string propertyNamesSeparatedByComma, string expectedResult)
     {
         // Arrange:

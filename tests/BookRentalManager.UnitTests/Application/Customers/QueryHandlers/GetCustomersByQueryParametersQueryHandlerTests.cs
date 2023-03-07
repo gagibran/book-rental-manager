@@ -51,7 +51,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 Email.Create("johndoe@email.com").Value!,
                 PhoneNumber.Create(200, 2_000_000).Value!,
                 It.IsAny<IReadOnlyList<GetBookRentedByCustomerDto>>(),
-                new CustomerStatus(CustomerType.Explorer),
+                CustomerStatus.Create(11),
                 It.IsAny<int>()));
 
         // Act:

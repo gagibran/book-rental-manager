@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BookRentalManager.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedFirstTables : Migration
+    public partial class AddedInitialTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,7 +52,8 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     BookTitle = table.Column<string>(type: "text", nullable: false),
                     Edition = table.Column<int>(type: "integer", nullable: false),
                     Isbn = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
+                    RentedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CustomerId = table.Column<Guid>(type: "uuid", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

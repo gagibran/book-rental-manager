@@ -31,11 +31,11 @@ public sealed class IQueryableExtensionsTests
         List<Book> books = new List<Book> { book1, book2, book3 };
         yield return new object[]
         {
-            "BookTitleDesc,IsAvailable",
+            "BookTitleDesc,DueDate",
             books,
             books
                 .OrderByDescending(book => book.BookTitle)
-                .ThenBy(book => book.IsAvailable)
+                .ThenBy(book => book.DueDate)
                 .ToList()
         };
         yield return new object[]
@@ -52,11 +52,11 @@ public sealed class IQueryableExtensionsTests
         };
         yield return new object[]
         {
-            "Edition.EditionNumber,IsAvailableDesc",
+            "Edition.EditionNumber,RentedAtDesc",
             books,
             books
                 .OrderBy(book => book.Edition.EditionNumber)
-                .ThenByDescending(book => book.IsAvailable)
+                .ThenByDescending(book => book.RentedAt)
                 .ToList()
         };
         yield return new object[]
@@ -67,11 +67,11 @@ public sealed class IQueryableExtensionsTests
         };
         yield return new object[]
         {
-            "Edition.EditionNumberDesc,IsAvailable,BookTitleDesc,Isbn.IsbnValueDesc",
+            "Edition.EditionNumberDesc,RentedAt,BookTitleDesc,Isbn.IsbnValueDesc",
             books,
             books
                 .OrderByDescending(book => book.Edition.EditionNumber)
-                .ThenBy(book => book.IsAvailable)
+                .ThenBy(book => book.RentedAt)
                 .ThenByDescending(book => book.BookTitle)
                 .ThenByDescending(book => book.Isbn.IsbnValue)
                 .ToList()

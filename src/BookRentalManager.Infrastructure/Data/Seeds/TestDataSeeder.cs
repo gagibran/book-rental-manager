@@ -44,57 +44,8 @@ public sealed class TestDataSeeder
                 new Author(FullName.Create("Ralph", "Johnson").Value!),
                 new Author(FullName.Create("Richard", "Helm").Value!),
                 new Author(FullName.Create("Bob", "Martin").Value!),
-                new Author(FullName.Create("Lewis", "Carroll").Value!),
-                new Author(FullName.Create("Franz", "Kafka").Value!),
                 new Author(FullName.Create("Howard", "Lovecraft").Value!),
-                new Author(FullName.Create("Isabel", "Allende").Value!),
                 new Author(FullName.Create("Edgar Allan", "Poe").Value!),
-                new Author(FullName.Create("Andy", "Hunt").Value!),
-                new Author(FullName.Create("John Ronald", "Tolkien").Value!),
-                new Author(FullName.Create("Stephen", "King").Value!),
-                new Author(FullName.Create("George Raymond", "Martin").Value!),
-                new Author(FullName.Create("Agatha", "Christie").Value!),
-                new Author(FullName.Create("Leo", "Tolstoy").Value!),
-                new Author(FullName.Create("William", "Shakespeare").Value!),
-                new Author(FullName.Create("James", "Joyce").Value!),
-                new Author(FullName.Create("Vladimir", "Nabokov").Value!),
-                new Author(FullName.Create("Fyodor", "Dostoevsky").Value!),
-                new Author(FullName.Create("William", "Faulkner").Value!),
-                new Author(FullName.Create("Charles", "Dickens").Value!),
-                new Author(FullName.Create("Anton", "Chekhov").Value!),
-                new Author(FullName.Create("Gustave", "Flaubert").Value!),
-                new Author(FullName.Create("Jane", "Austen").Value!),
-                new Author(FullName.Create("Joanne", "Rowling").Value!),
-                new Author(FullName.Create("Ernest", "Hemingway").Value!),
-                new Author(FullName.Create("Maria", "Popova").Value!),
-                new Author(FullName.Create("Francis Scott", "Fitzgerald").Value!),
-                new Author(FullName.Create("Vladimir", "Khorikov").Value!),
-                new Author(FullName.Create("Nora", "Roberts").Value!),
-                new Author(FullName.Create("Paulo", "Coelho").Value!),
-                new Author(FullName.Create("Roald", "Dahl").Value!),
-                new Author(FullName.Create("George", "Orwell").Value!),
-                new Author(FullName.Create("Georges", "Simenon").Value!),
-                new Author(FullName.Create("Anne", "Frank").Value!),
-                new Author(FullName.Create("Dan", "Brown").Value!),
-                new Author(FullName.Create("Enid", "Blyton").Value!),
-                new Author(FullName.Create("Gilbert", "Patten").Value!),
-                new Author(FullName.Create("Beatrix", "Potter").Value!),
-                new Author(FullName.Create("Karl", "May").Value!),
-                new Author(FullName.Create("Rex", "Stout").Value!),
-                new Author(FullName.Create("Yasuo", "Uchida").Value!),
-                new Author(FullName.Create("Stephenie", "Meyer").Value!),
-                new Author(FullName.Create("Anne", "Golon").Value!),
-                new Author(FullName.Create("Nicholas", "Sparks").Value!),
-                new Author(FullName.Create("Debbie", "Macomber").Value!),
-                new Author(FullName.Create("Dr.", "Seuss").Value!),
-                new Author(FullName.Create("Jane", "Austen").Value!),
-                new Author(FullName.Create("Nora", "Roberts").Value!),
-                new Author(FullName.Create("Ken", "Follett").Value!),
-                new Author(FullName.Create("Patricia", "Cornwell").Value!),
-                new Author(FullName.Create("Hermann", "Hesse").Value!),
-                new Author(FullName.Create("Harold", "Robbins").Value!),
-                new Author(FullName.Create("Sidney", "Sheldon").Value!),
-                new Author(FullName.Create("Barbara", "Catland").Value!)
             };
             var designPatternsBook = new Book(
                 "Design Patterns: Elements of Reusable Object-Oriented Software",
@@ -109,7 +60,23 @@ public sealed class TestDataSeeder
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
             newAuthors[4].AddBook(cleanCodeBook);
-            var newBooks = new List<Book> { cleanCodeBook, designPatternsBook };
+            var callOfCthulhuBook = new Book(
+                "The Call Of Cthulhu",
+                Edition.Create(1).Value!,
+                Isbn.Create("978-1515424437").Value!);
+            var shadowOverInnsmouthBook = new Book(
+                "The Shadow Over Innsmouth",
+                Edition.Create(1).Value!,
+                Isbn.Create("978-1878252180").Value!);
+            newAuthors[5].AddBook(callOfCthulhuBook);
+            newAuthors[5].AddBook(shadowOverInnsmouthBook);
+            var newBooks = new List<Book>
+            {
+                cleanCodeBook,
+                designPatternsBook,
+                callOfCthulhuBook,
+                shadowOverInnsmouthBook
+            };
             var customer = new Customer(
                 FullName.Create("Rosanne", "Johnson").Value!,
                 Email.Create("rosane.johnson@email.com").Value!,

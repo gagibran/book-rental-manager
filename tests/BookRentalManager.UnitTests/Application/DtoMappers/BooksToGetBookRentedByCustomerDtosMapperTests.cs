@@ -9,13 +9,18 @@ public sealed class BooksToGetBookRentedByCustomerDtosMapperTests
         var booksToGetBookRentedByCustomerDtosMapper = new BooksToGetBookRentedByCustomerDtosMapper();
 
         Book book = TestFixtures.CreateDummyBook();
+        Customer customer = TestFixtures.CreateDummyCustomer();
+        customer.RentBook(book);
         var expectedGetBookRentedByCustomerDto = new GetBookRentedByCustomerDto(
             book.BookTitle,
             book.Edition,
-            book.Isbn);
+            book.Isbn,
+            book.RentedAt!.Value,
+            book.DueDate!.Value);
 
         // Act:
-        IReadOnlyList<GetBookRentedByCustomerDto> getBookRentedByCustomerDtos = booksToGetBookRentedByCustomerDtosMapper.Map(new List<Book> { book });
+        IReadOnlyList<GetBookRentedByCustomerDto> getBookRentedByCustomerDtos = booksToGetBookRentedByCustomerDtosMapper.Map(
+            new List<Book> { book });
 
         // Assert (maybe refactor this using FluentAssertions):
         GetBookRentedByCustomerDto actualGetBookRentedByCustomerDtos = getBookRentedByCustomerDtos.FirstOrDefault()!;

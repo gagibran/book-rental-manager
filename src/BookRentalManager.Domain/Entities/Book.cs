@@ -8,7 +8,8 @@ public sealed class Book : Entity
     public IReadOnlyList<Author> Authors => _authors.AsReadOnly();
     public Edition Edition { get; }
     public Isbn Isbn { get; }
-    public bool IsAvailable { get; internal set; }
+    public DateTime? RentedAt { get; internal set; }
+    public DateTime? DueDate { get; internal set; }
     public Customer? Customer { get; private set; }
 
     private Book()
@@ -17,8 +18,9 @@ public sealed class Book : Entity
         BookTitle = string.Empty!;
         Edition = default!;
         Isbn = default!;
-        IsAvailable = default;
         Customer = default;
+        RentedAt = default;
+        DueDate = default;
     }
 
     public Book(string bookTitle, Edition edition, Isbn isbn)
@@ -27,7 +29,8 @@ public sealed class Book : Entity
         BookTitle = bookTitle.Trim();
         Edition = edition;
         Isbn = isbn;
-        IsAvailable = true;
+        RentedAt = null;
+        DueDate = null;
     }
 
     internal void AddAuthor(Author author)

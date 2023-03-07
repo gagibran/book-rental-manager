@@ -72,9 +72,13 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IsAvailable");
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DueDate");
+
+                    b.Property<DateTime?>("RentedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("RentedAt");
 
                     b.HasKey("Id");
 
