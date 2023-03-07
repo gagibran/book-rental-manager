@@ -90,19 +90,20 @@ public sealed class CustomerTests
     {
         // Arrange:
         var expectedDueDate = DateTime.Today.AddDays(targetDueDate);
-
-        // Act:
         for (int i = 0; i < targetCustomerPoints; i++)
         {
             Book book = TestFixtures.CreateDummyBook();
             if (i == targetCustomerPoints - 1)
             {
-                _customer.RentBook(book);
                 break;
             }
             _customer.RentBook(book);
             _customer.ReturnBook(book);
         }
+        Book bookToRent = TestFixtures.CreateDummyBook();
+
+        // Act:
+        _customer.RentBook(bookToRent);
 
         // Assert:
         Assert.Equal(expectedCustomerType, _customer.CustomerStatus.CustomerType);
@@ -132,20 +133,23 @@ public sealed class CustomerTests
         int expectedCustomerPoints,
         CustomerType expectedCustomerType)
     {
-        // Act:
+        // Arrange:
         for (int i = 0; i < targetCustomerPoints; i++)
         {
             Book book = TestFixtures.CreateDummyBook();
             if (i == targetCustomerPoints - 1)
             {
-                _customer.RentBook(book);
-                book.DueDate = DateTime.UtcNow.AddDays(-1);
-                _customer.ReturnBook(book);
                 break;
             }
             _customer.RentBook(book);
             _customer.ReturnBook(book);
         }
+        Book bookToReturn = TestFixtures.CreateDummyBook();
+        _customer.RentBook(bookToReturn);
+        bookToReturn.DueDate = DateTime.UtcNow.AddDays(-1);
+
+        // Act:
+        _customer.ReturnBook(bookToReturn);
 
         // Assert:
         Assert.Equal(expectedCustomerPoints, _customer.CustomerPoints);
