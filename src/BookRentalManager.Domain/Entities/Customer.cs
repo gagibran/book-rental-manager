@@ -72,23 +72,25 @@ public sealed class Customer : Entity
         return Result.Success();
     }
 
-    public Result UpdateFullName(FullName fullName)
+    public Result UpdateFullName(string firstName, string lastName)
     {
-        if (fullName is null)
+        Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
+        if (!fullNameResult.IsSuccess)
         {
-            return Result.Fail("fullName", "'fullName' cannot be null.");
+            return fullNameResult;
         }
-        FullName = fullName;
+        FullName = fullNameResult.Value!;
         return Result.Success();
     }
 
-    public Result UpdatePhoneNumber(PhoneNumber phoneNumber)
+    public Result UpdatePhoneNumber(int areaCode, int prefixAndLineNumber)
     {
-        if (phoneNumber is null)
+        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(areaCode, prefixAndLineNumber);
+        if (!phoneNumberResult.IsSuccess)
         {
-            return Result.Fail("phoneNumber", "'phoneNumber' cannot be null.");
+            return phoneNumberResult;
         }
-        PhoneNumber = phoneNumber;
+        PhoneNumber = phoneNumberResult.Value!;
         return Result.Success();
     }
 

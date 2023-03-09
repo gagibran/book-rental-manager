@@ -170,46 +170,20 @@ public sealed class CustomerTests
     }
 
     [Fact]
-    public void UpdateFullName_WithNullFullName_ReturnsErrorMessage()
-    {
-        // Arrange:
-        var expectedErrorMessage = "'fullName' cannot be null.";
-
-        // Act:
-        Result updateFullNameResult = _customer.UpdateFullName(null!);
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, updateFullNameResult.ErrorMessage);
-    }
-
-    [Fact]
     public void UpdateFullName_WithNonNullFullName_ReturnsSuccess()
     {
         // Act:
-        Result updateFullNameResult = _customer.UpdateFullName(FullName.Create("John", "Doe").Value!);
+        Result updateFullNameResult = _customer.UpdateFullName("John", "Doe");
 
         // Assert:
         Assert.True(updateFullNameResult.IsSuccess);
     }
 
     [Fact]
-    public void UpdatePhoneNumber_WithNullPhoneNumber_ReturnsErrorMessage()
-    {
-        // Arrange:
-        var expectedErrorMessage = "'phoneNumber' cannot be null.";
-
-        // Act:
-        Result updatePhoneNumberResult = _customer.UpdatePhoneNumber(null!);
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, updatePhoneNumberResult.ErrorMessage);
-    }
-
-    [Fact]
     public void UpdatePhoneNumber_WithNonNullPhoneNumber_ReturnsErrorMessage()
     {
         // Act:
-        Result updatePhoneNumberResult = _customer.UpdatePhoneNumber(PhoneNumber.Create(200, 2000000).Value!);
+        Result updatePhoneNumberResult = _customer.UpdatePhoneNumber(200, 2000000);
 
         // Assert:
         Assert.True(updatePhoneNumberResult.IsSuccess);

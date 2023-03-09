@@ -26,17 +26,13 @@ internal sealed class PatchCustomerNameAndPhoneNumberCommandHandler : ICommandHa
             patchCustomerNameAndPhoneNumberCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument,
             patchCustomerNameAndPhoneNumberDto,
             new string[] { "add", "remove" });
-        Result<FullName> fullNameResult = FullName.Create(patchCustomerNameAndPhoneNumberDto.FirstName, patchCustomerNameAndPhoneNumberDto.LastName);
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(
-            patchCustomerNameAndPhoneNumberDto.AreaCode,
-            patchCustomerNameAndPhoneNumberDto.PrefixAndLineNumber);
-        Result combinedResult = Result.Combine(patchAppliedResult, fullNameResult, phoneNumberResult);
+        Result updateFullnameResult = customer.UpdateFullName(patchCustomerNameAndPhoneNumberDto.FirstName, patchCustomerNameAndPhoneNumberDto.LastName);
+        Result updatePhoneNumberResult = customer.UpdatePhoneNumber(patchCustomerNameAndPhoneNumberDto.AreaCode, patchCustomerNameAndPhoneNumberDto.PrefixAndLineNumber);
+        Result combinedResult = Result.Combine(patchAppliedResult, updateFullnameResult, updatePhoneNumberResult);
         if (!combinedResult.IsSuccess)
         {
             return Result.Fail(combinedResult.ErrorType, combinedResult.ErrorMessage);
         }
-        customer.UpdateFullName(fullNameResult.Value!);
-        customer.UpdatePhoneNumber(phoneNumberResult.Value!);
         await _customerRepository.UpdateAsync(customer, cancellationToken);
         return Result.Success();
     }
