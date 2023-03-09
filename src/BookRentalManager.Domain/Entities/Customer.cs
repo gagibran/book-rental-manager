@@ -97,7 +97,7 @@ public sealed class Customer : Entity
         if (book.Customer is not null)
         {
             return Result.Fail(
-                "bookNotAvailable", $"The book '{book.BookTitle}' is unavailable at the moment. Return due date: {book.DueDate}.");
+                "bookNotAvailable", $"The book '{book.BookTitle}' is unavailable at the moment. Return due date: {book.DueDate!.Value.ToLocalTime().ToShortDateString()}.");
         }
         Result bookPastDueDateResult = Result.Success();
         foreach (Book customerBook in Books)

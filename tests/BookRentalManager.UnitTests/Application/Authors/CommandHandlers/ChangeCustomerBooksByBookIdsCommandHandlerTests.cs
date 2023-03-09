@@ -1,32 +1,33 @@
 namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
 
-public sealed class ReturnBooksByBookIdsCommandHandlerTests
+public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
 {
     private readonly Book _book;
     private readonly Book _anotherBook;
     private readonly Customer _customer;
-    private readonly ReturnBooksByBookIdsCommand _returnBooksByBookIdsCommand;
+    private readonly JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> _changeCustomerBooksByBookIdsDtoDocument;
+    private readonly ChangeCustomerBooksByBookIdsCommand _changeCustomerBooksByBookIdsCommand;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly ReturnBooksByBookIdsCommandHandler _returnBooksByBookIdsCommandHandler;
+    private readonly ChangeCustomerBooksByBookIdsCommandHandler _changeCustomerBooksByBookIdsCommandHandler;
 
-    public ReturnBooksByBookIdsCommandHandlerTests()
+    public ChangeCustomerBooksByBookIdsCommandHandlerTests()
     {
         _book = TestFixtures.CreateDummyBook();
         _anotherBook = new Book(
                 "Clean Code: A Handbook of Agile Software Craftsmanship",
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
-        var operations = new List<Operation<ReturnCustomerBookByIdDto>>
+        var operations = new List<Operation<ChangeCustomerBooksByBookIdsDto>>
         {
-            new Operation<ReturnCustomerBookByIdDto>("add", "/bookIds", It.IsAny<string>(), new List<Guid> { _book.Id, _anotherBook.Id })
+            new Operation<ChangeCustomerBooksByBookIdsDto>("add", "/bookIds", It.IsAny<string>(), new List<Guid> { _book.Id, _anotherBook.Id })
         };
-        var returnCustomerBookByIdDtoDocument = new JsonPatchDocument<ReturnCustomerBookByIdDto>(operations, new DefaultContractResolver());
+        _changeCustomerBooksByBookIdsDtoDocument = new(operations, new DefaultContractResolver());
         _customer = TestFixtures.CreateDummyCustomer();
-        _returnBooksByBookIdsCommand = new(_customer.Id, returnCustomerBookByIdDtoDocument);
+        _changeCustomerBooksByBookIdsCommand = new(_customer.Id, _changeCustomerBooksByBookIdsDtoDocument, true);
         _customerRepositoryStub = new();
         _bookRepositoryStub = new();
-        _returnBooksByBookIdsCommandHandler = new(_customerRepositoryStub.Object, _bookRepositoryStub.Object);
+        _changeCustomerBooksByBookIdsCommandHandler = new(_customerRepositoryStub.Object, _bookRepositoryStub.Object);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<BooksByIdsSpecification>(),
@@ -50,13 +51,13 @@ public sealed class ReturnBooksByBookIdsCommandHandlerTests
                 It.IsAny<CustomerByIdWithBooksSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Customer?)null);
-        var returnBooksByBookIdsCommand = new ReturnBooksByBookIdsCommand(
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
             id,
-            It.IsAny<JsonPatchDocument<ReturnCustomerBookByIdDto>>());
+            It.IsAny<JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>>());
 
         // Act:
-        Result handleAsyncResult = await _returnBooksByBookIdsCommandHandler.HandleAsync(
-            returnBooksByBookIdsCommand,
+        Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
+            changeCustomerBooksByBookIdsCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:
@@ -70,16 +71,16 @@ public sealed class ReturnBooksByBookIdsCommandHandlerTests
     {
         // Arrange:
         var expectedErrorMessage = $"'{operation}' operation not allowed in this context.";
-        var operations = new List<Operation<ReturnCustomerBookByIdDto>>
+        var operations = new List<Operation<ChangeCustomerBooksByBookIdsDto>>
         {
-            new Operation<ReturnCustomerBookByIdDto>(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
+            new Operation<ChangeCustomerBooksByBookIdsDto>(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
-        var returnCustomerBookByIdDtoDocument = new JsonPatchDocument<ReturnCustomerBookByIdDto>(operations, new DefaultContractResolver());
-        var returnBooksByBookIdsCommand = new ReturnBooksByBookIdsCommand(_customer.Id, returnCustomerBookByIdDtoDocument);
+        var changeCustomerBooksByBookIdsDtoDocument = new JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>(operations, new DefaultContractResolver());
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(_customer.Id, changeCustomerBooksByBookIdsDtoDocument);
 
         // Act:
-        Result handleAsyncResult = await _returnBooksByBookIdsCommandHandler.HandleAsync(
-            returnBooksByBookIdsCommand,
+        Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
+            changeCustomerBooksByBookIdsCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:
@@ -98,8 +99,8 @@ public sealed class ReturnBooksByBookIdsCommandHandlerTests
             .ReturnsAsync(new List<Book>());
 
         // Act:
-        Result handleAsyncResult = await _returnBooksByBookIdsCommandHandler.HandleAsync(
-            _returnBooksByBookIdsCommand,
+        Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
+            _changeCustomerBooksByBookIdsCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:
@@ -113,8 +114,8 @@ public sealed class ReturnBooksByBookIdsCommandHandlerTests
         var expectedErrorMessage = $"The book '{_book.BookTitle}' does not exist for this customer.|The book '{_anotherBook.BookTitle}' does not exist for this customer.";
 
         // Act:
-        Result handleAsyncResult = await _returnBooksByBookIdsCommandHandler.HandleAsync(
-            _returnBooksByBookIdsCommand,
+        Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
+            _changeCustomerBooksByBookIdsCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:
@@ -122,15 +123,31 @@ public sealed class ReturnBooksByBookIdsCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithCorrectParameters_ReturnsSuccess()
+    public async Task HandleAsync_WithCorrectParametersAndReturningBook_ReturnsSuccess()
     {
         // Arrange:
         _customer.RentBook(_book);
         _customer.RentBook(_anotherBook);
 
         // Act:
-        Result handleAsyncResult = await _returnBooksByBookIdsCommandHandler.HandleAsync(
-            _returnBooksByBookIdsCommand,
+        Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
+            _changeCustomerBooksByBookIdsCommand,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.True(handleAsyncResult.IsSuccess);
+    }
+
+
+    [Fact]
+    public async Task HandleAsync_WithCorrectParametersAndRentingBook_ReturnsSuccess()
+    {
+        // Arrange:
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(_customer.Id, _changeCustomerBooksByBookIdsDtoDocument);
+
+        // Act:
+        Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
+            changeCustomerBooksByBookIdsCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:

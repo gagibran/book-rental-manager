@@ -80,14 +80,32 @@ public sealed class CustomerController : ApiController
         return NoContent();
     }
 
+    [HttpPatch("{id}/rentBooks")]
+    public async Task<ActionResult> RentBooksByBookIds(
+        Guid id,
+        JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
+        CancellationToken cancellationToken)
+    {
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(id, changeCustomerBooksByBookIdsDtoPatchDocument);
+        Result rentBookByBookIdResult = await _dispatcher.DispatchAsync(changeCustomerBooksByBookIdsCommand, cancellationToken);
+        if (!rentBookByBookIdResult.IsSuccess)
+        {
+            return HandleError(rentBookByBookIdResult);
+        }
+        return NoContent();
+    }
+
     [HttpPatch("{id}/returnBooks")]
     public async Task<ActionResult> ReturnBooksByBookIds(
         Guid id,
-        JsonPatchDocument<ReturnCustomerBookByIdDto> returnCustomerBookByIdDtoPatchDocument,
+        JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
         CancellationToken cancellationToken)
     {
-        var returnBooksByBookIdsCommand = new ReturnBooksByBookIdsCommand(id, returnCustomerBookByIdDtoPatchDocument);
-        Result returnBookByBookIdResult = await _dispatcher.DispatchAsync(returnBooksByBookIdsCommand, cancellationToken);
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
+            id,
+            changeCustomerBooksByBookIdsDtoPatchDocument,
+            true);
+        Result returnBookByBookIdResult = await _dispatcher.DispatchAsync(changeCustomerBooksByBookIdsCommand, cancellationToken);
         if (!returnBookByBookIdResult.IsSuccess)
         {
             return HandleError(returnBookByBookIdResult);

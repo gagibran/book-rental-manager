@@ -36,7 +36,7 @@ public sealed class CustomerTests
     {
         // Arrange:
         _customer.RentBook(_book);
-        var expectedErrorMessage = $"The book '{_book.BookTitle}' is unavailable at the moment. Return due date: {_book.DueDate}.";
+        var expectedErrorMessage = $"The book '{_book.BookTitle}' is unavailable at the moment. Return due date: {_book.DueDate!.Value.ToLocalTime().ToShortDateString()}.";
 
         // Act:
         Result rentBookResult = _customer.RentBook(_book);
@@ -89,7 +89,7 @@ public sealed class CustomerTests
         CustomerType expectedCustomerType)
     {
         // Arrange:
-        var expectedDueDate = DateTime.Today.AddDays(targetDueDate);
+        var expectedDueDate = DateTime.UtcNow.AddDays(targetDueDate);
         for (int i = 0; i < targetCustomerPoints; i++)
         {
             Book book = TestFixtures.CreateDummyBook();
@@ -107,7 +107,7 @@ public sealed class CustomerTests
 
         // Assert:
         Assert.Equal(expectedCustomerType, _customer.CustomerStatus.CustomerType);
-        Assert.Equal(expectedDueDate.ToString("MM/dd/yyy"), _customer.Books.First().DueDate!.Value.ToString("MM/dd/yyy"));
+        Assert.Equal(expectedDueDate.Date, _customer.Books.First().DueDate!.Value.Date);
     }
 
     [Fact]
