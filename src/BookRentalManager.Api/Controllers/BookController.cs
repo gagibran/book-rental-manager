@@ -95,6 +95,20 @@ public sealed class BookController : ApiController
         return CreatedAtAction(nameof(GetBookByIdAsync), new { Id = createBookResult.Value!.Id }, createBookResult.Value);
     }
 
+    [HttpOptions]
+    public ActionResult GetBookOptions()
+    {
+        Response.Headers.Add("Allow", "GET, HEAD, POST, OPTIONS");
+        return Ok();
+    }
+
+    [HttpOptions("excludingAuthor")]
+    public ActionResult GetExcludingAuthorOptions()
+    {
+        Response.Headers.Add("Allow", "GET, OPTIONS");
+        return Ok();
+    }
+
     protected override ActionResult HandleError(Result result)
     {
         _baseControllerLogger.LogError(result.ErrorMessage);

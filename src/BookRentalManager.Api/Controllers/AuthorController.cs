@@ -92,8 +92,15 @@ public sealed class AuthorController : ApiController
     }
 
     [HttpOptions("{id}/addBooks")]
-    public ActionResult GetAuthorAddBooksOptions()
+    public async Task<ActionResult> GetAuthorAddBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
+        Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync<GetAuthorDto>(
+            new GetAuthorByIdQuery(id),
+            cancellationToken);
+        if (!getAuthorByIdResult.IsSuccess)
+        {
+            return HandleError(getAuthorByIdResult);
+        }
         Response.Headers.Add("Allow", "PATCH, OPTIONS");
         return Ok();
     }
@@ -101,7 +108,7 @@ public sealed class AuthorController : ApiController
     [HttpOptions]
     public ActionResult GetAuthorOptions()
     {
-        Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
+        Response.Headers.Add("Allow", "GET, HEAD, POST, DELETE, OPTIONS");
         return Ok();
     }
 

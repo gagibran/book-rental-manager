@@ -53,7 +53,8 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             .ReturnsAsync((Customer?)null);
         var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
             id,
-            It.IsAny<JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>>());
+            It.IsAny<JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>>(),
+            It.IsAny<bool>());
 
         // Act:
         Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
@@ -76,7 +77,10 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             new Operation<ChangeCustomerBooksByBookIdsDto>(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var changeCustomerBooksByBookIdsDtoDocument = new JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>(operations, new DefaultContractResolver());
-        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(_customer.Id, changeCustomerBooksByBookIdsDtoDocument);
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
+            _customer.Id,
+            changeCustomerBooksByBookIdsDtoDocument,
+            It.IsAny<bool>());
 
         // Act:
         Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
@@ -143,7 +147,10 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
     public async Task HandleAsync_WithCorrectParametersAndRentingBook_ReturnsSuccess()
     {
         // Arrange:
-        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(_customer.Id, _changeCustomerBooksByBookIdsDtoDocument);
+        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
+            _customer.Id,
+            _changeCustomerBooksByBookIdsDtoDocument,
+            false);
 
         // Act:
         Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(

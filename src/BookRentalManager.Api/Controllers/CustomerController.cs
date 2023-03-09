@@ -81,30 +81,17 @@ public sealed class CustomerController : ApiController
     }
 
     [HttpPatch("{id}/rentBooks")]
-    public async Task<ActionResult> RentBooksByBookIds(
-        Guid id,
-        JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
-        CancellationToken cancellationToken)
-    {
-        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(id, changeCustomerBooksByBookIdsDtoPatchDocument);
-        Result rentBookByBookIdResult = await _dispatcher.DispatchAsync(changeCustomerBooksByBookIdsCommand, cancellationToken);
-        if (!rentBookByBookIdResult.IsSuccess)
-        {
-            return HandleError(rentBookByBookIdResult);
-        }
-        return NoContent();
-    }
-
     [HttpPatch("{id}/returnBooks")]
-    public async Task<ActionResult> ReturnBooksByBookIds(
+    public async Task<ActionResult> ChangeCustomerBooksByBookIds(
         Guid id,
         JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
         CancellationToken cancellationToken)
     {
+        var isReturn = Request.Path.Value!.Contains("return");
         var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
             id,
             changeCustomerBooksByBookIdsDtoPatchDocument,
-            true);
+            isReturn);
         Result returnBookByBookIdResult = await _dispatcher.DispatchAsync(changeCustomerBooksByBookIdsCommand, cancellationToken);
         if (!returnBookByBookIdResult.IsSuccess)
         {
@@ -132,9 +119,17 @@ public sealed class CustomerController : ApiController
         return Ok();
     }
 
+    [HttpOptions("{id}/rentBooks")]
     [HttpOptions("{id}/returnBooks")]
-    public ActionResult GetCustomerReturnBooksOptions()
+    public async Task<ActionResult> GetCustomerRentAndReturnBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
+        Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
+            new GetCustomerByIdQuery(id),
+            cancellationToken);
+        if (!getCustomerByIdResult.IsSuccess)
+        {
+            return HandleError(getCustomerByIdResult);
+        }
         Response.Headers.Add("Allow", "PATCH, OPTIONS");
         return Ok();
     }

@@ -9,7 +9,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommand : ICommand
     public ChangeCustomerBooksByBookIdsCommand(
         Guid id,
         JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
-        bool isReturn = false)
+        bool isReturn)
     {
         Id = id;
         IsReturn = isReturn;
