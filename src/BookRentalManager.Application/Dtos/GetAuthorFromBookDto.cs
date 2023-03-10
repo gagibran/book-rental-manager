@@ -6,6 +6,6 @@ public sealed class GetAuthorFromBookDto
 
     public GetAuthorFromBookDto(FullName fullName)
     {
-        FullName = fullName.GetFullName();
+        FullName = fullName.ToString();
     }
 }

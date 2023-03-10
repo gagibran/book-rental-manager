@@ -95,10 +95,21 @@ public sealed class BookController : ApiController
         return CreatedAtAction(nameof(GetBookByIdAsync), new { Id = createBookResult.Value!.Id }, createBookResult.Value);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteBookByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        Result deleteBookByIdResult = await _dispatcher.DispatchAsync(new DeleteBookByIdCommand(id), cancellationToken);
+        if (!deleteBookByIdResult.IsSuccess)
+        {
+            return HandleError(deleteBookByIdResult);
+        }
+        return NoContent();
+    }
+
     [HttpOptions]
     public ActionResult GetBookOptions()
     {
-        Response.Headers.Add("Allow", "GET, HEAD, POST, OPTIONS");
+        Response.Headers.Add("Allow", "GET, HEAD, POST, DELETE, OPTIONS");
         return Ok();
     }
 

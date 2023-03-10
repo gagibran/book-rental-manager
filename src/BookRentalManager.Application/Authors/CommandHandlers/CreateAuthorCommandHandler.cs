@@ -24,7 +24,7 @@ internal sealed class CreateAuthorCommandHandler : ICommandHandler<CreateAuthorC
         {
             existingAuthorResult = Result.Fail(
                 "authorAlreadyExists",
-                $"An author named '{existingAuthor.FullName.GetFullName()}' already exists.");
+                $"An author named '{existingAuthor.FullName.ToString()}' already exists.");
         }
         Result<FullName> authorFullNameResult = FullName.Create(createAuthorCommand.FirstName, createAuthorCommand.LastName);
         Result combinedResults = Result.Combine(existingAuthorResult, authorFullNameResult);

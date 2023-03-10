@@ -35,7 +35,7 @@ public sealed class FullName : ValueObject
         return Result.Success<FullName>(new FullName(firstName.Trim(), lastName.Trim()));
     }
 
-    public string GetFullName()
+    public override string ToString()
     {
         return FirstName + " " + LastName;
     }

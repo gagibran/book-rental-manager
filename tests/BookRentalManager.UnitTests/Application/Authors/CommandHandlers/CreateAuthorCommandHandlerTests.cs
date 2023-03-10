@@ -28,7 +28,7 @@ public sealed class CreateAuthorCommandHandlerTests
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_author);
-        var expectedErrorMessage = $"An author named '{_author.FullName.GetFullName()}' already exists.";
+        var expectedErrorMessage = $"An author named '{_author.FullName.ToString()}' already exists.";
 
         // Act:
         Result handleResult = await _createAuthorCommandHandler.HandleAsync(_createAuthorCommand, default);

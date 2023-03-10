@@ -41,6 +41,6 @@ public sealed class FullNameTests
         Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
 
         // Assert:
-        Assert.Equal(expectedFullName, fullNameResult.Value!.GetFullName());
+        Assert.Equal(expectedFullName, fullNameResult.Value!.ToString());
     }
 }

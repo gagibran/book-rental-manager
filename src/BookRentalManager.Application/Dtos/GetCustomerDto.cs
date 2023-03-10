@@ -20,7 +20,7 @@ public sealed class GetCustomerDto
         int customerPoints)
     {
         Id = id;
-        FullName = fullName.GetFullName();
+        FullName = fullName.ToString();
         Email = email.EmailAddress;
         PhoneNumber = phoneNumber.GetCompletePhoneNumber();
         Books = books;

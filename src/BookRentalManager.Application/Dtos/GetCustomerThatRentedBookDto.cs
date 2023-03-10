@@ -11,7 +11,7 @@ public sealed class GetCustomerThatRentedBookDto
 
     public GetCustomerThatRentedBookDto(FullName fullName, Email email)
     {
-        FullName = fullName.GetFullName();
+        FullName = fullName.ToString();
         Email = email.EmailAddress;
     }
 }
