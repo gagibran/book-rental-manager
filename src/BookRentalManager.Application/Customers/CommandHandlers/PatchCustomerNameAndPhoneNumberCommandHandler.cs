@@ -26,9 +26,9 @@ internal sealed class PatchCustomerNameAndPhoneNumberCommandHandler : ICommandHa
             patchCustomerNameAndPhoneNumberCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument,
             patchCustomerNameAndPhoneNumberDto,
             new string[] { "add", "remove" });
-        Result updateFullnameResult = customer.UpdateFullName(patchCustomerNameAndPhoneNumberDto.FirstName, patchCustomerNameAndPhoneNumberDto.LastName);
+        Result updateFullNameResult = customer.UpdateFullName(patchCustomerNameAndPhoneNumberDto.FirstName, patchCustomerNameAndPhoneNumberDto.LastName);
         Result updatePhoneNumberResult = customer.UpdatePhoneNumber(patchCustomerNameAndPhoneNumberDto.AreaCode, patchCustomerNameAndPhoneNumberDto.PrefixAndLineNumber);
-        Result combinedResult = Result.Combine(patchAppliedResult, updateFullnameResult, updatePhoneNumberResult);
+        Result combinedResult = Result.Combine(patchAppliedResult, updateFullNameResult, updatePhoneNumberResult);
         if (!combinedResult.IsSuccess)
         {
             return Result.Fail(combinedResult.ErrorType, combinedResult.ErrorMessage);
