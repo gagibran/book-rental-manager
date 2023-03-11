@@ -33,6 +33,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<ICommandHandler<ChangeCustomerBooksByBookIdsCommand>, ChangeCustomerBooksByBookIdsCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteAuthorByIdCommand>, DeleteAuthorByIdCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteBookByIdCommand>, DeleteBookByIdCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<PatchBookTitleEditionAndIsbnByIdCommand>, PatchBookTitleEditionAndIsbnByIdCommandHandler>();
         return serviceCollection;
     }
 
@@ -61,6 +62,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerToCustomerCreatedDtoMapper>();
         serviceCollection.AddTransient<IMapper<Author, AuthorCreatedDto>, AuthorToAuthorCreatedDtoMapper>();
         serviceCollection.AddTransient<IMapper<Customer, PatchCustomerNameAndPhoneNumberDto>, CustomerToPatchCustomerNameAndPhoneNumberDtoMapper>();
+        serviceCollection.AddTransient<IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto>, BookToPatchBookTitleEditionAndIsbnByIdDtoMapper>();
         return serviceCollection;
     }
 

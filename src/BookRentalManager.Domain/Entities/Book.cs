@@ -4,10 +4,10 @@ public sealed class Book : Entity
 {
     private readonly List<Author> _authors;
 
-    public string BookTitle { get; }
+    public string BookTitle { get; private set; }
     public IReadOnlyList<Author> Authors => _authors.AsReadOnly();
-    public Edition Edition { get; }
-    public Isbn Isbn { get; }
+    public Edition Edition { get; private set; }
+    public Isbn Isbn { get; private set; }
     public DateTime? RentedAt { get; internal set; }
     public DateTime? DueDate { get; internal set; }
     public Customer? Customer { get; private set; }
@@ -31,6 +31,21 @@ public sealed class Book : Entity
         Isbn = isbn;
         RentedAt = null;
         DueDate = null;
+    }
+
+    public Result UpdateBookTitleEditionAndIsbn(string bookTitle, int edition, string isbn)
+    {
+        Result<Edition> editionResult = Edition.Create(edition);
+        Result<Isbn> isbnResult = Isbn.Create(isbn);
+        Result combinedResult = Result.Combine(editionResult, isbnResult);
+        if (!combinedResult.IsSuccess)
+        {
+            return combinedResult;
+        }
+        BookTitle = bookTitle;
+        Edition = editionResult.Value!;
+        Isbn = isbnResult.Value!;
+        return Result.Success();
     }
 
     internal void AddAuthor(Author author)

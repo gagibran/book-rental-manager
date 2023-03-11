@@ -95,6 +95,25 @@ public sealed class BookController : ApiController
         return CreatedAtAction(nameof(GetBookByIdAsync), new { Id = createBookResult.Value!.Id }, createBookResult.Value);
     }
 
+    [HttpPatch("{id}")]
+    public async Task<ActionResult> PatchBookTitleEditionAndIsbnByIdAsync(
+        Guid id,
+        JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> patchBookTitleEditionAndIsbnByIdDtoPatchDocument,
+        CancellationToken cancellationToken)
+    {
+        var patchBookTitleEditionAndIsbnByIdCommand = new PatchBookTitleEditionAndIsbnByIdCommand(
+            id,
+            patchBookTitleEditionAndIsbnByIdDtoPatchDocument);
+        Result patchBookTitleEditionAndIsbnByIdResult = await _dispatcher.DispatchAsync(
+            patchBookTitleEditionAndIsbnByIdCommand,
+            cancellationToken);
+        if (!patchBookTitleEditionAndIsbnByIdResult.IsSuccess)
+        {
+            return HandleError(patchBookTitleEditionAndIsbnByIdResult);
+        }
+        return NoContent();
+    }
+
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteBookByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -109,7 +128,7 @@ public sealed class BookController : ApiController
     [HttpOptions]
     public ActionResult GetBookOptions()
     {
-        Response.Headers.Add("Allow", "GET, HEAD, POST, DELETE, OPTIONS");
+        Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
         return Ok();
     }
 
