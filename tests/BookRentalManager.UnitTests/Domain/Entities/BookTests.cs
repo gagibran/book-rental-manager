@@ -2,6 +2,13 @@ namespace BookRentalManager.UnitTests.Domain.Entities;
 
 public sealed class BookTests
 {
+    private readonly Book _book;
+
+    public BookTests()
+    {
+        _book = TestFixtures.CreateDummyBook();
+    }
+
     [Fact]
     public void Book_WithCorrectValues_ReturnsBook()
     {
@@ -27,11 +34,8 @@ public sealed class BookTests
     [InlineData(0, "201-61622-X", "The edition number can't be smaller than 1.|Invalid ISBN format.")]
     public void UpdateBookTitleEditionAndIsbn_WithIncorrectData_ReturnsErrorMessage(int edition, string isbn, string expectedErrorMessage)
     {
-        // Arrange:
-        var book = TestFixtures.CreateDummyBook();
-
         // Act:
-        Result updateBookTitleEditionAndIsbnResult = book.UpdateBookTitleEditionAndIsbn(book.BookTitle, edition, isbn);
+        Result updateBookTitleEditionAndIsbnResult = _book.UpdateBookTitleEditionAndIsbn(_book.BookTitle, edition, isbn);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, updateBookTitleEditionAndIsbnResult.ErrorMessage);
@@ -43,14 +47,11 @@ public sealed class BookTests
     [InlineData(4, "3-201-61622-X")]
     public void UpdateBookTitleEditionAndIsbn_WithValidData_ReturnsCorrectUpdatedValues(int edition, string isbn)
     {
-        // Arrange:
-        var book = TestFixtures.CreateDummyBook();
-
         // Act:
-        Result updateBookTitleEditionAndIsbnResult = book.UpdateBookTitleEditionAndIsbn(book.BookTitle, edition, isbn);
+        Result updateBookTitleEditionAndIsbnResult = _book.UpdateBookTitleEditionAndIsbn(_book.BookTitle, edition, isbn);
 
         // Assert (maybe refactor this using FluentAssertions):
-        Assert.Equal(edition, book.Edition.EditionNumber);
-        Assert.Equal(isbn, book.Isbn.IsbnValue);
+        Assert.Equal(edition, _book.Edition.EditionNumber);
+        Assert.Equal(isbn, _book.Isbn.IsbnValue);
     }
 }

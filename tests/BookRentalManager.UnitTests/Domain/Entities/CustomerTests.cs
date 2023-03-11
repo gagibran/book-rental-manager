@@ -169,23 +169,39 @@ public sealed class CustomerTests
         Assert.False(_book.DueDate.HasValue);
     }
 
-    [Fact]
-    public void UpdateFullName_WithNonNullFullName_ReturnsSuccess()
+    [Theory]
+    [InlineData("", "Doe", 200, 2_000_000, "First name cannot be empty.")]
+    [InlineData("John", "Doe", 2002, 2_000_000, "Invalid area code.")]
+    public void UpdateFullNameAndPhoneNumber_WithInvalidData_ReturnsErrorMessage(
+        string firstName,
+        string lastName,
+        int areaCode,
+        int prefixAndLineNumber,
+        string expectedErrorMessage)
     {
         // Act:
-        Result updateFullNameResult = _customer.UpdateFullName("John", "Doe");
+        Result updateFullNameResult = _customer.UpdateFullNameAndPhoneNumber(firstName, lastName, areaCode, prefixAndLineNumber);
 
         // Assert:
-        Assert.True(updateFullNameResult.IsSuccess);
+        Assert.Equal(expectedErrorMessage, updateFullNameResult.ErrorMessage);
     }
 
-    [Fact]
-    public void UpdatePhoneNumber_WithNonNullPhoneNumber_ReturnsErrorMessage()
+    [Theory]
+    [InlineData("Johannes", "Doe", 200, 2_000_000)]
+    [InlineData("John", "Doe", 333, 2_000_000)]
+    public void UpdateFullNameAndPhoneNumber_WithValidData_ReturnsUpdatedValues(
+        string firstName,
+        string lastName,
+        int areaCode,
+        int prefixAndLineNumber)
     {
         // Act:
-        Result updatePhoneNumberResult = _customer.UpdatePhoneNumber(200, 2000000);
+        Result updateFullNameResult = _customer.UpdateFullNameAndPhoneNumber(firstName, lastName, areaCode, prefixAndLineNumber);
 
-        // Assert:
-        Assert.True(updatePhoneNumberResult.IsSuccess);
+        // Assert (maybe refactor this using FluentAssertions):
+        Assert.Equal(firstName, _customer.FullName.FirstName);
+        Assert.Equal(lastName, _customer.FullName.LastName);
+        Assert.Equal(areaCode, _customer.PhoneNumber.AreaCode);
+        Assert.Equal(prefixAndLineNumber, _customer.PhoneNumber.PrefixAndLineNumber);
     }
 }

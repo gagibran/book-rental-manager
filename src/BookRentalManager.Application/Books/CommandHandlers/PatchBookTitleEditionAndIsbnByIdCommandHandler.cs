@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler : ICommandHandler<PatchBookTitleEditionAndIsbnByIdCommand>
+internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler : ICommandHandler<PatchBookTitleEditionAndIsbnByIdCommand>
 {
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper;

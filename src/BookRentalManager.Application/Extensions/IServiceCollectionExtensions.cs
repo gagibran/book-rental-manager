@@ -29,7 +29,7 @@ public static class IServiceCollectionExtensions
         serviceCollection.AddScoped<ICommandHandler<CreateAuthorCommand, AuthorCreatedDto>, CreateAuthorCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<PatchAuthorBooksCommand>, PatchAuthorBooksCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteCustomerByIdCommand>, DeleteCustomerByIdCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<PatchCustomerNameAndPhoneNumberCommand>, PatchCustomerNameAndPhoneNumberCommandHandler>();
+        serviceCollection.AddScoped<ICommandHandler<PatchCustomerNameAndPhoneNumberByIdCommand>, PatchCustomerNameAndPhoneNumberByIdCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<ChangeCustomerBooksByBookIdsCommand>, ChangeCustomerBooksByBookIdsCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteAuthorByIdCommand>, DeleteAuthorByIdCommandHandler>();
         serviceCollection.AddScoped<ICommandHandler<DeleteBookByIdCommand>, DeleteBookByIdCommandHandler>();

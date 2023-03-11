@@ -66,13 +66,13 @@ public sealed class CustomerController : ApiController
     }
 
     [HttpPatch("{id}")]
-    public async Task<ActionResult> PatchCustomerNameAndPhoneNumberAsync(
+    public async Task<ActionResult> PatchCustomerNameAndPhoneNumberByIdAsync(
         Guid id,
         JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> patchCustomerNameAndPhoneNumberDtoPatchDocument,
         CancellationToken cancellationToken)
     {
-        var patchCustomerNameAndPhoneNumberCommand = new PatchCustomerNameAndPhoneNumberCommand(id, patchCustomerNameAndPhoneNumberDtoPatchDocument);
-        Result patchCustomerNameAndPhoneNumberResult = await _dispatcher.DispatchAsync(patchCustomerNameAndPhoneNumberCommand, cancellationToken);
+        var patchCustomerNameAndPhoneNumberByIdCommand = new PatchCustomerNameAndPhoneNumberByIdCommand(id, patchCustomerNameAndPhoneNumberDtoPatchDocument);
+        Result patchCustomerNameAndPhoneNumberResult = await _dispatcher.DispatchAsync(patchCustomerNameAndPhoneNumberByIdCommand, cancellationToken);
         if (!patchCustomerNameAndPhoneNumberResult.IsSuccess)
         {
             return HandleError(patchCustomerNameAndPhoneNumberResult);

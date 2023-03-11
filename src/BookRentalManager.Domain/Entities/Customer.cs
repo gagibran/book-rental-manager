@@ -72,24 +72,16 @@ public sealed class Customer : Entity
         return Result.Success();
     }
 
-    public Result UpdateFullName(string firstName, string lastName)
+    public Result UpdateFullNameAndPhoneNumber(string firstName, string lastName, int areaCode, int prefixAndLineNumber)
     {
         Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
-        if (!fullNameResult.IsSuccess)
+        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(areaCode, prefixAndLineNumber);
+        Result combinedResults = Result.Combine(fullNameResult, phoneNumberResult);
+        if (!combinedResults.IsSuccess)
         {
-            return fullNameResult;
+            return combinedResults;
         }
         FullName = fullNameResult.Value!;
-        return Result.Success();
-    }
-
-    public Result UpdatePhoneNumber(int areaCode, int prefixAndLineNumber)
-    {
-        Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(areaCode, prefixAndLineNumber);
-        if (!phoneNumberResult.IsSuccess)
-        {
-            return phoneNumberResult;
-        }
         PhoneNumber = phoneNumberResult.Value!;
         return Result.Success();
     }
