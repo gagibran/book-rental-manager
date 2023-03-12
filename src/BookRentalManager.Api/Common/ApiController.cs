@@ -9,20 +9,12 @@ public abstract class ApiController : ControllerBase
     protected readonly IDispatcher _dispatcher;
     protected readonly ILogger<ApiController> _baseControllerLogger;
 
+    protected abstract ActionResult HandleError(Result result);
+
     protected ApiController(IDispatcher dispatcher, ILogger<ApiController> baseControllerLogger)
     {
         _baseControllerLogger = baseControllerLogger;
         _dispatcher = dispatcher;
-    }
-
-    private void AddErrorsToModelError(string errorTypes, string errorMessages)
-    {
-        string[] splitErrorTypes = errorTypes.Split('|');
-        string[] splitErrorMessages = errorMessages.Split('|');
-        for (int i = 0; i < splitErrorMessages.Length; i++)
-        {
-            ModelState.AddModelError(splitErrorTypes[i], splitErrorMessages[i]);
-        }
     }
 
     protected void CreatePagingMetadata<TItem>(
@@ -73,9 +65,17 @@ public abstract class ApiController : ControllerBase
 
     protected ActionResult CustomHttpErrorResponse(string errorTypes, string errorMessages, HttpStatusCode httpStatusCode)
     {
-        AddErrorsToModelError(errorTypes, errorMessages);
+        AddErrorsToModelState(errorTypes, errorMessages);
         return ValidationProblem(modelStateDictionary: ModelState, statusCode: (int)httpStatusCode);
     }
 
-    protected abstract ActionResult HandleError(Result result);
+    private void AddErrorsToModelState(string errorTypes, string errorMessages)
+    {
+        string[] splitErrorTypes = errorTypes.Split('|');
+        string[] splitErrorMessages = errorMessages.Split('|');
+        for (int i = 0; i < splitErrorMessages.Length; i++)
+        {
+            ModelState.AddModelError(splitErrorTypes[i], splitErrorMessages[i]);
+        }
+    }
 }
