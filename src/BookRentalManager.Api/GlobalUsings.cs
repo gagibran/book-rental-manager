@@ -6,3 +6,4 @@ global using BookRentalManager.Domain.Common;
 global using BookRentalManager.Api.QueryParameters;
 global using System.Net;
 global using Microsoft.AspNetCore.JsonPatch;
+global using Asp.Versioning;

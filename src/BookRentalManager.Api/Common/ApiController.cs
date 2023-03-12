@@ -3,6 +3,7 @@ using System.Text.Json;
 namespace BookRentalManager.Api.Common;
 
 [ApiController]
+[Route("api/v{version:apiVersion}/[controller]")]
 public abstract class ApiController : ControllerBase
 {
     protected readonly IDispatcher _dispatcher;

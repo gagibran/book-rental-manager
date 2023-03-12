@@ -1,9 +1,9 @@
 using BookRentalManager.Application.Authors.Commands;
 using BookRentalManager.Application.Authors.Queries;
 
-namespace BookRentalManager.Api.Controllers;
+namespace BookRentalManager.Api.Controllers.V1;
 
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
 public sealed class AuthorController : ApiController
 {
     public AuthorController(IDispatcher dispatcher, ILogger<AuthorController> authorControllerLogger)

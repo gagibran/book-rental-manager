@@ -1,9 +1,9 @@
 using BookRentalManager.Application.Customers.Commands;
 using BookRentalManager.Application.Customers.Queries;
 
-namespace BookRentalManager.Api.Controllers;
+namespace BookRentalManager.Api.Controllers.V1;
 
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
 public sealed class CustomerController : ApiController
 {
     public CustomerController(IDispatcher dispatcher, ILogger<CustomerController> customerControllerLogger)

@@ -7,11 +7,14 @@ using Microsoft.EntityFrameworkCore;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container:
-builder.Services.AddControllers(configure => configure.ReturnHttpNotAcceptable = true).AddNewtonsoftJson();
+builder.Services
+    .AddControllers(configure => configure.ReturnHttpNotAcceptable = true)
+    .AddNewtonsoftJson();
 builder.Services.AddDbContext<BookRentalManagerDbContext>(dbContextOptionsBuilder =>
 {
     dbContextOptionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("BookRentalManagerConnectionString"));
 });
+builder.Services.AddApiVersioning(apiVersioningOptions => apiVersioningOptions.ApiVersionReader = new UrlSegmentApiVersionReader());
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 
