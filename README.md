@@ -9,3 +9,8 @@ A book rental management system created with .NET, Angular, Docker, PostgreSQL a
 
 ## Update Database
 `dotnet ef database update -s .\src\BookRentalManager.Api\ -p .\src\BookRentalManager.Infrastructure\`.
+
+## PostgreSQL
+1. Put the directory `C:\Program Files\PostgreSQL\15\bin` in the `PATH` variable;
+2. Run `psql -U postgres` and type in the password set up during the PostgreSQL installation;
+3. Run `CREATE ROLE admin WITH LOGIN SUPERUSER PASSWORD 'admin';`.
