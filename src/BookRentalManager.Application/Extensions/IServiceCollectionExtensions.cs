@@ -1,12 +1,5 @@
-using BookRentalManager.Application.Authors.QueryHandlers;
-using BookRentalManager.Application.Books.QueryHandlers;
-using BookRentalManager.Application.Customers.CommandHandlers;
-using BookRentalManager.Application.Customers.QueryHandlers;
 using Microsoft.Extensions.DependencyInjection;
-using BookRentalManager.Application.DtoMappers;
-using BookRentalManager.Application.Books.CommandHandlers;
-using BookRentalManager.Application.SortParametersMappers;
-using BookRentalManager.Application.Authors.CommandHandlers;
+using System.Reflection;
 
 namespace BookRentalManager.Application.Extensions;
 
@@ -15,62 +8,45 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IDispatcher, Dispatcher>();
-        serviceCollection.AddCommandServices();
-        serviceCollection.AddQueryServices();
-        serviceCollection.AddDtoMapperServices();
-        serviceCollection.AddSortParametersMapperServices();
+        serviceCollection.AddServicesFromAssembly(
+            typeof(ICommand).Assembly,
+            ServiceLifetime.Scoped,
+            typeof(ICommandHandler<>),
+            typeof(ICommandHandler<,>),
+            typeof(IQueryHandler<,>));
+        serviceCollection.AddServicesFromAssembly(
+            typeof(IMapper<,>).Assembly,
+            ServiceLifetime.Transient,
+            typeof(IMapper<,>));
         return serviceCollection;
     }
 
-    private static IServiceCollection AddCommandServices(this IServiceCollection serviceCollection)
+    private static void AddServicesFromAssembly(
+        this IServiceCollection serviceCollection,
+        Assembly assemblyToScan,
+        ServiceLifetime serviceLifetime,
+        params Type[] genericInterfacesToRegister)
     {
-        serviceCollection.AddScoped<ICommandHandler<CreateCustomerCommand, CustomerCreatedDto>, CreateCustomerCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<CreateBookCommand, BookCreatedDto>, CreateBookCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<CreateAuthorCommand, AuthorCreatedDto>, CreateAuthorCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<PatchAuthorBooksCommand>, PatchAuthorBooksCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<DeleteCustomerByIdCommand>, DeleteCustomerByIdCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<PatchCustomerNameAndPhoneNumberByIdCommand>, PatchCustomerNameAndPhoneNumberByIdCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<ChangeCustomerBooksByBookIdsCommand>, ChangeCustomerBooksByBookIdsCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<DeleteAuthorByIdCommand>, DeleteAuthorByIdCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<DeleteBookByIdCommand>, DeleteBookByIdCommandHandler>();
-        serviceCollection.AddScoped<ICommandHandler<PatchBookTitleEditionAndIsbnByIdCommand>, PatchBookTitleEditionAndIsbnByIdCommandHandler>();
-        return serviceCollection;
-    }
-
-    private static IServiceCollection AddQueryServices(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddScoped<IQueryHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>, GetCustomersByQueryParametersQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetCustomerByIdQuery, GetCustomerDto>, GetCustomerByIdQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>, GetAuthorsByQueryParametersQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersExcludingFromAuthorQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBookByIdQuery, GetBookDto>, GetBookByIdQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetAuthorByIdQuery, GetAuthorDto>, GetAuthorByIdQueryHandler>();
-        serviceCollection.AddScoped<IQueryHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>, GetBooksByQueryParametersQueryHandler>();
-        return serviceCollection;
-    }
-
-    private static IServiceCollection AddDtoMapperServices(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddTransient<IMapper<Customer, GetCustomerDto>, CustomerToGetCustomerDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Author, GetAuthorDto>, AuthorToGetAuthorDtoMapper>();
-        serviceCollection.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookRentedByCustomerDto>>, BooksToGetBookRentedByCustomerDtosMapper>();
-        serviceCollection.AddTransient<IMapper<IReadOnlyList<Book>, IReadOnlyList<GetBookFromAuthorDto>>, BooksToGetBookFromAuthorDtosMapper>();
-        serviceCollection.AddTransient<IMapper<Book, GetBookDto>, BookToGetBookDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Book, BookCreatedDto>, BookToBookCreatedDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Customer?, GetCustomerThatRentedBookDto>, CustomerToGetCustomerThatRentedBookDtoMapper>();
-        serviceCollection.AddTransient<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>, AuthorsToGetAuthorFromBookDtosMapper>();
-        serviceCollection.AddTransient<IMapper<Customer, CustomerCreatedDto>, CustomerToCustomerCreatedDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Author, AuthorCreatedDto>, AuthorToAuthorCreatedDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Customer, PatchCustomerNameAndPhoneNumberDto>, CustomerToPatchCustomerNameAndPhoneNumberDtoMapper>();
-        serviceCollection.AddTransient<IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto>, BookToPatchBookTitleEditionAndIsbnByIdDtoMapper>();
-        return serviceCollection;
-    }
-
-    private static IServiceCollection AddSortParametersMapperServices(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddTransient<IMapper<AuthorSortParameters, Result<string>>, AuthorSortParametersMapper>();
-        serviceCollection.AddTransient<IMapper<BookSortParameters, Result<string>>, BookSortParametersMapper>();
-        serviceCollection.AddTransient<IMapper<CustomerSortParameters, Result<string>>, CustomerSortParametersMapper>();
-        return serviceCollection;
+        IEnumerable<Type> handlerImplementations = assemblyToScan
+            .GetTypes()
+            .Where(type => type.IsConcrete() && type.HasGenericInterfaces(genericInterfacesToRegister));
+        foreach (Type handlerImplementation in handlerImplementations)
+        {
+            Type handlerInterface = handlerImplementation.GetInterfaces().First();
+            switch (serviceLifetime)
+            {
+                case ServiceLifetime.Singleton:
+                    serviceCollection.AddSingleton(handlerInterface, handlerImplementation);
+                    break;
+                case ServiceLifetime.Scoped:
+                    serviceCollection.AddScoped(handlerInterface, handlerImplementation);
+                    break;
+                case ServiceLifetime.Transient:
+                    serviceCollection.AddTransient(handlerInterface, handlerImplementation);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
