@@ -136,7 +136,6 @@ public sealed class CustomerController : ApiController
 
     protected override ActionResult HandleError(Result result)
     {
-        _baseControllerLogger.LogError(result.ErrorMessage);
         switch (result.ErrorType)
         {
             case "customerId":

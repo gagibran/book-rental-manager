@@ -114,7 +114,6 @@ public sealed class AuthorController : ApiController
 
     protected override ActionResult HandleError(Result result)
     {
-        _baseControllerLogger.LogError(result.ErrorMessage);
         switch (result.ErrorType)
         {
             case "authorId":
