@@ -25,7 +25,8 @@ internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler : IComma
         Result patchAppliedResult = JsonPatchDocumentExtensions.ApplyTo(
             patchCustomerNameAndPhoneNumberByIdCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument,
             patchCustomerNameAndPhoneNumberDto,
-            new string[] { "add", "remove" });
+            "add",
+            "remove");
         Result updateFullNameAndPhoneNumberResult = customer.UpdateFullNameAndPhoneNumber(
             patchCustomerNameAndPhoneNumberDto.FirstName,
             patchCustomerNameAndPhoneNumberDto.LastName,

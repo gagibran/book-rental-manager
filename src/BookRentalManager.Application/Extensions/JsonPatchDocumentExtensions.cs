@@ -7,7 +7,7 @@ public static class JsonPatchDocumentExtensions
     public static Result ApplyTo<T>(
         this JsonPatchDocument<T> jsonPatchDocument,
         T itemToApplyTo,
-        string[]? operationsToExclude = null) where T : class
+        params string[] operationsToExclude) where T : class
     {
         foreach (Operation<T> operation in jsonPatchDocument.Operations)
         {

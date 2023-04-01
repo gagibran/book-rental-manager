@@ -34,7 +34,8 @@ internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler : ICommandH
         PatchBookTitleEditionAndIsbnByIdDto patchBookTitleEditionAndIsbnByIdDto = _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper.Map(book);
         Result patchAppliedResult = patchBookTitleEditionAndIsbnByIdCommand.PatchBookTitleEditionAndIsbnByIdDtoPatchDocument.ApplyTo(
             patchBookTitleEditionAndIsbnByIdDto,
-            new string[] { "add", "remove" });
+            "add",
+            "remove");
         Result updateBookTitleEditionAndIsbnResult = book.UpdateBookTitleEditionAndIsbn(
             patchBookTitleEditionAndIsbnByIdDto.BookTitle,
             patchBookTitleEditionAndIsbnByIdDto.Edition,

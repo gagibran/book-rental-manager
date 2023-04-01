@@ -22,7 +22,8 @@ internal sealed class PatchAuthorBooksCommandHandler : ICommandHandler<PatchAuth
         var patchAuthorBooksDto = new PatchAuthorBooksDto(new List<Guid>());
         Result patchAppliedResult = patchAuthorBooksCommand.PatchAuthorBooksDtoPatchDocument.ApplyTo(
             patchAuthorBooksDto,
-            new string[] { "replace", "remove" });
+            "replace",
+            "remove");
         if (!patchAppliedResult.IsSuccess)
         {
             return patchAppliedResult;
