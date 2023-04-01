@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Books.Commands;
 
-public sealed class PatchBookTitleEditionAndIsbnByIdCommand : ICommand
+public sealed class PatchBookTitleEditionAndIsbnByIdCommand : IRequest
 {
     public Guid Id { get; }
     public JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> PatchBookTitleEditionAndIsbnByIdDtoPatchDocument { get; }

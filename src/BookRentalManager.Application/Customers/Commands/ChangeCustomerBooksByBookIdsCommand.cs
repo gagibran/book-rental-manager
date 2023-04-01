@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Customers.Commands;
 
-public sealed class ChangeCustomerBooksByBookIdsCommand : ICommand
+public sealed class ChangeCustomerBooksByBookIdsCommand : IRequest
 {
     public Guid Id { get; }
     public bool IsReturn { get; }

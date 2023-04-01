@@ -1,7 +1,7 @@
 namespace BookRentalManager.Application.Authors.QueryHandlers;
 
 internal sealed class GetAuthorsByQueryParametersQueryHandler
-    : IQueryHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
+    : IRequestHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper;

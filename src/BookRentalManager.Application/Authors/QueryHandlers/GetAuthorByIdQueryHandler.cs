@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Authors.QueryHandlers;
 
-internal sealed class GetAuthorByIdQueryHandler : IQueryHandler<GetAuthorByIdQuery, GetAuthorDto>
+internal sealed class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, GetAuthorDto>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper;

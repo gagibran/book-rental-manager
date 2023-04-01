@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler : ICommandHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
+internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler : IRequestHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> _customerToPatchCustomerNameAndPhoneNumberDtoMapper;

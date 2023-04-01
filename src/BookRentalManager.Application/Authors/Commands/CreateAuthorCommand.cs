@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Authors.Commands;
 
-public sealed class CreateAuthorCommand : ICommand<AuthorCreatedDto>
+public sealed class CreateAuthorCommand : IRequest<AuthorCreatedDto>
 {
     public string FirstName { get; }
     public string LastName { get; }

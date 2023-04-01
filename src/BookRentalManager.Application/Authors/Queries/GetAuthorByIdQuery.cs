@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Authors.Queries;
 
-public sealed class GetAuthorByIdQuery : IQuery<GetAuthorDto>
+public sealed class GetAuthorByIdQuery : IRequest<GetAuthorDto>
 {
     public Guid Id { get; }
 

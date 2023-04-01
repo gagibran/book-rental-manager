@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Authors.CommandHandlers;
 
-internal sealed class DeleteAuthorByIdCommandHandler : ICommandHandler<DeleteAuthorByIdCommand>
+internal sealed class DeleteAuthorByIdCommandHandler : IRequestHandler<DeleteAuthorByIdCommand>
 {
     private readonly IRepository<Author> _authorRepository;
 

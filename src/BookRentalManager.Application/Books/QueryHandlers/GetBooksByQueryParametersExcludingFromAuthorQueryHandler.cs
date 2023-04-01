@@ -1,7 +1,7 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
 internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler
-    : IQueryHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>
+    : IRequestHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;

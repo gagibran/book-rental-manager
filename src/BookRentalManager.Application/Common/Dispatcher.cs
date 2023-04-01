@@ -11,50 +11,33 @@ public sealed class Dispatcher : IDispatcher
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<Result> DispatchAsync(ICommand command, CancellationToken cancellationToken)
+    public async Task<Result> DispatchAsync(IRequest request, CancellationToken cancellationToken)
     {
-        Type commandHandlerType = typeof(ICommandHandler<>);
-        Type commandType = command.GetType();
-        Type commandHandlerGenericType = commandHandlerType.MakeGenericType(commandType);
-        dynamic? commandHandler = _serviceProvider.GetService(commandHandlerGenericType);
-        if (commandHandler is null)
+        Type requestHandlerType = typeof(IRequestHandler<>);
+        Type requestType = request.GetType();
+        Type requestHandlerGenericType = requestHandlerType.MakeGenericType(requestType);
+        dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType);
+        if (requestHandler is null)
         {
             throw new CommandHandlerObjectCannotBeNullException();
         }
-        return await commandHandler.HandleAsync((dynamic)command, cancellationToken);
+        return await requestHandler.HandleAsync((dynamic)request, cancellationToken);
     }
 
-    public async Task<Result<TResult>> DispatchAsync<TResult>(ICommand<TResult> command, CancellationToken cancellationToken)
+    public async Task<Result<TResult>> DispatchAsync<TResult>(IRequest<TResult> request, CancellationToken cancellationToken)
     {
-        Type commandHandlerType = typeof(ICommandHandler<,>);
-        Type[] commandHandlerArgumentTypes =
+        Type requestHandlerType = typeof(IRequestHandler<,>);
+        Type[] requestHandlerArgumentTypes =
         {
-            command.GetType(),
+            request.GetType(),
             typeof(TResult)
         };
-        Type commandHandlerGenericType = commandHandlerType.MakeGenericType(commandHandlerArgumentTypes);
-        dynamic? commandHandler = _serviceProvider.GetService(commandHandlerGenericType);
-        if (commandHandler is null)
+        Type requestHandlerGenericType = requestHandlerType.MakeGenericType(requestHandlerArgumentTypes);
+        dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType);
+        if (requestHandler is null)
         {
             throw new CommandHandlerObjectCannotBeNullException();
         }
-        return await commandHandler.HandleAsync((dynamic)command, cancellationToken);
-    }
-
-    public async Task<Result<TResult>> DispatchAsync<TResult>(IQuery<TResult> query, CancellationToken cancellationToken)
-    {
-        Type queryHandlerType = typeof(IQueryHandler<,>);
-        Type[] queryHandlerArgumentTypes =
-        {
-            query.GetType(),
-            typeof(TResult)
-        };
-        Type queryHandlerGenericType = queryHandlerType.MakeGenericType(queryHandlerArgumentTypes);
-        dynamic? queryHandler = _serviceProvider.GetService(queryHandlerGenericType);
-        if (queryHandler is null)
-        {
-            throw new QueryHandlerObjectCannotBeNullException();
-        }
-        return await queryHandler.HandleAsync((dynamic)query, cancellationToken);
+        return await requestHandler.HandleAsync((dynamic)request, cancellationToken);
     }
 }

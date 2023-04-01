@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Authors.CommandHandlers;
 
-internal sealed class PatchAuthorBooksCommandHandler : ICommandHandler<PatchAuthorBooksCommand>
+internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuthorBooksCommand>
 {
     private readonly IRepository<Author> _authorRepository;
     private readonly IRepository<Book> _bookRepository;

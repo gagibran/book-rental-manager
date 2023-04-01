@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Authors.Commands;
 
-public sealed class PatchAuthorBooksCommand : ICommand
+public sealed class PatchAuthorBooksCommand : IRequest
 {
     public Guid Id { get; }
     public JsonPatchDocument<PatchAuthorBooksDto> PatchAuthorBooksDtoPatchDocument { get; }

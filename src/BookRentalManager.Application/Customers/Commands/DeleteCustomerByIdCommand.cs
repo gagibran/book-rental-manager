@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Customers.Commands;
 
-public sealed class DeleteCustomerByIdCommand : ICommand
+public sealed class DeleteCustomerByIdCommand : IRequest
 {
     public Guid Id { get; }
 

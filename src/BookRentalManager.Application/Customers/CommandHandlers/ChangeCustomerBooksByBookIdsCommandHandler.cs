@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : ICommandHandler<ChangeCustomerBooksByBookIdsCommand>
+internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandler<ChangeCustomerBooksByBookIdsCommand>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IRepository<Book> _bookRepository;

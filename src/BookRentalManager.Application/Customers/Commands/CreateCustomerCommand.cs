@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Customers.Commands;
 
-public sealed class CreateCustomerCommand : ICommand<CustomerCreatedDto>
+public sealed class CreateCustomerCommand : IRequest<CustomerCreatedDto>
 {
     public string FirstName { get; }
     public string LastName { get; }

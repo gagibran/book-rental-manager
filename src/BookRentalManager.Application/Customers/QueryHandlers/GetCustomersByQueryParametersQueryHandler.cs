@@ -1,7 +1,7 @@
 namespace BookRentalManager.Application.Customers.QueryHandlers;
 
 internal sealed class GetCustomersByQueryParametersQueryHandler
-    : IQueryHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>
+    : IRequestHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>
 {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IMapper<Customer, GetCustomerDto> _customerToGetCustomerDtoMapper;

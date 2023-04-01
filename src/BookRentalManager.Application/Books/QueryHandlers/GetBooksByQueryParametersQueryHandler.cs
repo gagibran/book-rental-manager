@@ -1,7 +1,7 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
 internal sealed class GetBooksByQueryParametersQueryHandler
-    : IQueryHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>
+    : IRequestHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>
 {
     private readonly IRepository<Book> _bookRepository;
     private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;

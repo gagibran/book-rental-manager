@@ -1,9 +1,9 @@
 namespace BookRentalManager.Application.Interfaces;
 
-public interface ICommand
+public interface IRequest
 {
 }
 
-public interface ICommand<TResult>
+public interface IRequest<TResult>
 {
 }

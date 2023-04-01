@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-public sealed class DeleteBookByIdCommandHandler : ICommandHandler<DeleteBookByIdCommand>
+public sealed class DeleteBookByIdCommandHandler : IRequestHandler<DeleteBookByIdCommand>
 {
     private readonly IRepository<Book> _bookRepository;
 
