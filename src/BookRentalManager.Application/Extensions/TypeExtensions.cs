@@ -7,13 +7,13 @@ public static class TypeExtensions
         return !type.IsAbstract && !type.IsInterface;
     }
     
-    public static bool HasGenericInterfaces(this Type type, params Type[] genericInterfaceTypesToFilter)
+    public static bool HasGenericInterfaces(this Type type, Type genericInterfaceTypeToMatch)
     {
         return type
             .GetInterfaces()
             .Any(interfaceType =>
             {
-                return interfaceType.IsGenericType && genericInterfaceTypesToFilter.Contains(interfaceType.GetGenericTypeDefinition());
+                return interfaceType.IsGenericType && genericInterfaceTypeToMatch == interfaceType.GetGenericTypeDefinition();
             });
     }
 }
