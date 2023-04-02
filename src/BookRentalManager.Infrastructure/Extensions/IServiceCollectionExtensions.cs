@@ -6,10 +6,10 @@ namespace BookRentalManager.Infrastructure.Extensions;
 
 public static class IServiceCollectionExtensions
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection serviceCollection)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<TestDataSeeder>();
-        return services;
+        serviceCollection.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        serviceCollection.AddScoped<TestDataSeeder>();
+        return serviceCollection;
     }
 }

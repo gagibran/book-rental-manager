@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BookRentalManager.Application.Decorators;
 
-public sealed class ExecutionTimeLoggingDecorator<TRequest> : IRequestHandler<TRequest> where TRequest : IRequest
+internal sealed class ExecutionTimeLoggingDecorator<TRequest> : IRequestHandler<TRequest> where TRequest : IRequest
 {
     private readonly IRequestHandler<TRequest> _requestHandler;
     private readonly ILogger<IRequestHandler<TRequest>> _logger;
@@ -33,7 +33,7 @@ public sealed class ExecutionTimeLoggingDecorator<TRequest> : IRequestHandler<TR
     }
 }
 
-public sealed class ExecutionTimeLoggingDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult> where TRequest : IRequest<TResult>
+internal sealed class ExecutionTimeLoggingDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult> where TRequest : IRequest<TResult>
 {
     private readonly IRequestHandler<TRequest, TResult> _requestHandler;
     private readonly ILogger<IRequestHandler<TRequest, TResult>> _logger;

@@ -21,15 +21,18 @@ builder.Services.AddInfrastructureServices();
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline:
-app.UseHttpsRedirection();
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthorization();
 app.MapControllers();
-using IServiceScope serviceScope = app.Services.CreateScope();
-IServiceProvider serviceProvider = serviceScope.ServiceProvider;
-BookRentalManagerDbContext bookRentalManagerDbContext = serviceProvider.GetRequiredService<BookRentalManagerDbContext>();
-await bookRentalManagerDbContext.Database.MigrateAsync();
 if (app.Environment.IsDevelopment())
 {
+    using IServiceScope serviceScope = app.Services.CreateScope();
+    IServiceProvider serviceProvider = serviceScope.ServiceProvider;
+    BookRentalManagerDbContext bookRentalManagerDbContext = serviceProvider.GetRequiredService<BookRentalManagerDbContext>();
+    await bookRentalManagerDbContext.Database.MigrateAsync();
     TestDataSeeder testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
     await testDataSeeder.SeedTestDataAsync();
 }

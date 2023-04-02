@@ -26,25 +26,25 @@ public static class IServiceCollectionExtensions
     public static void AddServicesFromAssembly(
         this IServiceCollection serviceCollection,
         Type genericInterfaceToRegister,
-        ServiceLifetime serviceLifetime)
-    {
-        IEnumerable<Type> typeImplementations = GetTypeImplementations(genericInterfaceToRegister);
-        foreach (Type typeImplementation in typeImplementations)
-        {
-            AddServices(serviceCollection, typeImplementation, serviceLifetime);
-        }
-    }
-
-    public static void AddServicesFromAssembly(
-        this IServiceCollection serviceCollection,
-        Type genericInterfaceToRegister,
         ServiceLifetime serviceLifetime,
         params Type[] decorators)
     {
-        IEnumerable<Type> typeImplementations = GetTypeImplementations(genericInterfaceToRegister);
-        foreach (Type typeImplementation in typeImplementations)
+        IEnumerable<Type> typeImplementations = genericInterfaceToRegister.Assembly
+            .GetTypes()
+            .Where(type => type.IsConcrete() && type.HasGenericInterfaces(genericInterfaceToRegister));
+        if (decorators.Any())
         {
-            AddDecoratedServices(serviceCollection, typeImplementation, serviceLifetime, decorators);
+            foreach (Type typeImplementation in typeImplementations)
+            {
+                AddDecoratedServices(serviceCollection, typeImplementation, serviceLifetime, decorators);
+            }
+        }
+        else
+        {
+            foreach (Type typeImplementation in typeImplementations.Where(type => !type.Name.Contains("Decorator")))
+            {
+                AddServices(serviceCollection, typeImplementation, serviceLifetime);
+            }
         }
     }
 
@@ -94,13 +94,6 @@ public static class IServiceCollectionExtensions
         }
     }
 
-    private static IEnumerable<Type> GetTypeImplementations(Type genericInterfaceToRegister)
-    {
-        return genericInterfaceToRegister.Assembly
-            .GetTypes()
-            .Where(type => type.IsConcrete() && type.HasGenericInterfaces(genericInterfaceToRegister));
-    }
-
     private static Func<IServiceProvider, object> DecorateBehaviors(
         Type typeImplementation,
         Type typeInterface,
@@ -111,12 +104,12 @@ public static class IServiceCollectionExtensions
             IEnumerable<Type> implementationTypeAndDecorators = decorators
                 .Concat(new Type[] { typeImplementation })
                 .Reverse();
-            IEnumerable<ConstructorInfo> ctors = implementationTypeAndDecorators.Select(type =>
+            IEnumerable<ConstructorInfo> constructors = implementationTypeAndDecorators.Select(type =>
             {
                 Type implementation = type.IsGenericType ? type.MakeGenericType(typeInterface.GenericTypeArguments) : type;
                 return implementation.GetConstructors().First();
             });
-            return InvokeConstructors(ctors, typeImplementation, serviceProvider);
+            return InvokeConstructors(constructors, typeImplementation, serviceProvider);
         };
     }
 

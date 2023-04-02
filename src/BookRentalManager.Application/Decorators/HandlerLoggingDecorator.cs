@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BookRentalManager.Application.Decorators;
 
-public sealed class HandlerLoggingDecorator<TRequest> : IRequestHandler<TRequest> where TRequest : IRequest
+internal sealed class HandlerLoggingDecorator<TRequest> : IRequestHandler<TRequest> where TRequest : IRequest
 {
     private readonly IRequestHandler<TRequest> _requestHandler;
     private readonly ILogger<IRequestHandler<TRequest>> _logger;
@@ -42,7 +42,7 @@ public sealed class HandlerLoggingDecorator<TRequest> : IRequestHandler<TRequest
     }
 }
 
-public sealed class HandlerLoggingDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult> where TRequest : IRequest<TResult>
+internal sealed class HandlerLoggingDecorator<TRequest, TResult> : IRequestHandler<TRequest, TResult> where TRequest : IRequest<TResult>
 {
     private readonly IRequestHandler<TRequest, TResult> _requestHandler;
     private readonly ILogger<IRequestHandler<TRequest, TResult>> _logger;
@@ -65,7 +65,7 @@ public sealed class HandlerLoggingDecorator<TRequest, TResult> : IRequestHandler
         Result<TResult> handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         if (!handleAsyncResult.IsSuccess)
         {
-            _logger.LogWarning(
+            _logger.LogError(
                 "{Timestamp} An error ocurred while executing the request handler '{RequestName}' with request value: {RequestValue}. Error message: {ErrorMessage}",
                 DateTime.UtcNow,
                 typeof(TRequest),
