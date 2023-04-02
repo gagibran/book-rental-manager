@@ -10,8 +10,16 @@ public static class IServiceCollectionExtensions
     {
         serviceCollection.AddScoped<IDispatcher, Dispatcher>();
         serviceCollection.AddServicesFromAssembly(typeof(IMapper<,>), ServiceLifetime.Transient);
-        serviceCollection.AddServicesFromAssembly(typeof(IRequestHandler<>), ServiceLifetime.Scoped, typeof(LoggingDecorator<>));
-        serviceCollection.AddServicesFromAssembly(typeof(IRequestHandler<,>), ServiceLifetime.Scoped, typeof(LoggingDecorator<,>));
+        serviceCollection.AddServicesFromAssembly(
+            typeof(IRequestHandler<>),
+            ServiceLifetime.Scoped,
+            typeof(ExecutionTimeLoggingDecorator<>),
+            typeof(HandlerLoggingDecorator<>));
+        serviceCollection.AddServicesFromAssembly(
+            typeof(IRequestHandler<,>),
+            ServiceLifetime.Scoped,
+            typeof(ExecutionTimeLoggingDecorator<,>),
+            typeof(HandlerLoggingDecorator<,>));
         return serviceCollection;
     }
 
