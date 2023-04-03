@@ -1,6 +1,3 @@
-using BookRentalManager.Application.Decorators;
-using Microsoft.Extensions.Logging;
-
 namespace BookRentalManager.UnitTests.Application.Decorators;
 
 public sealed class HandlerLoggingDecoratorTests
