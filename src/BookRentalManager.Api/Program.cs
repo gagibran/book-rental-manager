@@ -4,28 +4,29 @@ using BookRentalManager.Infrastructure.Data.Seeds;
 using BookRentalManager.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container:
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services
-    .AddControllers(configure => configure.ReturnHttpNotAcceptable = true)
+    .AddControllers(mvcOptions => mvcOptions.ReturnHttpNotAcceptable = true)
     .AddNewtonsoftJson();
 builder.Services.AddDbContext<BookRentalManagerDbContext>(dbContextOptionsBuilder =>
 {
     dbContextOptionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("BookRentalManagerConnectionString"));
 });
-builder.Services.AddApiVersioning(apiVersioningOptions => apiVersioningOptions.ApiVersionReader = new UrlSegmentApiVersionReader());
+builder.Services.AddApiVersioning(apiVersioningOptions =>
+{
+    apiVersioningOptions.ApiVersionReader = new UrlSegmentApiVersionReader();
+});
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 
-WebApplication app = builder.Build();
-
 // Configure the HTTP request pipeline:
+WebApplication app = builder.Build();
+app.UseExceptionHandler("/internalServerError");
 if (app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
 }
-app.UseAuthorization();
 app.MapControllers();
 if (app.Environment.IsDevelopment())
 {

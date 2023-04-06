@@ -6,15 +6,17 @@ namespace BookRentalManager.Api.Common;
 [Route("api/v{version:apiVersion}/[controller]")]
 public abstract class ApiController : ControllerBase
 {
-    protected readonly IDispatcher _dispatcher;
-    protected readonly ILogger<ApiController> _baseControllerLogger;
-
-    protected abstract ActionResult HandleError(Result result);
-
-    protected ApiController(IDispatcher dispatcher, ILogger<ApiController> baseControllerLogger)
+    protected ActionResult HandleError(Result result)
     {
-        _baseControllerLogger = baseControllerLogger;
-        _dispatcher = dispatcher;
+        switch (result.ErrorType)
+        {
+            case string error when error.ToLower().Contains("id"):
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
+            case "jsonPatch":
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
+            default:
+                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
+        }
     }
 
     protected void CreatePagingMetadata<TItem>(

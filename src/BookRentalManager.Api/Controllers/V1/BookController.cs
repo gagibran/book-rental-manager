@@ -6,9 +6,11 @@ namespace BookRentalManager.Api.Controllers.V1;
 [ApiVersion("1.0")]
 public sealed class BookController : ApiController
 {
-    public BookController(IDispatcher dispatcher, ILogger<BookController> authorControllerLogger)
-        : base(dispatcher, authorControllerLogger)
+    private readonly IDispatcher _dispatcher;
+
+    public BookController(IDispatcher dispatcher)
     {
+        _dispatcher = dispatcher;
     }
 
     [HttpGet(Name = nameof(GetBooksByQueryParametersAsync))]
@@ -137,20 +139,5 @@ public sealed class BookController : ApiController
     {
         Response.Headers.Add("Allow", "GET, OPTIONS");
         return Ok();
-    }
-
-    protected override ActionResult HandleError(Result result)
-    {
-        switch (result.ErrorType)
-        {
-            case "bookId":
-            case "authorId":
-            case "authorIds":
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
-            case "jsonPatch":
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
-            default:
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
-        }
     }
 }
