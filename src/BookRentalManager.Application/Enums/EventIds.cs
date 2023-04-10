@@ -6,5 +6,6 @@ public enum EventIds
     LogHandlerExecutionStart,
     LogHandlerThrewError,
     LogHandlerReturnedResponse,
-    LogHandlerExecutionFinish
+    LogHandlerExecutionFinish,
+    LogInternalServerError
 }

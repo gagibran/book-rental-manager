@@ -46,4 +46,14 @@ public static partial class ILoggerExtensions
         LogLevel.Information,
         "Executing request handler '{RequestHandlerType}' with request value: {RequestValue}.")]
     public static partial void LogHandlerExecutionFinish(this ILogger logger, Type requestHandlerType, string requestValue);
+
+    [LoggerMessage(
+        (int)EventIds.LogInternalServerError,
+        LogLevel.Error,
+        "An exception of type '{ExceptionType}' was thrown. Error message: {ErrorMessage} Stack trace: {StackTrace}.")]
+    public static partial void LogInternalServerError(
+        this ILogger logger,
+        Type exceptionType,
+        string errorMessage,
+        string? stackTrace);
 }
