@@ -22,12 +22,7 @@ internal sealed class ExecutionTimeLoggingDecorator<TRequest> : IRequestHandler<
         stopwatch.Start();
         Result handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         stopwatch.Stop();
-        _logger.LogIfLevelEnabled(
-            LogLevel.Debug,
-            "Execution of request handler '{RequestName}' with request value: {RequestValue} took {ExecutionTimeInMilliSeconds} ms.",
-            typeof(TRequest),
-            JsonSerializer.Serialize(request),
-            stopwatch.ElapsedMilliseconds);
+        _logger.LogHandlerExecutionTime(typeof(TRequest), JsonSerializer.Serialize(request), stopwatch.ElapsedMilliseconds);
         return handleAsyncResult;
     }
 }
@@ -51,12 +46,7 @@ internal sealed class ExecutionTimeLoggingDecorator<TRequest, TResult> : IReques
         stopwatch.Start();
         Result<TResult> handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         stopwatch.Stop();
-        _logger.LogIfLevelEnabled(
-            LogLevel.Debug,
-            "Execution of request handler '{RequestName}' with request value: {RequestValue} took {ExecutionTimeInMilliSeconds} ms.",
-            typeof(TRequest),
-            JsonSerializer.Serialize(request),
-            stopwatch.ElapsedMilliseconds);
+        _logger.LogHandlerExecutionTime(typeof(TRequest), JsonSerializer.Serialize(request), stopwatch.ElapsedMilliseconds);
         return handleAsyncResult;
     }
 }

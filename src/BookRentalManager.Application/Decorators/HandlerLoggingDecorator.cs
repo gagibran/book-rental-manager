@@ -17,26 +17,13 @@ internal sealed class HandlerLoggingDecorator<TRequest> : IRequestHandler<TReque
 
     public async Task<Result> HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogIfLevelEnabled(
-            LogLevel.Information,
-            "Executing request handler '{RequestName}' with request value: {RequestValue}.",
-            typeof(TRequest),
-            JsonSerializer.Serialize(request));
+        _logger.LogHandlerExecutionStart(typeof(TRequest), JsonSerializer.Serialize(request));
         Result handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         if (!handleAsyncResult.IsSuccess)
         {
-            _logger.LogIfLevelEnabled(
-                LogLevel.Warning,
-                "'{RequestName}' with request value: {RequestValue} threw the following error: {ErrorMessage}",
-                typeof(TRequest),
-                JsonSerializer.Serialize(request),
-                handleAsyncResult.ErrorMessage);
+            _logger.LogHandlerThrewError(typeof(TRequest), JsonSerializer.Serialize(request), handleAsyncResult.ErrorMessage);
         }
-        _logger.LogIfLevelEnabled(
-            LogLevel.Information,
-            "Finished executing request handler '{RequestName}' with request value: {RequestValue}.",
-            typeof(TRequest),
-            JsonSerializer.Serialize(request));
+        _logger.LogHandlerExecutionFinish(typeof(TRequest), JsonSerializer.Serialize(request));
         return handleAsyncResult;
     }
 }
@@ -56,34 +43,20 @@ internal sealed class HandlerLoggingDecorator<TRequest, TResult> : IRequestHandl
 
     public async Task<Result<TResult>> HandleAsync(TRequest request, CancellationToken cancellationToken)
     {
-        _logger.LogIfLevelEnabled(
-            LogLevel.Information,
-            "Executing request handler '{RequestName}' with request value: {RequestValue}.",
-            typeof(TRequest),
-            JsonSerializer.Serialize(request));
+        _logger.LogHandlerExecutionStart(typeof(TRequest), JsonSerializer.Serialize(request));
         Result<TResult> handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         if (!handleAsyncResult.IsSuccess)
         {
-            _logger.LogIfLevelEnabled(
-                LogLevel.Warning,
-                "'{RequestName}' with request value: {RequestValue} threw the following error: {ErrorMessage}",
-                typeof(TRequest),
-                JsonSerializer.Serialize(request),
-                handleAsyncResult.ErrorMessage);
+            _logger.LogHandlerThrewError(typeof(TRequest), JsonSerializer.Serialize(request), handleAsyncResult.ErrorMessage);
         }
         else
         {
-            _logger.LogIfLevelEnabled(
-                LogLevel.Information,
-                "'{RequestName}' with request value: {RequestValue} returned the following response: {ResponseValue}.",
-                DateTime.UtcNow,
+            _logger.LogHandlerReturnedResponse(
+                typeof(TRequest),
+                JsonSerializer.Serialize(request),
                 JsonSerializer.Serialize(handleAsyncResult.Value));
         }
-        _logger.LogIfLevelEnabled(
-            LogLevel.Information,
-            "Finished executing request handler '{RequestName}' with request value: {RequestValue}.",
-            typeof(TRequest),
-            JsonSerializer.Serialize(request));
+        _logger.LogHandlerExecutionFinish(typeof(TRequest), JsonSerializer.Serialize(request));
         return handleAsyncResult;
     }
 }
