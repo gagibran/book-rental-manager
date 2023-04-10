@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 
 namespace BookRentalManager.Application.Decorators;
 
@@ -23,9 +22,9 @@ internal sealed class ExecutionTimeLoggingDecorator<TRequest> : IRequestHandler<
         stopwatch.Start();
         Result handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         stopwatch.Stop();
-        _logger.LogDebug(
-            "{Timestamp} Execution of request handler '{RequestName}' with request value: {RequestValue} took {ExecutionTimeInMilliSeconds} ms.",
-            DateTime.UtcNow,
+        _logger.LogIfLevelEnabled(
+            LogLevel.Debug,
+            "Execution of request handler '{RequestName}' with request value: {RequestValue} took {ExecutionTimeInMilliSeconds} ms.",
             typeof(TRequest),
             JsonSerializer.Serialize(request),
             stopwatch.ElapsedMilliseconds);
@@ -52,9 +51,9 @@ internal sealed class ExecutionTimeLoggingDecorator<TRequest, TResult> : IReques
         stopwatch.Start();
         Result<TResult> handleAsyncResult = await _requestHandler.HandleAsync(request, cancellationToken);
         stopwatch.Stop();
-        _logger.LogDebug(
-            "{Timestamp} Execution of request handler '{RequestName}' with request value: {RequestValue} took {ExecutionTimeInMilliSeconds} ms.",
-            DateTime.UtcNow,
+        _logger.LogIfLevelEnabled(
+            LogLevel.Debug,
+            "Execution of request handler '{RequestName}' with request value: {RequestValue} took {ExecutionTimeInMilliSeconds} ms.",
             typeof(TRequest),
             JsonSerializer.Serialize(request),
             stopwatch.ElapsedMilliseconds);
