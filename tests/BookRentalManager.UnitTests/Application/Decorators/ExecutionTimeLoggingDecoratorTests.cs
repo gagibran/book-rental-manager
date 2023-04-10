@@ -17,6 +17,8 @@ public sealed class ExecutionTimeLoggingDecoratorTests
         _loggerWithResultStub = new();
         _executionTimeLoggingDecorator = new(_requestHandlerStub.Object, _loggerStub.Object);
         _executionTimeLoggingWithResultDecorator = new(_requestHandlerWithResultStub.Object, _loggerWithResultStub.Object);
+        _loggerStub.Setup(logger => logger.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        _loggerWithResultStub.Setup(loggerWithResult => loggerWithResult.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
     }
 
     [Fact]

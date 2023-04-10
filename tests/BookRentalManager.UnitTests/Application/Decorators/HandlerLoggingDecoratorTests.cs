@@ -17,6 +17,8 @@ public sealed class HandlerLoggingDecoratorTests
         _loggerWithResultStub = new();
         _handlerLoggingDecorator = new(_requestHandlerStub.Object, _loggerStub.Object);
         _handlerLoggingWithResultDecorator = new(_requestHandlerWithResultStub.Object, _loggerWithResultStub.Object);
+        _loggerStub.Setup(logger => logger.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+        _loggerWithResultStub.Setup(loggerWithResult => loggerWithResult.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
     }
 
     [Fact]
@@ -55,7 +57,7 @@ public sealed class HandlerLoggingDecoratorTests
         // Assert:
         _loggerStub.Verify(
             logger => logger.Log(
-                LogLevel.Error,
+                LogLevel.Warning,
                 It.IsAny<EventId>(),
                 It.IsAny<It.IsAnyType>(),
                 It.IsAny<Exception?>(),
@@ -103,7 +105,7 @@ public sealed class HandlerLoggingDecoratorTests
         // Assert:
         _loggerWithResultStub.Verify(
             logger => logger.Log(
-                LogLevel.Error,
+                LogLevel.Warning,
                 It.IsAny<EventId>(),
                 It.IsAny<It.IsAnyType>(),
                 It.IsAny<Exception?>(),
