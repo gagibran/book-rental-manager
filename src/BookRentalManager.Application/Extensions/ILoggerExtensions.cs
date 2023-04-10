@@ -23,7 +23,8 @@ public static partial class ILoggerExtensions
     [LoggerMessage(
         (int)EventIds.LogHandlerThrewError,
         LogLevel.Warning,
-        "'{RequestHandlerType}' with request value: {RequestValue} threw the following error: {ErrorMessage}")]
+        "'{RequestHandlerType}' with request value: {RequestValue} threw the following error: {ErrorMessage}",
+        SkipEnabledCheck = true)]
     public static partial void LogHandlerThrewError(
         this ILogger logger,
         Type requestHandlerType,
