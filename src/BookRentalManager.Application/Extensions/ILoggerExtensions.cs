@@ -23,7 +23,7 @@ public static partial class ILoggerExtensions
     [LoggerMessage(
         (int)EventIds.LogHandlerThrewError,
         LogLevel.Warning,
-        "'{RequestHandlerType}' with request value: {RequestValue} threw the following error: {ErrorMessage}",
+        "The '{RequestHandlerType}' handler with request value: {RequestValue} threw the following error: {ErrorMessage}",
         SkipEnabledCheck = true)]
     public static partial void LogHandlerThrewError(
         this ILogger logger,
@@ -34,7 +34,7 @@ public static partial class ILoggerExtensions
     [LoggerMessage(
         (int)EventIds.LogHandlerReturnedResponse,
         LogLevel.Information,
-        "'{RequestHandlerType}' with request value: {RequestValue} returned the following response: {ResponseValue}.")]
+        "'The '{RequestHandlerType}' handler with request value: {RequestValue} returned the following response: {ResponseValue}.")]
     public static partial void LogHandlerReturnedResponse(
         this ILogger logger,
         Type requestHandlerType,
@@ -50,7 +50,8 @@ public static partial class ILoggerExtensions
     [LoggerMessage(
         (int)EventIds.LogInternalServerError,
         LogLevel.Error,
-        "An exception of type '{ExceptionType}' was thrown. Error message: {ErrorMessage} Stack trace: {StackTrace}.")]
+        "An exception of type '{ExceptionType}' was thrown. Error message: {ErrorMessage} Stack trace: {StackTrace}.",
+        SkipEnabledCheck = true)]
     public static partial void LogInternalServerError(
         this ILogger logger,
         Type exceptionType,
