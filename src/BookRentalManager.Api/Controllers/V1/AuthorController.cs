@@ -7,10 +7,17 @@ namespace BookRentalManager.Api.Controllers.V1;
 public sealed class AuthorController : ApiController
 {
     private readonly IDispatcher _dispatcher;
+    private readonly List<AllowedRestMethodsDto> _allowedRestMethodDtos;
 
     public AuthorController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
+        _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
+        {
+            new AllowedRestMethodsDto(nameof(GetAuthorByIdAsync), "GET", "self"),
+            new AllowedRestMethodsDto(nameof(AddExistingBooksToAuthor), "PATCH", "add_existing_books_to_author"),
+            new AllowedRestMethodsDto(nameof(DeleteAuthorByIdAsync), "DELETE", "delete_author")
+        };
     }
 
     [HttpGet(Name = nameof(GetAuthorsByQueryParametersAsync))]
@@ -36,10 +43,10 @@ public sealed class AuthorController : ApiController
             queryParameters.SearchQuery,
             queryParameters.SortBy,
             getAllAuthorsResult.Value!);
-        return Ok(getAllAuthorsResult.Value);
+        return Ok(AddHateoasLinksToPaginatedCollection(_allowedRestMethodDtos, getAllAuthorsResult.Value!));
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = nameof(GetAuthorByIdAsync))]
     [HttpHead("{id}")]
     [ActionName(nameof(GetAuthorByIdAsync))]
     public async Task<ActionResult<GetAuthorDto>> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -51,10 +58,10 @@ public sealed class AuthorController : ApiController
         {
             return HandleError(getAuthorByIdResult);
         }
-        return Ok(getAuthorByIdResult.Value);
+        return Ok(AddHateoasLinks(_allowedRestMethodDtos, getAuthorByIdResult.Value!));
     }
 
-    [HttpPost]
+    [HttpPost(Name = nameof(CreateAuthorAsync))]
     public async Task<ActionResult> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
     {
         Result<AuthorCreatedDto> createAuthorResult = await _dispatcher.DispatchAsync<AuthorCreatedDto>(
@@ -64,10 +71,13 @@ public sealed class AuthorController : ApiController
         {
             return HandleError(createAuthorResult);
         }
-        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { Id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
+        return CreatedAtAction(
+            nameof(GetAuthorByIdAsync),
+            new { Id = createAuthorResult.Value!.Id },
+            AddHateoasLinks(_allowedRestMethodDtos, createAuthorResult.Value!));
     }
 
-    [HttpPatch("{id}/addBooks")]
+    [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthor))]
     public async Task<ActionResult> AddExistingBooksToAuthor(
         Guid id,
         JsonPatchDocument<PatchAuthorBooksDto> patchAuthorBooksDtoPatchDocument,
@@ -82,7 +92,7 @@ public sealed class AuthorController : ApiController
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = nameof(DeleteAuthorByIdAsync))]
     public async Task<ActionResult> DeleteAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         Result deleteAuthorByIdResult = await _dispatcher.DispatchAsync(new DeleteAuthorByIdCommand(id), cancellationToken);
@@ -93,7 +103,7 @@ public sealed class AuthorController : ApiController
         return NoContent();
     }
 
-    [HttpOptions("{id}/addBooks")]
+    [HttpOptions("{id}/AddBooks")]
     public async Task<ActionResult> GetAuthorAddBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
         Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync<GetAuthorDto>(

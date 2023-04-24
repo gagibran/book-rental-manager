@@ -1,8 +1,7 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetCustomerDto
+public sealed class GetCustomerDto : SingleResourceBaseDto
 {
-    public Guid Id { get; }
     public string FullName { get; }
     public string Email { get; }
     public string PhoneNumber { get; }
@@ -17,9 +16,8 @@ public sealed class GetCustomerDto
         PhoneNumber phoneNumber,
         IReadOnlyList<GetBookRentedByCustomerDto> books,
         CustomerStatus customerStatus,
-        int customerPoints)
+        int customerPoints) : base(id)
     {
-        Id = id;
         FullName = fullName.ToString();
         Email = email.EmailAddress;
         PhoneNumber = phoneNumber.GetCompletePhoneNumber();

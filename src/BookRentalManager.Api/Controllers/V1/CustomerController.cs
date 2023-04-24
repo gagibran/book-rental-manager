@@ -7,10 +7,19 @@ namespace BookRentalManager.Api.Controllers.V1;
 public sealed class CustomerController : ApiController
 {
     private readonly IDispatcher _dispatcher;
+    private readonly List<AllowedRestMethodsDto> _allowedRestMethodDtos;
 
     public CustomerController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
+        _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
+        {
+            new AllowedRestMethodsDto(nameof(GetCustomerByIdAsync), "GET", "self"),
+            new AllowedRestMethodsDto(nameof(PatchCustomerNameAndPhoneNumberByIdAsync), "PATCH", "patch_customer"),
+            new AllowedRestMethodsDto("RentBooks", "PATCH", "rent_books"),
+            new AllowedRestMethodsDto("ReturnBooks", "PATCH", "return_books"),
+            new AllowedRestMethodsDto(nameof(DeleteCustomerByIdAsync), "DELETE", "delete_customer")
+        };
     }
 
     [HttpGet(Name = nameof(GetCustomersByQueryParametersAsync))]
@@ -36,10 +45,10 @@ public sealed class CustomerController : ApiController
             queryParameters.SearchQuery,
             queryParameters.SortBy,
             getAllCustomersResult.Value!);
-        return Ok(getAllCustomersResult.Value);
+        return Ok(AddHateoasLinksToPaginatedCollection(_allowedRestMethodDtos, getAllCustomersResult.Value!));
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = nameof(GetCustomerByIdAsync))]
     [HttpHead("{id}")]
     [ActionName(nameof(GetCustomerByIdAsync))]
     public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -51,7 +60,7 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(getCustomerByIdResult);
         }
-        return Ok(getCustomerByIdResult.Value);
+        return Ok(AddHateoasLinks(_allowedRestMethodDtos, getCustomerByIdResult.Value!));
     }
 
     [HttpPost]
@@ -64,10 +73,13 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(createCustomerResult);
         }
-        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { Id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
+        return CreatedAtAction(
+            nameof(GetCustomerByIdAsync),
+            new { Id = createCustomerResult.Value!.Id },
+            AddHateoasLinks(_allowedRestMethodDtos, createCustomerResult.Value));
     }
 
-    [HttpPatch("{id}")]
+    [HttpPatch("{id}", Name = nameof(PatchCustomerNameAndPhoneNumberByIdAsync))]
     public async Task<ActionResult> PatchCustomerNameAndPhoneNumberByIdAsync(
         Guid id,
         JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> patchCustomerNameAndPhoneNumberDtoPatchDocument,
@@ -82,8 +94,8 @@ public sealed class CustomerController : ApiController
         return NoContent();
     }
 
-    [HttpPatch("{id}/rentBooks")]
-    [HttpPatch("{id}/returnBooks")]
+    [HttpPatch("{id}/RentBooks", Name = "RentBooks")]
+    [HttpPatch("{id}/ReturnBooks", Name = "ReturnBooks")]
     public async Task<ActionResult> ChangeCustomerBooksByBookIds(
         Guid id,
         JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
@@ -102,7 +114,7 @@ public sealed class CustomerController : ApiController
         return NoContent();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id}", Name = nameof(DeleteCustomerByIdAsync))]
     public async Task<ActionResult> DeleteCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var deleteCustomerByIdCommand = new DeleteCustomerByIdCommand(id);
@@ -121,8 +133,8 @@ public sealed class CustomerController : ApiController
         return Ok();
     }
 
-    [HttpOptions("{id}/rentBooks")]
-    [HttpOptions("{id}/returnBooks")]
+    [HttpOptions("{id}/RentBooks")]
+    [HttpOptions("{id}/ReturnBooks")]
     public async Task<ActionResult> GetCustomerRentAndReturnBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(

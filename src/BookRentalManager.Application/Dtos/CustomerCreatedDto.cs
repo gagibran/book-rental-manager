@@ -1,8 +1,7 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class CustomerCreatedDto
+public sealed class CustomerCreatedDto : SingleResourceBaseDto
 {
-    public Guid Id { get; }
     public string FirstName { get; }
     public string LastName { get; }
     public string Email { get; }
@@ -19,9 +18,8 @@ public sealed class CustomerCreatedDto
         int areaCode,
         int prefixAndLineNumber,
         string customerStatus,
-        int customerPoints)
+        int customerPoints) : base(id)
     {
-        Id = id;
         FirstName = firstName;
         LastName = lastName;
         Email = email;

@@ -1,8 +1,7 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetBookDto
+public sealed class GetBookDto : SingleResourceBaseDto
 {
-    public Guid Id { get; }
     public string BookTitle { get; }
     public IReadOnlyList<GetAuthorFromBookDto> Authors { get; }
     public int Edition { get; }
@@ -20,8 +19,8 @@ public sealed class GetBookDto
         DateTime? rentedAt,
         DateTime? dueDate,
         GetCustomerThatRentedBookDto rentedBy)
+        : base(id)
     {
-        Id = id;
         BookTitle = bookTitle;
         Authors = authors;
         Edition = edition.EditionNumber;

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using BookRentalManager.Application.Common;
 
 namespace BookRentalManager.Api.Common;
 
@@ -69,6 +70,40 @@ public abstract class ApiController : ControllerBase
     {
         AddErrorsToModelState(errorTypes, errorMessages);
         return ValidationProblem(modelStateDictionary: ModelState, statusCode: (int)httpStatusCode);
+    }
+
+    protected SingleResourceBaseDto AddHateoasLinks(List<AllowedRestMethodsDto> allowedRestMethodDtos, SingleResourceBaseDto singleResourceBaseDto)
+    {
+        if (!allowedRestMethodDtos.Any())
+        {
+            throw new ArgumentException($"{allowedRestMethodDtos} cannot be empty.");
+        }
+        var hateoasLinkDtos = new List<HateoasLinkDto>();
+        foreach (AllowedRestMethodsDto allowedRestMethodDto in allowedRestMethodDtos)
+        {
+            string? href = Url.Link(allowedRestMethodDto.Method, new { Id = singleResourceBaseDto.Id });
+            var hateoasLinkDto = new HateoasLinkDto(href!, allowedRestMethodDto.Rel, allowedRestMethodDto.MethodName);
+            hateoasLinkDtos.Add(hateoasLinkDto);
+        }
+        singleResourceBaseDto.Links = hateoasLinkDtos;
+        return singleResourceBaseDto;
+    }
+
+    protected PaginatedList<SingleResourceBaseDto> AddHateoasLinksToPaginatedCollection<TDto>(List<AllowedRestMethodsDto> allowedRestMethodDtos, PaginatedList<TDto> paginatedBaseDtos)
+        where TDto : SingleResourceBaseDto
+    {
+        var dtosWithHateoas = new List<SingleResourceBaseDto>();
+        foreach (SingleResourceBaseDto paginatedBaseDto in paginatedBaseDtos)
+        {
+            SingleResourceBaseDto dtoWithHateoas = AddHateoasLinks(allowedRestMethodDtos, paginatedBaseDto);
+            dtosWithHateoas.Add(dtoWithHateoas);
+        }
+        return new PaginatedList<SingleResourceBaseDto>(
+            dtosWithHateoas,
+            paginatedBaseDtos.TotalAmountOfItems,
+            paginatedBaseDtos.TotalAmountOfPages,
+            paginatedBaseDtos.PageIndex,
+            paginatedBaseDtos.PageSize);
     }
 
     private void AddErrorsToModelState(string errorTypes, string errorMessages)

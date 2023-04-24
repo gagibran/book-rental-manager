@@ -1,15 +1,12 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class AuthorCreatedDto
+public sealed class AuthorCreatedDto : SingleResourceBaseDto
 {
-    public Guid Id { get; }
-
     public string FirstName { get; }
     public string LastName { get; }
 
-    public AuthorCreatedDto(Guid id, string firstName, string lastName)
+    public AuthorCreatedDto(Guid id, string firstName, string lastName) : base(id)
     {
-        Id = id;
         FirstName = firstName;
         LastName = lastName;
     }
