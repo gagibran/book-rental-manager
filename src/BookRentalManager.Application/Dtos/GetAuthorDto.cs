@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetAuthorDto : SingleResourceBaseDto
+public sealed class GetAuthorDto : IdentifiableDto
 {
     public string FullName { get; }
     public IReadOnlyList<GetBookFromAuthorDto> Books { get; }

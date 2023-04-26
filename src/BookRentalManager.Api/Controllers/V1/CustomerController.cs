@@ -26,8 +26,13 @@ public sealed class CustomerController : ApiController
     [HttpHead]
     public async Task<ActionResult<PaginatedList<GetCustomerDto>>> GetCustomersByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
+        [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
+        if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue))
+        {
+            return CustomHttpErrorResponse(MediaTypeConstants.MediaTypeErrorType, MediaTypeConstants.MediaTypeErrorMessage, HttpStatusCode.BadRequest);
+        }
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             queryParameters.PageIndex,
             queryParameters.PageSize,
@@ -40,12 +45,17 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(getAllCustomersResult);
         }
-        CreatePagingMetadata(
-            nameof(GetCustomersByQueryParametersAsync),
-            queryParameters.SearchQuery,
-            queryParameters.SortBy,
-            getAllCustomersResult.Value!);
-        return Ok(AddHateoasLinksToPaginatedCollection(_allowedRestMethodDtos, getAllCustomersResult.Value!));
+        CreatePaginationMetadata(nameof(GetCustomersByQueryParametersAsync), getAllCustomersResult.Value!);
+        if (mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType))
+        {
+            CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
+                nameof(GetCustomersByQueryParametersAsync),
+                queryParameters,
+                _allowedRestMethodDtos,
+                getAllCustomersResult.Value!);
+            return Ok(collectionWithHateoasLinksDto);
+        }
+        return Ok(getAllCustomersResult.Value);
     }
 
     [HttpGet("{id}", Name = nameof(GetCustomerByIdAsync))]

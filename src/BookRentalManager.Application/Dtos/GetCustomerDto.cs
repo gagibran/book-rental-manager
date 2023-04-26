@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetCustomerDto : SingleResourceBaseDto
+public sealed class GetCustomerDto : IdentifiableDto
 {
     public string FullName { get; }
     public string Email { get; }

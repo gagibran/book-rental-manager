@@ -2,6 +2,7 @@ using BookRentalManager.Application.Extensions;
 using BookRentalManager.Infrastructure.Data;
 using BookRentalManager.Infrastructure.Data.Seeds;
 using BookRentalManager.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 
 // Add services to the container:
@@ -19,6 +20,16 @@ builder.Services.AddApiVersioning(apiVersioningOptions =>
 });
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
+builder.Services.Configure<MvcOptions>(config =>
+{
+    NewtonsoftJsonOutputFormatter? newtonsoftJsonOutputFormatter = config.OutputFormatters
+        .OfType<NewtonsoftJsonOutputFormatter>()
+        .FirstOrDefault();
+    if (newtonsoftJsonOutputFormatter is not null)
+    {
+        newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add(MediaTypeConstants.BookRentalManagerHateoasMediaType);
+    }
+});
 
 // Configure the HTTP request pipeline:
 WebApplication app = builder.Build();

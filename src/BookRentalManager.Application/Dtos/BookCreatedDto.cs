@@ -1,6 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class BookCreatedDto : SingleResourceBaseDto
+public sealed class BookCreatedDto : IdentifiableDto
 {
     public string BookTitle { get; }
     public int Edition { get; }
