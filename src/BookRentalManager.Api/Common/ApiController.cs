@@ -95,12 +95,10 @@ public abstract class ApiController : ControllerBase
         GetAllItemsQueryParameters queryParameters,
         PaginatedList<ExpandoObject> paginatedItems)
     {
-        string? previousPageLink = null;
-        string? nextPageLink = null;
         var hateoasLinkDtos = new List<HateoasLinkDto>();
         if (paginatedItems.HasPreviousPage)
         {
-            previousPageLink = Url.Link(routeName, new
+            string? previousPageLink = Url.Link(routeName, new
             {
                 PageIndex = paginatedItems.PageIndex - 1,
                 PageSize = paginatedItems.PageSize,
@@ -111,7 +109,7 @@ public abstract class ApiController : ControllerBase
         }
         if (paginatedItems.HasNextPage)
         {
-            nextPageLink = Url.Link(routeName, new
+            string? nextPageLink = Url.Link(routeName, new
             {
                 PageIndex = paginatedItems.PageIndex + 1,
                 PageSize = paginatedItems.PageSize,
