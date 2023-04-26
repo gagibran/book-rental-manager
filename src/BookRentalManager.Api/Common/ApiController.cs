@@ -6,7 +6,7 @@ namespace BookRentalManager.Api.Common;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public abstract class ApiController : ControllerBase
+public class ApiController : ControllerBase
 {
     protected ActionResult HandleError(Result result)
     {
@@ -61,9 +61,10 @@ public abstract class ApiController : ControllerBase
         IDictionary<string, object?> expandoObject = new ExpandoObject();
         foreach (PropertyInfo property in identifiableDto.GetType().GetProperties())
         {
-            expandoObject.Add(property.Name, property.GetValue(identifiableDto));
+            var propertyFirstLetterLowercase = char.ToLower(property.Name[0]).ToString() + property.Name[1..];
+            expandoObject.Add(propertyFirstLetterLowercase, property.GetValue(identifiableDto));
         }
-        expandoObject["Links"] = hateoasLinkDtos;
+        expandoObject["links"] = hateoasLinkDtos;
         return (ExpandoObject)expandoObject;
     }
 
@@ -88,6 +89,12 @@ public abstract class ApiController : ControllerBase
             paginatedBaseDtos.PageSize);
         List<HateoasLinkDto> links = CreatePreviousAndNextPagesLinks(routeName, queryParameters, values);
         return new CollectionWithHateoasLinksDto(values, links);
+    }
+
+    protected bool IsMediaTypeVendorSpecific(string? mediaType)
+    {
+        return MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue)
+            && mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType);
     }
 
     private List<HateoasLinkDto> CreatePreviousAndNextPagesLinks(

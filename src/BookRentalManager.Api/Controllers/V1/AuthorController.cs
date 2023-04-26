@@ -27,10 +27,6 @@ public sealed class AuthorController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue))
-        {
-            return CustomHttpErrorResponse(MediaTypeConstants.MediaTypeErrorType, MediaTypeConstants.MediaTypeErrorMessage, HttpStatusCode.BadRequest);
-        }
         var getAuthorsByQueryParametersQuery = new GetAuthorsByQueryParametersQuery(
             queryParameters.PageIndex,
             queryParameters.PageSize,
@@ -44,7 +40,7 @@ public sealed class AuthorController : ApiController
             return HandleError(getAllAuthorsResult);
         }
         CreatePaginationMetadata(nameof(GetAuthorsByQueryParametersAsync), getAllAuthorsResult.Value!);
-        if (mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType))
+        if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
                 nameof(GetAuthorsByQueryParametersAsync),
@@ -59,7 +55,10 @@ public sealed class AuthorController : ApiController
     [HttpGet("{id}", Name = nameof(GetAuthorByIdAsync))]
     [HttpHead("{id}")]
     [ActionName(nameof(GetAuthorByIdAsync))]
-    public async Task<ActionResult<GetAuthorDto>> GetAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetAuthorDto>> GetAuthorByIdAsync(
+        Guid id,
+        [FromHeader(Name = "Accept")] string? mediaType,
+        CancellationToken cancellationToken)
     {
         Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync<GetAuthorDto>(
             new GetAuthorByIdQuery(id),
@@ -68,11 +67,18 @@ public sealed class AuthorController : ApiController
         {
             return HandleError(getAuthorByIdResult);
         }
-        return Ok(AddHateoasLinks(_allowedRestMethodDtos, getAuthorByIdResult.Value!));
+        if (IsMediaTypeVendorSpecific(mediaType))
+        {
+            return Ok(AddHateoasLinks(_allowedRestMethodDtos, getAuthorByIdResult.Value!));
+        }
+        return Ok(getAuthorByIdResult.Value);
     }
 
     [HttpPost(Name = nameof(CreateAuthorAsync))]
-    public async Task<ActionResult> CreateAuthorAsync(CreateAuthorCommand createAuthorCommand, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateAuthorAsync(
+        CreateAuthorCommand createAuthorCommand,
+        [FromHeader(Name = "Accept")] string? mediaType,
+        CancellationToken cancellationToken)
     {
         Result<AuthorCreatedDto> createAuthorResult = await _dispatcher.DispatchAsync<AuthorCreatedDto>(
             createAuthorCommand,
@@ -81,10 +87,14 @@ public sealed class AuthorController : ApiController
         {
             return HandleError(createAuthorResult);
         }
-        return CreatedAtAction(
+        if (IsMediaTypeVendorSpecific(mediaType))
+        {
+            return CreatedAtAction(
             nameof(GetAuthorByIdAsync),
             new { Id = createAuthorResult.Value!.Id },
             AddHateoasLinks(_allowedRestMethodDtos, createAuthorResult.Value!));
+        }
+        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { Id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 
     [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthor))]

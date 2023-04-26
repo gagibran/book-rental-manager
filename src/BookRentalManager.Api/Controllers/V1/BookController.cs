@@ -27,10 +27,6 @@ public sealed class BookController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue))
-        {
-            return CustomHttpErrorResponse(MediaTypeConstants.MediaTypeErrorType, MediaTypeConstants.MediaTypeErrorMessage, HttpStatusCode.BadRequest);
-        }
         var getBooksByQueryParametersQuery = new GetBooksByQueryParametersQuery(
             queryParameters.PageIndex,
             queryParameters.PageSize,
@@ -44,7 +40,7 @@ public sealed class BookController : ApiController
             return HandleError(getAllBooksResult);
         }
         CreatePaginationMetadata(nameof(GetBooksByQueryParametersAsync), getAllBooksResult.Value!);
-        if (mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType))
+        if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
                 nameof(GetBooksByQueryParametersAsync),
@@ -62,6 +58,7 @@ public sealed class BookController : ApiController
     public async Task<ActionResult<GetBookDto>> GetBookByIdAsync(
         Guid authorId,
         Guid id,
+        [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
         var getBookByIdQuery = new GetBookByIdQuery(id);
@@ -70,12 +67,17 @@ public sealed class BookController : ApiController
         {
             return HandleError(getBookByIdResult);
         }
-        return Ok(AddHateoasLinks(_allowedRestMethodDtos, getBookByIdResult.Value!));
+        if (IsMediaTypeVendorSpecific(mediaType))
+        {
+            return Ok(AddHateoasLinks(_allowedRestMethodDtos, getBookByIdResult.Value!));
+        }
+        return Ok(getBookByIdResult.Value);
     }
 
     [HttpPost(Name = nameof(CreateBookAsync))]
     public async Task<ActionResult> CreateBookAsync(
         CreateBookCommand createBookCommand,
+        [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
         Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookCommand, cancellationToken);
@@ -83,10 +85,14 @@ public sealed class BookController : ApiController
         {
             return HandleError(createBookResult);
         }
-        return CreatedAtAction(
-            nameof(GetBookByIdAsync),
-            new { Id = createBookResult.Value!.Id },
-            AddHateoasLinks(_allowedRestMethodDtos, createBookResult.Value));
+        if (IsMediaTypeVendorSpecific(mediaType))
+        {
+            return CreatedAtAction(
+                nameof(GetBookByIdAsync),
+                new { Id = createBookResult.Value!.Id },
+                AddHateoasLinks(_allowedRestMethodDtos, createBookResult.Value));
+        }
+        return CreatedAtAction(nameof(GetBookByIdAsync), new { Id = createBookResult.Value!.Id }, _allowedRestMethodDtos);
     }
 
     [HttpPatch("{id}", Name = nameof(PatchBookTitleEditionAndIsbnByIdAsync))]
@@ -127,10 +133,6 @@ public sealed class BookController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue))
-        {
-            return CustomHttpErrorResponse(MediaTypeConstants.MediaTypeErrorType, MediaTypeConstants.MediaTypeErrorMessage, HttpStatusCode.BadRequest);
-        }
         var getBooksBySearchParameterFromAuthor = new GetBooksByQueryParametersExcludingFromAuthorQuery(
             authorId,
             queryParameters.PageIndex,
@@ -145,7 +147,7 @@ public sealed class BookController : ApiController
             return HandleError(getAllBooksResult);
         }
         CreatePaginationMetadata(nameof(GetBooksByQueryParametersExcludingFromAuthorAsync), getAllBooksResult.Value!);
-        if (mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType))
+        if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
                 nameof(GetBooksByQueryParametersExcludingFromAuthorAsync),

@@ -29,10 +29,6 @@ public sealed class CustomerController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue))
-        {
-            return CustomHttpErrorResponse(MediaTypeConstants.MediaTypeErrorType, MediaTypeConstants.MediaTypeErrorMessage, HttpStatusCode.BadRequest);
-        }
         var getCustomersByQueryParametersQuery = new GetCustomersByQueryParametersQuery(
             queryParameters.PageIndex,
             queryParameters.PageSize,
@@ -46,7 +42,7 @@ public sealed class CustomerController : ApiController
             return HandleError(getAllCustomersResult);
         }
         CreatePaginationMetadata(nameof(GetCustomersByQueryParametersAsync), getAllCustomersResult.Value!);
-        if (mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType))
+        if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
                 nameof(GetCustomersByQueryParametersAsync),
@@ -61,7 +57,10 @@ public sealed class CustomerController : ApiController
     [HttpGet("{id}", Name = nameof(GetCustomerByIdAsync))]
     [HttpHead("{id}")]
     [ActionName(nameof(GetCustomerByIdAsync))]
-    public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<GetCustomerDto>> GetCustomerByIdAsync(
+        Guid id,
+        [FromHeader(Name = "Accept")] string? mediaType,
+        CancellationToken cancellationToken)
     {
         Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
             new GetCustomerByIdQuery(id),
@@ -70,11 +69,18 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(getCustomerByIdResult);
         }
-        return Ok(AddHateoasLinks(_allowedRestMethodDtos, getCustomerByIdResult.Value!));
+        if (IsMediaTypeVendorSpecific(mediaType))
+        {
+            return Ok(AddHateoasLinks(_allowedRestMethodDtos, getCustomerByIdResult.Value!));
+        }
+        return Ok(getCustomerByIdResult.Value);
     }
 
     [HttpPost]
-    public async Task<ActionResult> CreateCustomerAsync(CreateCustomerCommand createCustomerCommand, CancellationToken cancellationToken)
+    public async Task<ActionResult> CreateCustomerAsync(
+        CreateCustomerCommand createCustomerCommand,
+        [FromHeader(Name = "Accept")] string? mediaType,
+        CancellationToken cancellationToken)
     {
         Result<CustomerCreatedDto> createCustomerResult = await _dispatcher.DispatchAsync<CustomerCreatedDto>(
             createCustomerCommand,
@@ -83,10 +89,14 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(createCustomerResult);
         }
-        return CreatedAtAction(
-            nameof(GetCustomerByIdAsync),
-            new { Id = createCustomerResult.Value!.Id },
-            AddHateoasLinks(_allowedRestMethodDtos, createCustomerResult.Value));
+        if (IsMediaTypeVendorSpecific(mediaType))
+        {
+            return CreatedAtAction(
+                nameof(GetCustomerByIdAsync),
+                new { Id = createCustomerResult.Value!.Id },
+                AddHateoasLinks(_allowedRestMethodDtos, createCustomerResult.Value));
+        }
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { Id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 
     [HttpPatch("{id}", Name = nameof(PatchCustomerNameAndPhoneNumberByIdAsync))]
