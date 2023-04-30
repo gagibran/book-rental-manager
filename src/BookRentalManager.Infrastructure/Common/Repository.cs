@@ -2,7 +2,7 @@ using BookRentalManager.Infrastructure.Data;
 
 namespace BookRentalManager.Infrastructure.Common;
 
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
+public sealed class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
 {
     private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
     private readonly DbSet<TEntity> _dbSet;
@@ -56,12 +56,12 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
         await SaveAsync(cancellationToken);
     }
 
-    public async Task SaveAsync(CancellationToken cancellationToken = default)
+    private async Task SaveAsync(CancellationToken cancellationToken = default)
     {
         await _bookRentalManagerDbContext.SaveChangesAsync();
     }
 
-    public IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification)
+    private IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification)
     {
         return SpecificationEvaluator.GetQuery<TEntity>(query, specification);
     }

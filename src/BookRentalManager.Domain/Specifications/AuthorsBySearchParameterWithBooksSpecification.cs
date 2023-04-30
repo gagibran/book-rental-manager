@@ -9,5 +9,6 @@ public sealed class AuthorsBySearchParameterWithBooksSpecification : Specificati
             || author.FullName.LastName.ToLower().Contains(formattedSearchParameters);
         IncludeExpressions.Add(author => author.Books);
         OrderByPropertyName = sortParameters;
+        CacheKey = nameof(AuthorsBySearchParameterWithBooksSpecification) + "-" + sortParameters;
     }
 }

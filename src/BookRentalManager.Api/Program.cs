@@ -30,6 +30,7 @@ builder.Services.Configure<MvcOptions>(config =>
         newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add(MediaTypeConstants.BookRentalManagerHateoasMediaType);
     }
 });
+builder.Services.AddMemoryCache();
 
 // Configure the HTTP request pipeline:
 WebApplication app = builder.Build();
