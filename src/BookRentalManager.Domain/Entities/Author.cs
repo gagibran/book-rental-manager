@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Author : AggregateRoot
+public sealed class Author : Entity
 {
     private readonly List<Book> _books;
 
