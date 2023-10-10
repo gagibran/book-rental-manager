@@ -30,3 +30,8 @@ global using BookRentalManager.Application.Books.Commands;
 global using BookRentalManager.Application.Books.CommandHandlers;
 global using Microsoft.Extensions.Logging;
 global using BookRentalManager.Application.Decorators;
+global using BookRentalManager.Api.Controllers.V1;
+global using Microsoft.AspNetCore.Mvc;
+global using BookRentalManager.Api.QueryParameters;
+global using System.Net;
+global using BookRentalManager.Api.Constants;

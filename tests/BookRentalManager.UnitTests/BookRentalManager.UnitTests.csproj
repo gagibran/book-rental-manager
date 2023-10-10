@@ -28,6 +28,7 @@
     <ProjectReference Include="..\..\src\BookRentalManager.Domain\BookRentalManager.Domain.csproj" />
     <ProjectReference Include="..\..\src\BookRentalManager.Application\BookRentalManager.Application.csproj" />
     <ProjectReference Include="..\..\src\BookRentalManager.Infrastructure\BookRentalManager.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\BookRentalManager.Api\BookRentalManager.Api.csproj" />
   </ItemGroup>
 
 </Project>
