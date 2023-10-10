@@ -1,4 +1,4 @@
-name: Build Test And Deploy
+name: Build And Test
 
 on:
   - pull_request
@@ -26,26 +26,3 @@ jobs:
 
     - name: Run .NET Tests
       run: dotnet test --no-restore --verbosity normal
-
-  # nodejs_build_and_test:
-  #   needs: dotnet_build_and_test
-  #   name: Build And Test Node.js 18.x.x Projects
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       working-directory: src/ClientApp/
-
-  #   steps:
-  #   - name: Checkout To Branch
-  #     uses: actions/checkout@v3
-
-  #   - name: Setup Node.js 18.x.x
-  #     uses: actions/setup-node@v3
-  #     with:
-  #       node-version: 18.x
-
-  #   - name: Install Node.js
-  #     run: npm ci
-
-  #   - name: Build Node.js
-  #     run: npm run build
