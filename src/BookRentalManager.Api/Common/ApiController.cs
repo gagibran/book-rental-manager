@@ -10,18 +10,18 @@ public class ApiController : ControllerBase
 {
     protected ActionResult HandleError(Result result)
     {
-        switch (result.ErrorType)
+        return result.ErrorType switch
         {
-            case string error when error.ToLower().Contains("id"):
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
-            case "jsonPatch":
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
-            default:
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
-        }
+            string error when error.ToLower().Contains("id") => CustomHttpErrorResponse(
+                result.ErrorType,
+                result.ErrorMessage,
+                HttpStatusCode.NotFound),
+            "jsonPatch" => CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest),
+            _ => CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity),
+        };
     }
 
-    protected void CreatePaginationMetadata<TItem>(string routeName, PaginatedList<TItem> paginatedList)
+    protected void CreatePaginationMetadata<TItem>(PaginatedList<TItem> paginatedList)
     {
         int totalAmountOfPages = paginatedList.TotalAmountOfPages == int.MinValue ? 0 : paginatedList.TotalAmountOfPages;
         string serializedMetadata = JsonSerializer.Serialize(
@@ -54,7 +54,7 @@ public class ApiController : ControllerBase
         var hateoasLinkDtos = new List<HateoasLinkDto>();
         foreach (AllowedRestMethodsDto allowedRestMethodDto in allowedRestMethodDtos)
         {
-            string? href = Url.Link(allowedRestMethodDto.Method, new { Id = identifiableDto.Id });
+            string? href = Url.Link(allowedRestMethodDto.Method, new { identifiableDto.Id });
             var hateoasLinkDto = new HateoasLinkDto(href!, allowedRestMethodDto.Rel, allowedRestMethodDto.MethodName);
             hateoasLinkDtos.Add(hateoasLinkDto);
         }

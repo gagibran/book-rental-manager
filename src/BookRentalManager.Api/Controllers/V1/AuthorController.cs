@@ -32,14 +32,14 @@ public sealed class AuthorController : ApiController
             queryParameters.PageSize,
             queryParameters.SearchQuery,
             queryParameters.SortBy);
-        Result<PaginatedList<GetAuthorDto>> getAllAuthorsResult = await _dispatcher.DispatchAsync<PaginatedList<GetAuthorDto>>(
+        Result<PaginatedList<GetAuthorDto>> getAllAuthorsResult = await _dispatcher.DispatchAsync(
                 getAuthorsByQueryParametersQuery,
                 cancellationToken);
         if (!getAllAuthorsResult.IsSuccess)
         {
             return HandleError(getAllAuthorsResult);
         }
-        CreatePaginationMetadata(nameof(GetAuthorsByQueryParametersAsync), getAllAuthorsResult.Value!);
+        CreatePaginationMetadata(getAllAuthorsResult.Value!);
         if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
@@ -60,7 +60,7 @@ public sealed class AuthorController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync<GetAuthorDto>(
+        Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync(
             new GetAuthorByIdQuery(id),
             cancellationToken);
         if (!getAuthorByIdResult.IsSuccess)
@@ -80,7 +80,7 @@ public sealed class AuthorController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        Result<AuthorCreatedDto> createAuthorResult = await _dispatcher.DispatchAsync<AuthorCreatedDto>(
+        Result<AuthorCreatedDto> createAuthorResult = await _dispatcher.DispatchAsync(
             createAuthorCommand,
             cancellationToken);
         if (!createAuthorResult.IsSuccess)
@@ -90,11 +90,11 @@ public sealed class AuthorController : ApiController
         if (IsMediaTypeVendorSpecific(mediaType))
         {
             return CreatedAtAction(
-            nameof(GetAuthorByIdAsync),
-            new { Id = createAuthorResult.Value!.Id },
-            AddHateoasLinks(_allowedRestMethodDtos, createAuthorResult.Value!));
+                nameof(GetAuthorByIdAsync),
+                new { createAuthorResult.Value!.Id },
+                AddHateoasLinks(_allowedRestMethodDtos, createAuthorResult.Value!));
         }
-        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { Id = createAuthorResult.Value!.Id }, createAuthorResult.Value);
+        return CreatedAtAction(nameof(GetAuthorByIdAsync), new { createAuthorResult.Value!.Id }, createAuthorResult.Value);
     }
 
     [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthor))]
@@ -126,7 +126,7 @@ public sealed class AuthorController : ApiController
     [HttpOptions("{id}/AddBooks")]
     public async Task<ActionResult> GetAuthorAddBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
-        Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync<GetAuthorDto>(
+        Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync(
             new GetAuthorByIdQuery(id),
             cancellationToken);
         if (!getAuthorByIdResult.IsSuccess)

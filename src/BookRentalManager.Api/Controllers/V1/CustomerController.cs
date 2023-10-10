@@ -34,14 +34,14 @@ public sealed class CustomerController : ApiController
             queryParameters.PageSize,
             queryParameters.SearchQuery,
             queryParameters.SortBy);
-        Result<PaginatedList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync<PaginatedList<GetCustomerDto>>(
+        Result<PaginatedList<GetCustomerDto>> getAllCustomersResult = await _dispatcher.DispatchAsync(
             getCustomersByQueryParametersQuery,
             cancellationToken);
         if (!getAllCustomersResult.IsSuccess)
         {
             return HandleError(getAllCustomersResult);
         }
-        CreatePaginationMetadata(nameof(GetCustomersByQueryParametersAsync), getAllCustomersResult.Value!);
+        CreatePaginationMetadata(getAllCustomersResult.Value!);
         if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
@@ -62,7 +62,7 @@ public sealed class CustomerController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
+        Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync(
             new GetCustomerByIdQuery(id),
             cancellationToken);
         if (!getCustomerByIdResult.IsSuccess)
@@ -82,7 +82,7 @@ public sealed class CustomerController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        Result<CustomerCreatedDto> createCustomerResult = await _dispatcher.DispatchAsync<CustomerCreatedDto>(
+        Result<CustomerCreatedDto> createCustomerResult = await _dispatcher.DispatchAsync(
             createCustomerCommand,
             cancellationToken);
         if (!createCustomerResult.IsSuccess)
@@ -157,7 +157,7 @@ public sealed class CustomerController : ApiController
     [HttpOptions("{id}/ReturnBooks")]
     public async Task<ActionResult> GetCustomerRentAndReturnBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
-        Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync<GetCustomerDto>(
+        Result<GetCustomerDto> getCustomerByIdResult = await _dispatcher.DispatchAsync(
             new GetCustomerByIdQuery(id),
             cancellationToken);
         if (!getCustomerByIdResult.IsSuccess)

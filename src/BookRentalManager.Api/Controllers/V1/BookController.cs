@@ -32,14 +32,14 @@ public sealed class BookController : ApiController
             queryParameters.PageSize,
             queryParameters.SearchQuery,
             queryParameters.SortBy);
-        Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
+        Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync(
                 getBooksByQueryParametersQuery,
                 cancellationToken);
         if (!getAllBooksResult.IsSuccess)
         {
             return HandleError(getAllBooksResult);
         }
-        CreatePaginationMetadata(nameof(GetBooksByQueryParametersAsync), getAllBooksResult.Value!);
+        CreatePaginationMetadata(getAllBooksResult.Value!);
         if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
@@ -56,13 +56,12 @@ public sealed class BookController : ApiController
     [HttpHead("{id}")]
     [ActionName(nameof(GetBookByIdAsync))]
     public async Task<ActionResult<GetBookDto>> GetBookByIdAsync(
-        Guid authorId,
         Guid id,
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
         var getBookByIdQuery = new GetBookByIdQuery(id);
-        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync<GetBookDto>(getBookByIdQuery, cancellationToken);
+        Result<GetBookDto> getBookByIdResult = await _dispatcher.DispatchAsync(getBookByIdQuery, cancellationToken);
         if (!getBookByIdResult.IsSuccess)
         {
             return HandleError(getBookByIdResult);
@@ -80,7 +79,7 @@ public sealed class BookController : ApiController
         [FromHeader(Name = "Accept")] string? mediaType,
         CancellationToken cancellationToken)
     {
-        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync<BookCreatedDto>(createBookCommand, cancellationToken);
+        Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync(createBookCommand, cancellationToken);
         if (!createBookResult.IsSuccess)
         {
             return HandleError(createBookResult);
@@ -139,14 +138,14 @@ public sealed class BookController : ApiController
             queryParameters.PageSize,
             queryParameters.SearchQuery,
             queryParameters.SortBy);
-        Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync<PaginatedList<GetBookDto>>(
+        Result<PaginatedList<GetBookDto>> getAllBooksResult = await _dispatcher.DispatchAsync(
                 getBooksBySearchParameterFromAuthor,
                 cancellationToken);
         if (!getAllBooksResult.IsSuccess)
         {
             return HandleError(getAllBooksResult);
         }
-        CreatePaginationMetadata(nameof(GetBooksByQueryParametersExcludingFromAuthorAsync), getAllBooksResult.Value!);
+        CreatePaginationMetadata(getAllBooksResult.Value!);
         if (IsMediaTypeVendorSpecific(mediaType))
         {
             CollectionWithHateoasLinksDto collectionWithHateoasLinksDto = AddHateoasLinksToPaginatedCollection(
