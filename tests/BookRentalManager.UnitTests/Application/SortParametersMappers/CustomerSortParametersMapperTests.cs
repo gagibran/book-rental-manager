@@ -1,4 +1,4 @@
-namespace CustomerRentalManager.UnitTests.Application.SortParametersMappers;
+namespace BookRentalManager.UnitTests.Application.SortParametersMappers;
 
 public sealed class CustomerSortParametersMapperTests
 {
