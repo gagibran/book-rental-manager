@@ -15,7 +15,7 @@ public sealed class AuthorTests
     public void AddBook_WithExistingBook_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = $"A book with the ID '{_book.Id}' has already been added to this author.";
+        var expectedErrorMessage = $"A book with the ISBN '{_book.Isbn}' has already been added to this author.";
         _author.AddBook(_book);
 
         // Act:
