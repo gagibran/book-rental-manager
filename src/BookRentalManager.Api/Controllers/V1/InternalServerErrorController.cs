@@ -14,6 +14,7 @@ public sealed class InternalServerErrorController : ApiController
     }
 
     [Route("/internalServerError")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public ActionResult HandleInternalServerError()
     {
         Exception exception = HttpContext.Features.Get<IExceptionHandlerFeature>()!.Error;

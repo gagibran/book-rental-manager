@@ -27,9 +27,9 @@ public class ApiController : ControllerBase
         string serializedMetadata = JsonSerializer.Serialize(
             new
             {
-                TotalAmountOfItems = paginatedList.TotalAmountOfItems,
-                PageIndex = paginatedList.PageIndex,
-                PageSize = paginatedList.PageSize,
+                paginatedList.TotalAmountOfItems,
+                paginatedList.PageIndex,
+                paginatedList.PageSize,
                 TotalAmountOfPages = totalAmountOfPages,
             },
             new JsonSerializerOptions
@@ -108,9 +108,9 @@ public class ApiController : ControllerBase
             string? previousPageLink = Url.Link(routeName, new
             {
                 PageIndex = paginatedItems.PageIndex - 1,
-                PageSize = paginatedItems.PageSize,
-                SearchQuery = queryParameters.SearchQuery,
-                SortBy = queryParameters.SortBy
+                paginatedItems.PageSize,
+                queryParameters.SearchQuery,
+                queryParameters.SortBy
             });
             hateoasLinkDtos.Add(new HateoasLinkDto(previousPageLink!, "previous_page", "GET"));
         }
@@ -119,9 +119,9 @@ public class ApiController : ControllerBase
             string? nextPageLink = Url.Link(routeName, new
             {
                 PageIndex = paginatedItems.PageIndex + 1,
-                PageSize = paginatedItems.PageSize,
-                SearchQuery = queryParameters.SearchQuery,
-                SortBy = queryParameters.SortBy
+                paginatedItems.PageSize,
+                queryParameters.SearchQuery,
+                queryParameters.SortBy
             });
             hateoasLinkDtos.Add(new HateoasLinkDto(nextPageLink!, "next_page", "GET"));
         }

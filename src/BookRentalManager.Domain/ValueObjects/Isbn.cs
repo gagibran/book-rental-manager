@@ -21,11 +21,16 @@ public sealed class Isbn : ValueObject
         {
             return Result.Fail<Isbn>("isbnFormat", "Invalid ISBN format.");
         }
-        return Result.Success<Isbn>(new Isbn(isbnValue.Trim()));
+        return Result.Success(new Isbn(isbnValue.Trim()));
     }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return IsbnValue;
+    }
+
+    public override string ToString()
+    {
+        return IsbnValue;
     }
 }

@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Customer : Entity
+public sealed class Customer : AggregateRoot
 {
     private readonly List<Book> _books;
 
@@ -113,14 +113,11 @@ public sealed class Customer : Entity
 
     private DateTime GetReturnDueDate()
     {
-        switch (CustomerStatus.CustomerType)
+        return CustomerStatus.CustomerType switch
         {
-            case CustomerType.Adventurer:
-                return DateTime.UtcNow.AddDays(16);
-            case CustomerType.Master:
-                return DateTime.UtcNow.AddDays(30);
-            default:
-                return DateTime.UtcNow.AddDays(7);
-        }
+            CustomerType.Adventurer => DateTime.UtcNow.AddDays(16),
+            CustomerType.Master => DateTime.UtcNow.AddDays(30),
+            _ => DateTime.UtcNow.AddDays(7)
+        };
     }
 }

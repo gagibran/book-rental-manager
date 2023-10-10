@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Author : Entity
+public sealed class Author : AggregateRoot
 {
     private readonly List<Book> _books;
 
@@ -23,7 +23,7 @@ public sealed class Author : Entity
     {
         if (_books.Select(book => book.Id).Contains(book.Id))
         {
-            return Result.Fail("book", $"A book with the ID '{book.Id}' has already been added to this author.");
+            return Result.Fail("book", $"A book with the ISBN '{book.Isbn}' has already been added to this author.");
         }
         book.AddAuthor(this);
         _books.Add(book);

@@ -121,7 +121,7 @@ public sealed class CustomerController : ApiController
         JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
         CancellationToken cancellationToken)
     {
-        var isReturn = Request.Path.Value!.Contains("return");
+        var isReturn = Request.Path.Value!.Contains("return", StringComparison.OrdinalIgnoreCase);
         var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
             id,
             changeCustomerBooksByBookIdsDtoPatchDocument,

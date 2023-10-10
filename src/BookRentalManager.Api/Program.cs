@@ -8,16 +8,28 @@ using Microsoft.EntityFrameworkCore;
 // Add services to the container:
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services
-    .AddControllers(mvcOptions => mvcOptions.ReturnHttpNotAcceptable = true)
+    .AddControllers(mvcOptions =>
+    {
+        mvcOptions.Filters.Add(new ProducesAttribute(
+            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            MediaTypeConstants.ApplicationJsonMediaType));
+        mvcOptions.ReturnHttpNotAcceptable = true;
+    })
     .AddNewtonsoftJson();
 builder.Services.AddDbContext<BookRentalManagerDbContext>(dbContextOptionsBuilder =>
 {
     dbContextOptionsBuilder.UseNpgsql(builder.Configuration.GetConnectionString("BookRentalManagerConnectionString"));
 });
-builder.Services.AddApiVersioning(apiVersioningOptions =>
-{
-    apiVersioningOptions.ApiVersionReader = new UrlSegmentApiVersionReader();
-});
+builder.Services
+    .AddApiVersioning(apiVersioningOptions =>
+    {
+        apiVersioningOptions.ApiVersionReader = new UrlSegmentApiVersionReader();
+    })
+    .AddApiExplorer(apiExplorerAction =>
+    {
+        apiExplorerAction.GroupNameFormat = "'v'VVV";
+        apiExplorerAction.SubstituteApiVersionInUrl = true;
+    });
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 builder.Services.Configure<MvcOptions>(config =>
@@ -31,6 +43,7 @@ builder.Services.Configure<MvcOptions>(config =>
     }
 });
 builder.Services.AddMemoryCache();
+builder.Services.AddSwaggerGen();
 
 // Configure the HTTP request pipeline:
 WebApplication app = builder.Build();
@@ -48,5 +61,7 @@ if (app.Environment.IsDevelopment())
     await bookRentalManagerDbContext.Database.MigrateAsync();
     TestDataSeeder testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
     await testDataSeeder.SeedTestDataAsync();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 app.Run();
