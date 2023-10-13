@@ -22,7 +22,7 @@ public sealed class DeleteBookByIdCommandHandler : IRequestHandler<DeleteBookByI
         if (book.Customer is not null)
         {
             return Result.Fail<GetBookDto>(
-                "bookCustomer", $"This book is currently rented by {book.Customer.FullName.ToString()}. Return the book before deleting it.");
+                "bookCustomer", $"This book is currently rented by {book.Customer.FullName}. Return the book before deleting it.");
         }
         await _bookRepository.DeleteAsync(book, cancellationToken);
         return Result.Success();

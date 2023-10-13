@@ -17,7 +17,7 @@ public sealed class CustomerToPatchCustomerNameAndPhoneNumberDtoMapperTests
         // Act:
         PatchCustomerNameAndPhoneNumberDto actualPatchCustomerNameAndPhoneNumberDto = customerToPatchCustomerNameAndPhoneNumberDtoMapper.Map(customer);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedPatchCustomerNameAndPhoneNumberDto.FirstName, actualPatchCustomerNameAndPhoneNumberDto.FirstName);
         Assert.Equal(expectedPatchCustomerNameAndPhoneNumberDto.LastName, actualPatchCustomerNameAndPhoneNumberDto.LastName);
         Assert.Equal(expectedPatchCustomerNameAndPhoneNumberDto.AreaCode, actualPatchCustomerNameAndPhoneNumberDto.AreaCode);

@@ -29,7 +29,7 @@ internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler : IRequestH
         if (book.Customer is not null)
         {
             return Result.Fail<GetBookDto>(
-                "bookCustomer", $"This book is currently rented by {book.Customer.FullName.ToString()}. Return the book before updating it.");
+                "bookCustomer", $"This book is currently rented by {book.Customer.FullName}. Return the book before updating it.");
         }
         PatchBookTitleEditionAndIsbnByIdDto patchBookTitleEditionAndIsbnByIdDto = _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper.Map(book);
         Result patchAppliedResult = patchBookTitleEditionAndIsbnByIdCommand.PatchBookTitleEditionAndIsbnByIdDtoPatchDocument.ApplyTo(

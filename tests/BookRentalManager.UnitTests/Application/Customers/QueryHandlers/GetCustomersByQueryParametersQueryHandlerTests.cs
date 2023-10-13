@@ -98,7 +98,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             _getCustomersByQueryParametersQuery,
             It.IsAny<CancellationToken>());
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         GetCustomerDto actualGetCustomerDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(expectedGetCustomerDto.Id, actualGetCustomerDto.Id);
         Assert.Equal(expectedGetCustomerDto.FullName, actualGetCustomerDto.FullName);

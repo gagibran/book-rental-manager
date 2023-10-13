@@ -13,7 +13,7 @@ public sealed class AuthorToAuthorCreatedDtoMapperTests
         // Act:
         AuthorCreatedDto actualAuthorCreatedDto = authorsToGetAuthorFromBookDtosMapper.Map(author);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedAuthorCreatedDto.Id, actualAuthorCreatedDto.Id);
         Assert.Equal(expectedAuthorCreatedDto.FirstName, actualAuthorCreatedDto.FirstName);
         Assert.Equal(expectedAuthorCreatedDto.LastName, actualAuthorCreatedDto.LastName);

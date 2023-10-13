@@ -13,7 +13,7 @@ public sealed class CustomerToGetCustomerThatRentedBookDtoMapperTests
         // Act:
         GetCustomerThatRentedBookDto actualGetCustomerThatRentedBookDto = customerToGetCustomerThatRentedBookDtoMapper.Map(customer);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedGetCustomerThatRentedBookDto.FullName, actualGetCustomerThatRentedBookDto.FullName);
         Assert.Equal(expectedGetCustomerThatRentedBookDto.Email, actualGetCustomerThatRentedBookDto.Email);
     }
@@ -28,7 +28,7 @@ public sealed class CustomerToGetCustomerThatRentedBookDtoMapperTests
         // Act:
         GetCustomerThatRentedBookDto actualGetCustomerThatRentedBookDto = customerToGetCustomerThatRentedBookDtoMapper.Map(null);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedGetCustomerThatRentedBookDto.FullName, actualGetCustomerThatRentedBookDto.FullName);
         Assert.Equal(expectedGetCustomerThatRentedBookDto.Email, actualGetCustomerThatRentedBookDto.Email);
     }

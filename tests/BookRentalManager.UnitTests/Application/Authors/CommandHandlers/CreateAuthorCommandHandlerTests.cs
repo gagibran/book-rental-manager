@@ -28,7 +28,7 @@ public sealed class CreateAuthorCommandHandlerTests
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_author);
-        var expectedErrorMessage = $"An author named '{_author.FullName.ToString()}' already exists.";
+        var expectedErrorMessage = $"An author named '{_author.FullName}' already exists.";
 
         // Act:
         Result handleResult = await _createAuthorCommandHandler.HandleAsync(_createAuthorCommand, default);
@@ -49,7 +49,7 @@ public sealed class CreateAuthorCommandHandlerTests
         // Act:
         Result<AuthorCreatedDto> handleResult = await _createAuthorCommandHandler.HandleAsync(_createAuthorCommand, default);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedAuthorCreatedDto.Id, handleResult.Value!.Id);
         Assert.Equal(expectedAuthorCreatedDto.FirstName, handleResult.Value!.FirstName);
         Assert.Equal(expectedAuthorCreatedDto.LastName, handleResult.Value!.LastName);

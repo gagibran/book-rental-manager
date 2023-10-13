@@ -1,8 +1,11 @@
 namespace BookRentalManager.Domain.ValueObjects;
 
-public sealed class Isbn : ValueObject
+public sealed partial class Isbn : ValueObject
 {
     public string IsbnValue { get; }
+
+    [GeneratedRegex("\\s+|-+")]
+    private static partial Regex FormattedIsbn();
 
     private Isbn()
     {
@@ -16,7 +19,7 @@ public sealed class Isbn : ValueObject
 
     public static Result<Isbn> Create(string isbnValue)
     {
-        string formattedIsbn = Regex.Replace(isbnValue, @"\s+|-+", "").ToUpper();
+        string formattedIsbn = FormattedIsbn().Replace(isbnValue, "").ToUpper();
         if (formattedIsbn.Length != 10 && formattedIsbn.Length != 13)
         {
             return Result.Fail<Isbn>("isbnFormat", "Invalid ISBN format.");

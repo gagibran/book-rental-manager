@@ -94,7 +94,7 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             _getBooksByQueryParametersExcludingFromAuthorQuery,
             It.IsAny<CancellationToken>());
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         GetBookDto actualGetBookDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(getBookDto.Id, actualGetBookDto.Id);
         Assert.Equal(getBookDto.BookTitle, actualGetBookDto.BookTitle);

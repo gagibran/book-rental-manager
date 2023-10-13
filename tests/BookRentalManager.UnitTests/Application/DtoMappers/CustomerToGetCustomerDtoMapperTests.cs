@@ -24,7 +24,7 @@ public sealed class CustomerToGetCustomerDtoMapperTests
         // Act:
         GetCustomerDto getCustomerDto = customerToGetCustomerDtoMapper.Map(customer);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedGetCustomerDto.Id, getCustomerDto.Id);
         Assert.Equal(expectedGetCustomerDto.FullName, getCustomerDto.FullName);
         Assert.Equal(expectedGetCustomerDto.Email, getCustomerDto.Email);

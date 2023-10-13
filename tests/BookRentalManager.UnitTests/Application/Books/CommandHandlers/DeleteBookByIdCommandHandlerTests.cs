@@ -45,7 +45,7 @@ public sealed class DeleteBookByIdCommandHandlerTests
     {
         // Arrange:
         Customer customer = TestFixtures.CreateDummyCustomer();
-        var expectedErrorMessage = $"This book is currently rented by {customer.FullName.ToString()}. Return the book before deleting it.";
+        var expectedErrorMessage = $"This book is currently rented by {customer.FullName}. Return the book before deleting it.";
         customer.RentBook(_book);
 
         // Act:

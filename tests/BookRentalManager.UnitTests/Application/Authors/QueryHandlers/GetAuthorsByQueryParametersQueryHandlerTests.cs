@@ -87,7 +87,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             _getAuthorsByQueryParametersQuery,
             It.IsAny<CancellationToken>());
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         GetAuthorDto actualGetAuthorDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(expectedGetAuthorDto.Id, actualGetAuthorDto.Id);
         Assert.Equal(expectedGetAuthorDto.FullName, actualGetAuthorDto.FullName);

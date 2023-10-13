@@ -21,7 +21,7 @@ public sealed class BookTests
             Edition.Create(1).Value!,
             Isbn.Create("978-1548234355").Value!);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedBookTitle, book.BookTitle);
         Assert.Equal(new List<Author>(), book.Authors);
         Assert.Null(book.RentedAt);
@@ -48,9 +48,9 @@ public sealed class BookTests
     public void UpdateBookTitleEditionAndIsbn_WithValidData_ReturnsCorrectUpdatedValues(int edition, string isbn)
     {
         // Act:
-        Result updateBookTitleEditionAndIsbnResult = _book.UpdateBookTitleEditionAndIsbn(_book.BookTitle, edition, isbn);
+        _book.UpdateBookTitleEditionAndIsbn(_book.BookTitle, edition, isbn);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(edition, _book.Edition.EditionNumber);
         Assert.Equal(isbn, _book.Isbn.IsbnValue);
     }

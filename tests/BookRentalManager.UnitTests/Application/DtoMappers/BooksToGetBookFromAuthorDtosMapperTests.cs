@@ -16,7 +16,7 @@ public sealed class BooksToGetBookFromAuthorDtosMapperTests
         // Act:
         IReadOnlyList<GetBookFromAuthorDto> getBookFromAuthorDtos = booksToGetBookFromAuthorDtosMapper.Map(new List<Book> { book });
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         GetBookFromAuthorDto actualGetBookFromAuthorDtos = getBookFromAuthorDtos.FirstOrDefault()!;
         Assert.Equal(expectedGetBookFromAuthorDto.BookTitle, actualGetBookFromAuthorDtos.BookTitle);
         Assert.Equal(expectedGetBookFromAuthorDto.Edition, actualGetBookFromAuthorDtos.Edition);

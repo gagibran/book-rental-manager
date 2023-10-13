@@ -17,7 +17,7 @@ public sealed class BookToBookCreatedDtoMapperTests
         // Act:
         BookCreatedDto bookCreatedDto = bookToBookCreatedDtoMapper.Map(book);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedBookCreatedDto.BookTitle, bookCreatedDto.BookTitle);
         Assert.Equal(expectedBookCreatedDto.Edition, bookCreatedDto.Edition);
         Assert.Equal(expectedBookCreatedDto.Isbn, bookCreatedDto.Isbn);

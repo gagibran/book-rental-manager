@@ -196,9 +196,9 @@ public sealed class CustomerTests
         int prefixAndLineNumber)
     {
         // Act:
-        Result updateFullNameResult = _customer.UpdateFullNameAndPhoneNumber(firstName, lastName, areaCode, prefixAndLineNumber);
+        _customer.UpdateFullNameAndPhoneNumber(firstName, lastName, areaCode, prefixAndLineNumber);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(firstName, _customer.FullName.FirstName);
         Assert.Equal(lastName, _customer.FullName.LastName);
         Assert.Equal(areaCode, _customer.PhoneNumber.AreaCode);

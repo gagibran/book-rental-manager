@@ -16,7 +16,7 @@ public sealed class BookToPatchBookTitleEditionAndIsbnByIdDtoMapperTests
         // Act:
         PatchBookTitleEditionAndIsbnByIdDto actualPatchBookTitleEditionAndIsbnByIdDto = bookToPatchBookTitleEditionAndIsbnByIdDtoMapper.Map(book);
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         Assert.Equal(expectedPatchBookTitleEditionAndIsbnByIdDto.BookTitle, actualPatchBookTitleEditionAndIsbnByIdDto.BookTitle);
         Assert.Equal(expectedPatchBookTitleEditionAndIsbnByIdDto.Edition, actualPatchBookTitleEditionAndIsbnByIdDto.Edition);
         Assert.Equal(expectedPatchBookTitleEditionAndIsbnByIdDto.Isbn, actualPatchBookTitleEditionAndIsbnByIdDto.Isbn);
