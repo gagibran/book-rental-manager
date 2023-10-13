@@ -20,7 +20,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
                 Isbn.Create("978-0132350884").Value!);
         var operations = new List<Operation<ChangeCustomerBooksByBookIdsDto>>
         {
-            new Operation<ChangeCustomerBooksByBookIdsDto>("add", "/bookIds", It.IsAny<string>(), new List<Guid> { _book.Id, _anotherBook.Id })
+            new("add", "/bookIds", It.IsAny<string>(), new List<Guid> { _book.Id, _anotherBook.Id })
         };
         _changeCustomerBooksByBookIdsDtoDocument = new(operations, new DefaultContractResolver());
         _customer = TestFixtures.CreateDummyCustomer();
@@ -74,7 +74,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
         var expectedErrorMessage = $"'{operation}' operation not allowed in this context.";
         var operations = new List<Operation<ChangeCustomerBooksByBookIdsDto>>
         {
-            new Operation<ChangeCustomerBooksByBookIdsDto>(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
+            new(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var changeCustomerBooksByBookIdsDtoDocument = new JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>(operations, new DefaultContractResolver());
         var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(

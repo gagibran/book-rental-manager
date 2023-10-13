@@ -14,11 +14,11 @@ public sealed class IQueryableExtensionsTests
     public static IEnumerable<object[]> GetOrderedBooksByParameters()
     {
         Book book1 = TestFixtures.CreateDummyBook();
-        Book book2 = new Book(
+        Book book2 = new(
             "Clean Code: A Handbook of Agile Software Craftsmanship",
             Edition.Create(1).Value!,
             Isbn.Create("978-0132350884").Value!);
-        Book book3 = new Book(
+        Book book3 = new(
             "Design Patterns: Elements of Reusable Object-Oriented Software",
             Edition.Create(1).Value!,
             Isbn.Create("0-201-63361-2").Value!);
@@ -28,7 +28,7 @@ public sealed class IQueryableExtensionsTests
         author.AddBook(book2);
         author.AddBook(book3);
         customer.RentBook(book2);
-        List<Book> books = new List<Book> { book1, book2, book3 };
+        List<Book> books = new() { book1, book2, book3 };
         yield return new object[]
         {
             "BookTitleDesc,DueDate",

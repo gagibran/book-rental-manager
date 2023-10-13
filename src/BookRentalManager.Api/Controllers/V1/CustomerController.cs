@@ -14,11 +14,11 @@ public sealed class CustomerController : ApiController
         _dispatcher = dispatcher;
         _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
         {
-            new AllowedRestMethodsDto(nameof(GetCustomerByIdAsync), "GET", "self"),
-            new AllowedRestMethodsDto(nameof(PatchCustomerNameAndPhoneNumberByIdAsync), "PATCH", "patch_customer"),
-            new AllowedRestMethodsDto("RentBooks", "PATCH", "rent_books"),
-            new AllowedRestMethodsDto("ReturnBooks", "PATCH", "return_books"),
-            new AllowedRestMethodsDto(nameof(DeleteCustomerByIdAsync), "DELETE", "delete_customer")
+            new(nameof(GetCustomerByIdAsync), "GET", "self"),
+            new(nameof(PatchCustomerNameAndPhoneNumberByIdAsync), "PATCH", "patch_customer"),
+            new("RentBooks", "PATCH", "rent_books"),
+            new("ReturnBooks", "PATCH", "return_books"),
+            new(nameof(DeleteCustomerByIdAsync), "DELETE", "delete_customer")
         };
     }
 

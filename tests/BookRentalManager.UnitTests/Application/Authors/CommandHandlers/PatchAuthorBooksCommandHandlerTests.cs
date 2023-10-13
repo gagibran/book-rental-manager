@@ -19,7 +19,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
         var bookIdsToAdd = new List<Guid> { _book.Id, anotherBook.Id };
         var operations = new List<Operation<PatchAuthorBooksDto>>
         {
-            new Operation<PatchAuthorBooksDto>("add", "/bookIds", It.IsAny<string>(), bookIdsToAdd)
+            new("add", "/bookIds", It.IsAny<string>(), bookIdsToAdd)
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         _author = TestFixtures.CreateDummyAuthor();
@@ -67,7 +67,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
         // Arrange:
         var operations = new List<Operation<PatchAuthorBooksDto>>
         {
-            new Operation<PatchAuthorBooksDto>("add", "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
+            new("add", "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         var patchAuthorBooksCommand = new PatchAuthorBooksCommand(It.IsAny<Guid>(), patchAuthorBooksDtoPatchDocument);
@@ -100,7 +100,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
         // Arrange:
         var operations = new List<Operation<PatchAuthorBooksDto>>
         {
-            new Operation<PatchAuthorBooksDto>(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
+            new(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         var patchAuthorBooksCommand = new PatchAuthorBooksCommand(It.IsAny<Guid>(), patchAuthorBooksDtoPatchDocument);

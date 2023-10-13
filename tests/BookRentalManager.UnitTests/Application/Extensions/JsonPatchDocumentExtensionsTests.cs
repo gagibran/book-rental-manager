@@ -28,7 +28,7 @@ public sealed class JsonPatchDocumentExtensionsTests
         // Arrange:
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>(operation, path, It.IsAny<string>(), 222)
+            new(operation, path, It.IsAny<string>(), 222)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,
@@ -51,7 +51,7 @@ public sealed class JsonPatchDocumentExtensionsTests
         var expectedErrorMessage = "'value' cannot be empty.";
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", "/areaCode", It.IsAny<string>(), null)
+            new("replace", "/areaCode", It.IsAny<string>(), null)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,
@@ -72,7 +72,7 @@ public sealed class JsonPatchDocumentExtensionsTests
         // Arrange:
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", "/areaCode", It.IsAny<string>(), 222)
+            new("replace", "/areaCode", It.IsAny<string>(), 222)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,

@@ -21,7 +21,7 @@ public sealed class CreateBookCommandHandlerTests
         _authors = new List<Author>
         {
             TestFixtures.CreateDummyAuthor(),
-            new Author(FullName.Create("Sarah", "Smith").Value!)
+            new(FullName.Create("Sarah", "Smith").Value!)
         }.AsReadOnly();
         _createBookCommand = new(
             _authors.Select(author => author.Id),

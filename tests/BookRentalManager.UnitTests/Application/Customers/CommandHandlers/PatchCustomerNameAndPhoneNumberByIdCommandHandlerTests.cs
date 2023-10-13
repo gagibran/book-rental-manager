@@ -15,7 +15,7 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
         _customer = TestFixtures.CreateDummyCustomer();
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", "/areaCode", It.IsAny<string>(), 222)
+            new("replace", "/areaCode", It.IsAny<string>(), 222)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,
@@ -74,8 +74,8 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
         // Arrange:
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", path1, It.IsAny<string>(), firstName),
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", path2, It.IsAny<string>(), newAreaCode)
+            new("replace", path1, It.IsAny<string>(), firstName),
+            new("replace", path2, It.IsAny<string>(), newAreaCode)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,

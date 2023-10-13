@@ -20,15 +20,15 @@ public sealed class TestDataSeeder
         {
             var newCustomers = new List<Customer>
             {
-                new Customer(
+                new(
                     FullName.Create("John", "Doe").Value!,
                     Email.Create("john.doe@email.com").Value!,
                     PhoneNumber.Create(200, 2000000).Value!),
-                new Customer(
+                new(
                     FullName.Create("Sarah", "Smith").Value!,
                     Email.Create("sarah.smith@email.com").Value!,
                     PhoneNumber.Create(235, 2204063).Value!),
-                new Customer(
+                new(
                     FullName.Create("Peter", "Griffin").Value!,
                     Email.Create("peter.griffin@email.com").Value!,
                     PhoneNumber.Create(546, 4056780).Value!)
@@ -39,13 +39,13 @@ public sealed class TestDataSeeder
         {
             var newAuthors = new List<Author>
             {
-                new Author(FullName.Create("Erich", "Gamma").Value!),
-                new Author(FullName.Create("John", "Vlissides").Value!),
-                new Author(FullName.Create("Ralph", "Johnson").Value!),
-                new Author(FullName.Create("Richard", "Helm").Value!),
-                new Author(FullName.Create("Bob", "Martin").Value!),
-                new Author(FullName.Create("Howard", "Lovecraft").Value!),
-                new Author(FullName.Create("Edgar Allan", "Poe").Value!),
+                new(FullName.Create("Erich", "Gamma").Value!),
+                new(FullName.Create("John", "Vlissides").Value!),
+                new(FullName.Create("Ralph", "Johnson").Value!),
+                new(FullName.Create("Richard", "Helm").Value!),
+                new(FullName.Create("Bob", "Martin").Value!),
+                new(FullName.Create("Howard", "Lovecraft").Value!),
+                new(FullName.Create("Edgar Allan", "Poe").Value!),
             };
             var designPatternsBook = new Book(
                 "Design Patterns: Elements of Reusable Object-Oriented Software",

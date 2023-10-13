@@ -19,7 +19,7 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
             _book.Isbn.IsbnValue);
         var operations = new List<Operation<PatchBookTitleEditionAndIsbnByIdDto>>
         {
-            new Operation<PatchBookTitleEditionAndIsbnByIdDto>("replace", "/edition", It.IsAny<string>(), 2)
+            new("replace", "/edition", It.IsAny<string>(), 2)
         };
         var patchBookTitleEditionAndIsbnByIdDtoPatchDocument = new JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>(
             operations,
@@ -73,8 +73,8 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
         // Arrange:
         var operations = new List<Operation<PatchBookTitleEditionAndIsbnByIdDto>>
         {
-            new Operation<PatchBookTitleEditionAndIsbnByIdDto>("replace", path1, It.IsAny<string>(), newEdition),
-            new Operation<PatchBookTitleEditionAndIsbnByIdDto>("replace", path2, It.IsAny<string>(), newIsbn)
+            new("replace", path1, It.IsAny<string>(), newEdition),
+            new("replace", path2, It.IsAny<string>(), newIsbn)
         };
         var patchBookTitleEditionAndIsbnByIdDtoPatchDocument = new JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>(
             operations,

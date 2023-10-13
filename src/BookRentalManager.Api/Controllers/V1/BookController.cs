@@ -14,9 +14,9 @@ public sealed class BookController : ApiController
         _dispatcher = dispatcher;
         _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
         {
-            new AllowedRestMethodsDto(nameof(GetBookByIdAsync), "GET", "self"),
-            new AllowedRestMethodsDto(nameof(PatchBookTitleEditionAndIsbnByIdAsync), "PATCH", "patch_book"),
-            new AllowedRestMethodsDto(nameof(DeleteBookByIdAsync), "DELETE", "delete_book")
+            new(nameof(GetBookByIdAsync), "GET", "self"),
+            new(nameof(PatchBookTitleEditionAndIsbnByIdAsync), "PATCH", "patch_book"),
+            new(nameof(DeleteBookByIdAsync), "DELETE", "delete_book")
         };
     }
 
