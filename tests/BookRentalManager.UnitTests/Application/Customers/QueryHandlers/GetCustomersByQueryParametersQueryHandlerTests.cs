@@ -24,7 +24,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             _customerSortParametersMapperStub.Object);
         _customerSortParametersMapperStub
             .Setup(customerSortParametersMapper => customerSortParametersMapper.Map(It.IsAny<CustomerSortParameters>()))
-            .Returns(Result.Success<string>(string.Empty));
+            .Returns(Result.Success(string.Empty));
     }
 
     [Fact]

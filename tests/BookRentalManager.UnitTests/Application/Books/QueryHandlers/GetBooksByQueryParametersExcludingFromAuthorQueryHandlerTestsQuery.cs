@@ -87,7 +87,7 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             .Returns(getBookDto);
         _bookSortParametersMapperStub
             .Setup(bookSortParametersMapper => bookSortParametersMapper.Map(It.IsAny<BookSortParameters>()))
-            .Returns(Result.Success<string>(string.Empty));
+            .Returns(Result.Success(string.Empty));
 
         // Act:
         Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersExcludingFromAuthorQueryHandler.HandleAsync(

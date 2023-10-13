@@ -45,6 +45,6 @@ internal sealed class GetCustomersByQueryParametersQueryHandler
             customers.TotalAmountOfPages,
             customers.PageIndex,
             customers.PageSize);
-        return Result.Success<PaginatedList<GetCustomerDto>>(paginatedGetCustomerDtos);
+        return Result.Success(paginatedGetCustomerDtos);
     }
 }

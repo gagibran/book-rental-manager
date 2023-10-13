@@ -21,6 +21,6 @@ internal sealed class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerB
         {
             return Result.Fail<GetCustomerDto>("customerId", $"No customer with the ID of '{getCustomerByIdQuery.Id}' was found.");
         }
-        return Result.Success<GetCustomerDto>(_customerToGetCustomerDtoMapper.Map(customer));
+        return Result.Success(_customerToGetCustomerDtoMapper.Map(customer));
     }
 }

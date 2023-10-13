@@ -19,6 +19,6 @@ internal sealed class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery
         {
             return Result.Fail<GetBookDto>("bookId", $"No book with the ID of '{getBookByIdQuery.Id}' was found.");
         }
-        return Result.Success<GetBookDto>(_bookToGetBookDtoMapper.Map(book!));
+        return Result.Success(_bookToGetBookDtoMapper.Map(book!));
     }
 }

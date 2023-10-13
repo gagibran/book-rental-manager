@@ -25,6 +25,6 @@ internal sealed class BookSortParametersMapper : IMapper<BookSortParameters, Res
             }
             convertedPropertyNamesSeparatedByComma += formattedPropertyName + ",";
         }
-        return Result.Success<string>(convertedPropertyNamesSeparatedByComma.TrimEnd(','));
+        return Result.Success(convertedPropertyNamesSeparatedByComma.TrimEnd(','));
     }
 }

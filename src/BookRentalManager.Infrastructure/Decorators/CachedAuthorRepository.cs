@@ -2,6 +2,8 @@ namespace BookRentalManager.Infrastructure.Decorators;
 
 public sealed class CachedAuthorRepository : IRepository<Author>
 {
+    private const int CacheExpirationTimeInMinutes = 1;
+
     private readonly IRepository<Author> _authorRepository;
     private readonly IMemoryCache _memoryCache;
 
@@ -20,7 +22,7 @@ public sealed class CachedAuthorRepository : IRepository<Author>
             return existingAuthorsCache;
         }
         IReadOnlyList<Author> existingAuthors = await _authorRepository.GetAllBySpecificationAsync(specification, cancellationToken);
-        return _memoryCache.Set(specification.CacheKey!, existingAuthors, TimeSpan.FromMinutes(2));
+        return _memoryCache.Set(specification.CacheKey!, existingAuthors, TimeSpan.FromMinutes(CacheExpirationTimeInMinutes));
     }
 
     public async Task<PaginatedList<Author>> GetAllBySpecificationAsync(
@@ -36,7 +38,7 @@ public sealed class CachedAuthorRepository : IRepository<Author>
             return existingAuthorsCache;
         }
         PaginatedList<Author> existingAuthors = await _authorRepository.GetAllBySpecificationAsync(pageIndex, pageSize, specification, cancellationToken);
-        return _memoryCache.Set(specification.CacheKey!, existingAuthors, TimeSpan.FromMinutes(2));
+        return _memoryCache.Set(specification.CacheKey!, existingAuthors, TimeSpan.FromMinutes(CacheExpirationTimeInMinutes));
     }
 
     public async Task<Author?> GetFirstOrDefaultBySpecificationAsync(Specification<Author> specification, CancellationToken cancellationToken = default)
@@ -44,7 +46,7 @@ public sealed class CachedAuthorRepository : IRepository<Author>
         HasCacheKey(specification);
         return await _memoryCache.GetOrCreateAsync(specification.CacheKey!, cacheEntry =>
         {
-            cacheEntry.SetAbsoluteExpiration(TimeSpan.FromMinutes(2));
+            cacheEntry.SetAbsoluteExpiration(TimeSpan.FromMinutes(CacheExpirationTimeInMinutes));
             return _authorRepository.GetFirstOrDefaultBySpecificationAsync(specification, cancellationToken);
         });
     }
@@ -64,7 +66,7 @@ public sealed class CachedAuthorRepository : IRepository<Author>
         await _authorRepository.UpdateAsync(author, cancellationToken);
     }
 
-    private void HasCacheKey(Specification<Author> specification)
+    private static void HasCacheKey(Specification<Author> specification)
     {
         if (string.IsNullOrWhiteSpace(specification.CacheKey))
         {

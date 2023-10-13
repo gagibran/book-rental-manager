@@ -32,7 +32,7 @@ public sealed class FullName : ValueObject
         {
             return Result.Fail<FullName>(finalResult.ErrorType, finalResult.ErrorMessage);
         }
-        return Result.Success<FullName>(new FullName(firstName.Trim(), lastName.Trim()));
+        return Result.Success(new FullName(firstName.Trim(), lastName.Trim()));
     }
 
     public override string ToString()

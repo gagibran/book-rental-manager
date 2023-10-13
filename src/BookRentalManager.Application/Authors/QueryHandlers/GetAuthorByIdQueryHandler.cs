@@ -21,6 +21,6 @@ internal sealed class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQ
         {
             return Result.Fail<GetAuthorDto>("authorId", $"No author with the ID of '{getAuthorByIdQuery.Id}' was found.");
         }
-        return Result.Success<GetAuthorDto>(_authorToGetAuthorDtoMapper.Map(author));
+        return Result.Success(_authorToGetAuthorDtoMapper.Map(author));
     }
 }

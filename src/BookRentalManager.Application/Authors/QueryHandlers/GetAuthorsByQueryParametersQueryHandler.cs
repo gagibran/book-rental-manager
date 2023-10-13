@@ -45,6 +45,6 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler
             authors.TotalAmountOfPages,
             authors.PageIndex,
             authors.PageSize);
-        return Result.Success<PaginatedList<GetAuthorDto>>(paginatedGetAuthorDtos);
+        return Result.Success(paginatedGetAuthorDtos);
     }
 }

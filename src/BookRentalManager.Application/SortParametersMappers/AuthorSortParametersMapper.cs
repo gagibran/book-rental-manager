@@ -21,6 +21,6 @@ internal sealed class AuthorSortParametersMapper : IMapper<AuthorSortParameters,
             }
             convertedPropertyNamesSeparatedByComma += formattedPropertyName + ",";
         }
-        return Result.Success<string>(convertedPropertyNamesSeparatedByComma.TrimEnd(','));
+        return Result.Success(convertedPropertyNamesSeparatedByComma.TrimEnd(','));
     }
 }

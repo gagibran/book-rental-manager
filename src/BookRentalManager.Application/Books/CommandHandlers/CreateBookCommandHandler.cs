@@ -44,6 +44,6 @@ internal sealed class CreateBookCommandHandler : IRequestHandler<CreateBookComma
             author.AddBook(newBook);
         }
         await _bookRepository.CreateAsync(newBook, cancellationToken);
-        return Result.Success<BookCreatedDto>(_bookToBookCreatedDtoMapper.Map(newBook));
+        return Result.Success(_bookToBookCreatedDtoMapper.Map(newBook));
     }
 }

@@ -6,7 +6,7 @@ namespace BookRentalManager.Api.Common;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class ApiController : ControllerBase
+public abstract class ApiController : ControllerBase
 {
     protected ActionResult HandleError(Result result)
     {

@@ -34,7 +34,7 @@ public sealed class ResultTests
         var validValue = 1;
 
         // Act:
-        Result<int> result = Result.Success<int>(validValue);
+        Result<int> result = Result.Success(validValue);
 
         // Assert:
         Assert.Equal(validValue, result.Value);

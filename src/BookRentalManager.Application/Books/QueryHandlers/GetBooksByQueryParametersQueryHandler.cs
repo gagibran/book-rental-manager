@@ -45,6 +45,6 @@ internal sealed class GetBooksByQueryParametersQueryHandler
             books.TotalAmountOfPages,
             books.PageIndex,
             books.PageSize);
-        return Result.Success<PaginatedList<GetBookDto>>(paginatedGetBookDtos);
+        return Result.Success(paginatedGetBookDtos);
     }
 }

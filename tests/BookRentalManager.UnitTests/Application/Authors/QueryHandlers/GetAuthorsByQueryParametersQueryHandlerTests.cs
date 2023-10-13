@@ -24,7 +24,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             _authorSortParametersMapperStub.Object);
         _authorSortParametersMapperStub
             .Setup(authorSortParametersMapper => authorSortParametersMapper.Map(It.IsAny<AuthorSortParameters>()))
-            .Returns(Result.Success<string>(string.Empty));
+            .Returns(Result.Success(string.Empty));
     }
 
     [Fact]

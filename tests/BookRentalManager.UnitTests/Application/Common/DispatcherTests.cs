@@ -60,7 +60,7 @@ public sealed class DispatcherTests
         var requestStub = new Mock<IRequest<Customer>>();
         requestHandlerStub
             .Setup(requestHandler => requestHandler.HandleAsync(It.IsAny<IRequest<Customer>>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success<Customer>(_customer));
+            .ReturnsAsync(Result.Success(_customer));
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
             .Returns(requestHandlerStub.Object);
@@ -96,7 +96,7 @@ public sealed class DispatcherTests
                 requestResponseHandler.HandleAsync(
                     It.IsAny<IRequest<Customer>>(),
                     It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success<Customer>(_customer));
+            .ReturnsAsync(Result.Success(_customer));
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
             .Returns(requestResponseHandlerStub.Object);
