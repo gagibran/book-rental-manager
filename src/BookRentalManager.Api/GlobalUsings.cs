@@ -10,3 +10,4 @@ global using Asp.Versioning;
 global using Microsoft.Net.Http.Headers;
 global using BookRentalManager.Application.Common;
 global using BookRentalManager.Api.Constants;
+global using BookRentalManager.Application.Extensions;

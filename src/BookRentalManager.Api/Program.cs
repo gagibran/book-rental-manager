@@ -1,4 +1,4 @@
-using BookRentalManager.Application.Extensions;
+using BookRentalManager.Api.ExceptionHandlers;
 using BookRentalManager.Infrastructure.Data;
 using BookRentalManager.Infrastructure.Data.Seeds;
 using BookRentalManager.Infrastructure.Extensions;
@@ -44,10 +44,11 @@ builder.Services.Configure<MvcOptions>(config =>
 });
 builder.Services.AddMemoryCache();
 builder.Services.AddSwaggerGen();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Configure the HTTP request pipeline:
 WebApplication app = builder.Build();
-app.UseExceptionHandler("/internalServerError");
+app.UseExceptionHandler(_ => { }); // .NET 8 bug that needs to be handled with an anonymous function.
 if (app.Environment.IsProduction())
 {
     app.UseHttpsRedirection();
