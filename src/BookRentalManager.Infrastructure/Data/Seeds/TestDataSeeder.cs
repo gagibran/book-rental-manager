@@ -2,20 +2,13 @@ using BookRentalManager.Domain.ValueObjects;
 
 namespace BookRentalManager.Infrastructure.Data.Seeds;
 
-public sealed class TestDataSeeder
+public static class TestDataSeeder
 {
-    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
-
-    public TestDataSeeder(BookRentalManagerDbContext bookRentalManagerDbContext)
+    public static async Task SeedTestDataAsync(BookRentalManagerDbContext bookRentalManagerDbContext)
     {
-        _bookRentalManagerDbContext = bookRentalManagerDbContext;
-    }
-
-    public async Task SeedTestDataAsync()
-    {
-        DbSet<Customer> customers = _bookRentalManagerDbContext.Set<Customer>();
-        DbSet<Book> books = _bookRentalManagerDbContext.Set<Book>();
-        DbSet<Author> authors = _bookRentalManagerDbContext.Set<Author>();
+        DbSet<Customer> customers = bookRentalManagerDbContext.Set<Customer>();
+        DbSet<Book> books = bookRentalManagerDbContext.Set<Book>();
+        DbSet<Author> authors = bookRentalManagerDbContext.Set<Author>();
         if (!customers.Any())
         {
             var newCustomers = new List<Customer>
@@ -86,6 +79,6 @@ public sealed class TestDataSeeder
             await books.AddRangeAsync(newBooks);
             await customers.AddAsync(customer);
         }
-        await _bookRentalManagerDbContext.SaveChangesAsync();
+        await bookRentalManagerDbContext.SaveChangesAsync();
     }
 }

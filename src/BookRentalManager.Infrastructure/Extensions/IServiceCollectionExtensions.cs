@@ -1,6 +1,5 @@
 using BookRentalManager.Infrastructure.Common;
 using BookRentalManager.Infrastructure.Data;
-using BookRentalManager.Infrastructure.Data.Seeds;
 using BookRentalManager.Infrastructure.Decorators;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +18,6 @@ public static class IServiceCollectionExtensions
         });
         serviceCollection.AddScoped<IRepository<Book>, Repository<Book>>();
         serviceCollection.AddScoped<IRepository<Customer>, Repository<Customer>>();
-        serviceCollection.AddScoped<TestDataSeeder>();
         return serviceCollection;
     }
 }

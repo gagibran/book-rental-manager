@@ -60,8 +60,7 @@ if (app.Environment.IsDevelopment())
     IServiceProvider serviceProvider = serviceScope.ServiceProvider;
     BookRentalManagerDbContext bookRentalManagerDbContext = serviceProvider.GetRequiredService<BookRentalManagerDbContext>();
     await bookRentalManagerDbContext.Database.MigrateAsync();
-    TestDataSeeder testDataSeeder = serviceProvider.GetRequiredService<TestDataSeeder>();
-    await testDataSeeder.SeedTestDataAsync();
+    await TestDataSeeder.SeedTestDataAsync(bookRentalManagerDbContext);
     app.UseSwagger();
     app.UseSwaggerUI();
 }
