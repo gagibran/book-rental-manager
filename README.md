@@ -21,6 +21,8 @@ This is required in order to run the application. After installing PostgreSQL on
     3. Run `CREATE ROLE admin WITH CREATEDB LOGIN PASSWORD 'admin';`.
 
 ## Running the application
+Docker Compose; Needs to have .pfx cert. Fix this later.
+
 `dotnet watch run` will open up the application with Swagger on http://localhost:5007/swagger/index.html. Starting the application for the first time will also create a database called `BookRentalManager` (in case it does not exist) with some seed data in its tables. For more information on the seed data, check the file `src/BookRentalManager.Infrastructure/Data/Seeds/TestDataSeeder.cs`.
 
 ## Migrations
