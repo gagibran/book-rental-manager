@@ -36,7 +36,7 @@ public abstract class ApiController : ControllerBase
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
-        Response.Headers.Add("X-Pagination", serializedMetadata);
+        Response.Headers.Append("X-Pagination", serializedMetadata);
     }
 
     protected ActionResult CustomHttpErrorResponse(string errorTypes, string errorMessages, HttpStatusCode httpStatusCode)

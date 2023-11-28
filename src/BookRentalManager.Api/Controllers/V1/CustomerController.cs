@@ -149,7 +149,7 @@ public sealed class CustomerController : ApiController
     [HttpOptions]
     public ActionResult GetCustomerOptions()
     {
-        Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
+        Response.Headers.Append("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
         return Ok();
     }
 
@@ -164,7 +164,7 @@ public sealed class CustomerController : ApiController
         {
             return HandleError(getCustomerByIdResult);
         }
-        Response.Headers.Add("Allow", "PATCH, OPTIONS");
+        Response.Headers.Append("Allow", "PATCH, OPTIONS");
         return Ok();
     }
 }

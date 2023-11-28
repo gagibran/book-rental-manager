@@ -49,10 +49,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Configure the HTTP request pipeline:
 WebApplication app = builder.Build();
 app.UseExceptionHandler(_ => { }); // .NET 8 bug that needs to be handled with an anonymous function.
-if (app.Environment.IsProduction())
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 app.MapControllers();
 if (app.Environment.IsDevelopment())
 {

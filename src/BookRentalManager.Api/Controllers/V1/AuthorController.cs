@@ -133,14 +133,14 @@ public sealed class AuthorController : ApiController
         {
             return HandleError(getAuthorByIdResult);
         }
-        Response.Headers.Add("Allow", "PATCH, OPTIONS");
+        Response.Headers.Append("Allow", "PATCH, OPTIONS");
         return Ok();
     }
 
     [HttpOptions]
     public ActionResult GetAuthorOptions()
     {
-        Response.Headers.Add("Allow", "GET, HEAD, POST, DELETE, OPTIONS");
+        Response.Headers.Append("Allow", "GET, HEAD, POST, DELETE, OPTIONS");
         return Ok();
     }
 }

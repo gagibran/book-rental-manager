@@ -161,14 +161,14 @@ public sealed class BookController : ApiController
     [HttpOptions]
     public ActionResult GetBookOptions()
     {
-        Response.Headers.Add("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
+        Response.Headers.Append("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
         return Ok();
     }
 
     [HttpOptions("ExcludingAuthor")]
     public ActionResult GetExcludingAuthorOptions()
     {
-        Response.Headers.Add("Allow", "GET, OPTIONS");
+        Response.Headers.Append("Allow", "GET, OPTIONS");
         return Ok();
     }
 }

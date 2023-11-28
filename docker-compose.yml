@@ -6,12 +6,31 @@ services:
     image: postgres:16
     restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
     volumes:
        - postgresql:/var/lib/postgresql/data
     ports:
       - 5432:5432
+  book_rental_manager:
+    container_name: book-rental-manager
+    image: book-rental-manager:0.1.0
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_HTTPS_PORT=5001
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=HttpsDevCertPass1!
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/httpsdevcert.pfx
+      - ConnectionStrings__BookRentalManagerConnectionString=Server=database;Port=5432;Database=BookRentalManager;User ID=admin;Password=admin
+    ports:
+      - 5000:80
+      - 5001:443
+    depends_on:
+      - database
 
 volumes:
   postgresql:
