@@ -120,7 +120,7 @@ public class AuthorControllerTests
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<GetAuthorDto>("notFound", "errorMessage404"));
+            .ReturnsAsync(Result.Fail<GetAuthorDto>("idNotFound", "errorMessage404"));
 
         // Act:
         var objectResult = (await _authorController.GetAuthorByIdAsync(
@@ -132,7 +132,7 @@ public class AuthorControllerTests
         Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["idNotFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -279,7 +279,7 @@ public class AuthorControllerTests
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<PatchAuthorBooksCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail("notFound", "errorMessage404"));
+            .ReturnsAsync(Result.Fail("idNotFound", "errorMessage404"));
 
         // Act:
         var objectResult = await _authorController.AddExistingBooksToAuthor(
@@ -291,7 +291,7 @@ public class AuthorControllerTests
         Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["idNotFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -318,7 +318,7 @@ public class AuthorControllerTests
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<DeleteAuthorByIdCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail("notFound", "errorMessage404"));
+            .ReturnsAsync(Result.Fail("idNotFound", "errorMessage404"));
 
         // Act:
         var objectResult = await _authorController.DeleteAuthorByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as ObjectResult;
@@ -327,7 +327,7 @@ public class AuthorControllerTests
         Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["idNotFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -351,7 +351,7 @@ public class AuthorControllerTests
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<GetAuthorDto>("notFound", "errorMessage404"));
+            .ReturnsAsync(Result.Fail<GetAuthorDto>("idNotFound", "errorMessage404"));
 
         // Act:
         var objectResult = await _authorController.GetAuthorAddBooksOptionsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as ObjectResult;
@@ -360,7 +360,7 @@ public class AuthorControllerTests
         Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["idNotFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
