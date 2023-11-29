@@ -1,6 +1,4 @@
 ﻿using System.Dynamic;
-using BookRentalManager.Application.Common;
-using Microsoft.AspNetCore.Http;
 
 namespace BookRentalManager.UnitTests;
 
@@ -12,13 +10,12 @@ public class AuthorControllerTests
 
     public AuthorControllerTests()
     {
-        var httpContext = new DefaultHttpContext();
         var urlHelperStub = new Mock<IUrlHelper>();
         _author = TestFixtures.CreateDummyAuthor();
         _dispatcherStub = new();
         _authorController = new(_dispatcherStub.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = httpContext },
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
             Url = urlHelperStub.Object
         };
         urlHelperStub

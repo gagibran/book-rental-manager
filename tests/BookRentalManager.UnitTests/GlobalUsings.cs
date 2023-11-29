@@ -35,3 +35,5 @@ global using Microsoft.AspNetCore.Mvc;
 global using BookRentalManager.Api.QueryParameters;
 global using System.Net;
 global using BookRentalManager.Api.Constants;
+global using BookRentalManager.Application.Common;
+global using Microsoft.AspNetCore.Http;
