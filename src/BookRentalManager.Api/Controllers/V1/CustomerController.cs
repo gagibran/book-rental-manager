@@ -12,14 +12,14 @@ public sealed class CustomerController : ApiController
     public CustomerController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
-        {
+        _allowedRestMethodDtos =
+        [
             new(nameof(GetCustomerByIdAsync), "GET", "self"),
             new(nameof(PatchCustomerNameAndPhoneNumberByIdAsync), "PATCH", "patch_customer"),
             new("RentBooks", "PATCH", "rent_books"),
             new("ReturnBooks", "PATCH", "return_books"),
             new(nameof(DeleteCustomerByIdAsync), "DELETE", "delete_customer")
-        };
+        ];
     }
 
     [HttpGet(Name = nameof(GetCustomersByQueryParametersAsync))]

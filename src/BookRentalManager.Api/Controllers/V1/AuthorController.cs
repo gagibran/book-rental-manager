@@ -12,12 +12,12 @@ public sealed class AuthorController : ApiController
     public AuthorController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
-        {
+        _allowedRestMethodDtos =
+        [
             new(nameof(GetAuthorByIdAsync), "GET", "self"),
             new(nameof(AddExistingBooksToAuthor), "PATCH", "add_existing_books_to_author"),
             new(nameof(DeleteAuthorByIdAsync), "DELETE", "delete_author")
-        };
+        ];
     }
 
     [HttpGet(Name = nameof(GetAuthorsByQueryParametersAsync))]

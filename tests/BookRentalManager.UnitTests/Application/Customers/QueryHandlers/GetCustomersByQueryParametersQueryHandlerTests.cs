@@ -38,7 +38,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Customer>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PaginatedList<Customer>(
-                new List<Customer>(),
+                [],
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
@@ -77,7 +77,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             customer.CustomerStatus,
             customer.CustomerPoints);
         var paginatedCustomers = new PaginatedList<Customer>(
-            new List<Customer> { customer },
+            [customer],
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<int>(),

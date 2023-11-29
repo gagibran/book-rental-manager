@@ -38,7 +38,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PaginatedList<Author>(
-                new List<Author>(),
+                [],
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
@@ -66,7 +66,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
         Author author = TestFixtures.CreateDummyAuthor();
         var expectedGetAuthorDto = new GetAuthorDto(Guid.NewGuid(), author.FullName, new List<GetBookFromAuthorDto>());
         var paginatedAuthors = new PaginatedList<Author>(
-            new List<Author> { author },
+            [author],
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<int>(),

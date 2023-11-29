@@ -13,7 +13,7 @@ public sealed class Customer : Entity
 
     private Customer()
     {
-        _books = new();
+        _books = [];
         FullName = default!;
         Email = default!;
         PhoneNumber = default!;
@@ -26,7 +26,7 @@ public sealed class Customer : Entity
         Email email,
         PhoneNumber phoneNumber)
     {
-        _books = new();
+        _books = [];
         FullName = fullName;
         Email = email;
         PhoneNumber = phoneNumber;

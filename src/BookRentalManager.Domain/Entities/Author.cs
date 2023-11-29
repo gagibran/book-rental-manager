@@ -9,14 +9,14 @@ public sealed class Author : Entity
 
     private Author()
     {
-        _books = new();
+        _books = [];
         FullName = default!;
     }
 
     public Author(FullName fullName)
     {
         FullName = fullName;
-        _books = new();
+        _books = [];
     }
 
     public Result AddBook(Book book)

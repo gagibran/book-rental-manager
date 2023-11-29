@@ -14,7 +14,7 @@ public sealed class Book : Entity
 
     private Book()
     {
-        _authors = new();
+        _authors = [];
         BookTitle = string.Empty!;
         Edition = default!;
         Isbn = default!;
@@ -25,7 +25,7 @@ public sealed class Book : Entity
 
     public Book(string bookTitle, Edition edition, Isbn isbn)
     {
-        _authors = new();
+        _authors = [];
         BookTitle = bookTitle.Trim();
         Edition = edition;
         Isbn = isbn;

@@ -30,7 +30,7 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
         // Arrange:
         Book book = TestFixtures.CreateDummyBook();
         var paginatedBooks = new PaginatedList<Book>(
-            new List<Book> { book },
+            [book],
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<int>(),

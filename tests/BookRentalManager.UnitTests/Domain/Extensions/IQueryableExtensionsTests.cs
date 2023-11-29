@@ -8,7 +8,7 @@ public sealed class IQueryableExtensionsTests
 
     public IQueryableExtensionsTests()
     {
-        _numbers = new List<int> { 1, 2, 3 };
+        _numbers = [1, 2, 3];
     }
 
     public static IEnumerable<object[]> GetOrderedBooksByParameters()
@@ -28,7 +28,7 @@ public sealed class IQueryableExtensionsTests
         author.AddBook(book2);
         author.AddBook(book3);
         customer.RentBook(book2);
-        List<Book> books = new() { book1, book2, book3 };
+        List<Book> books = [book1, book2, book3];
         yield return new object[]
         {
             "BookTitleDesc,DueDate",

@@ -32,19 +32,19 @@ public class AuthorControllerTests
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorsByQueryParametersQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<PaginatedList<GetAuthorDto>>("errorType", "errorMessage422"));
+            .ReturnsAsync(Result.Fail<PaginatedList<GetAuthorDto>>("unprocessableEntity", "errorMessage422"));
 
         // Act:
-        var result = (await _authorController.GetAuthorsByQueryParametersAsync(
+        var objectResult = (await _authorController.GetAuthorsByQueryParametersAsync(
             new GetAllItemsQueryParameters(),
             It.IsAny<string?>(),
             It.IsAny<CancellationToken>())).Result as ObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage422", _authorController.ModelState["errorType"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage422", _authorController.ModelState["unprocessableEntity"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -64,22 +64,22 @@ public class AuthorControllerTests
             new(
                 Guid.NewGuid(),
                 FullName.Create("Robert", "Plant").Value!,
-                It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>()),
+                It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>())
         };
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorsByQueryParametersQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(new PaginatedList<GetAuthorDto>(getAuthorDtos, 3, 3, 2, 1)));
 
         // Act:
-        var result = (await _authorController.GetAuthorsByQueryParametersAsync(
+        var okObjectResult = (await _authorController.GetAuthorsByQueryParametersAsync(
             new GetAllItemsQueryParameters(),
             MediaTypeConstants.BookRentalManagerHateoasMediaType,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
-        var collectionWithHateoasLinksDto = (CollectionWithHateoasLinksDto)result!.Value!;
+        var collectionWithHateoasLinksDto = (CollectionWithHateoasLinksDto)okObjectResult!.Value!;
         dynamic returnedExpandoObject = collectionWithHateoasLinksDto.Values[0];
-        Assert.Equal((int)HttpStatusCode.OK, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
         Assert.Equal("previous_page", collectionWithHateoasLinksDto.Links[0].Rel);
         Assert.Equal("next_page", collectionWithHateoasLinksDto.Links[1].Rel);
         Assert.Equal("url", returnedExpandoObject.links[0].Href);
@@ -104,35 +104,35 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Success(expectedPaginatedGetAuthorDtos));
 
         // Act:
-        var result = (await _authorController.GetAuthorsByQueryParametersAsync(
+        var okObjectResult = (await _authorController.GetAuthorsByQueryParametersAsync(
             new GetAllItemsQueryParameters(),
             It.IsAny<string>(),
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.OK, result!.StatusCode);
-        Assert.Equal(expectedPaginatedGetAuthorDtos, (PaginatedList<GetAuthorDto>)result!.Value!);
+        Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
+        Assert.Equal(expectedPaginatedGetAuthorDtos, (PaginatedList<GetAuthorDto>)okObjectResult!.Value!);
     }
 
     [Fact]
-    public async Task GetAuthorByIdAsync_WithUnsuccessfulGetAuthorByIdResult_ReturnsError()
+    public async Task GetAuthorByIdAsync_WithUnsuccessfulGetAuthorByIdResult_ReturnsNotFound()
     {
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<GetAuthorDto>("ID error", "errorMessage404"));
+            .ReturnsAsync(Result.Fail<GetAuthorDto>("notFound", "errorMessage404"));
 
         // Act:
-        var result = (await _authorController.GetAuthorByIdAsync(
+        var objectResult = (await _authorController.GetAuthorByIdAsync(
             It.IsAny<Guid>(),
             It.IsAny<string>(),
             It.IsAny<CancellationToken>())).Result as ObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.NotFound, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["ID error"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -150,15 +150,15 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Success(getAuthorDto));
 
         // Act:
-        var result = (await _authorController.GetAuthorByIdAsync(
+        var okObjectResult = (await _authorController.GetAuthorByIdAsync(
             It.IsAny<Guid>(),
             MediaTypeConstants.BookRentalManagerHateoasMediaType,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
-        dynamic authorWithHateosLinks = (ExpandoObject)result!.Value!;
+        dynamic authorWithHateosLinks = (ExpandoObject)okObjectResult!.Value!;
         var authorBook = ((List<GetBookFromAuthorDto>)authorWithHateosLinks.books).ElementAt(0);
-        Assert.Equal((int)HttpStatusCode.OK, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
         Assert.Equal(_author.Id, authorWithHateosLinks.id);
         Assert.Equal(_author.FullName.ToString(), (string)authorWithHateosLinks.fullName);
         Assert.Equal(getBookFromAuthorDtos.ElementAt(0).BookTitle, authorBook.BookTitle);
@@ -184,14 +184,14 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Success(getAuthorDto));
 
         // Act:
-        var result = (await _authorController.GetAuthorByIdAsync(
+        var okObjectResult = (await _authorController.GetAuthorByIdAsync(
             It.IsAny<Guid>(),
             MediaTypeConstants.ApplicationJsonMediaType,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
-        var returnedAuthor = result!.Value as GetAuthorDto;
-        Assert.Equal((int)HttpStatusCode.OK, result!.StatusCode);
+        var returnedAuthor = okObjectResult!.Value as GetAuthorDto;
+        Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
         Assert.Equal(_author.Id, returnedAuthor!.Id);
         Assert.Equal(_author.FullName.ToString(), returnedAuthor.FullName);
         Assert.Equal(getBookFromAuthorDtos.ElementAt(0).BookTitle, returnedAuthor.Books.ElementAt(0).BookTitle);
@@ -200,24 +200,24 @@ public class AuthorControllerTests
     }
 
     [Fact]
-    public async Task CreateAuthorAsync_WithCreateAuthorResultUnsuccessful_ReturnsError()
+    public async Task CreateAuthorAsync_WithCreateAuthorResultUnsuccessful_ReturnsUnprocessableEntity()
     {
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<CreateAuthorCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<AuthorCreatedDto>("authorAlreadyExists", "errorMessage422"));
+            .ReturnsAsync(Result.Fail<AuthorCreatedDto>("unprocessableEntity", "errorMessage422"));
 
         // Act:
-        var result = await _authorController.CreateAuthorAsync(
+        var objectResult = await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
             It.IsAny<string>(),
             It.IsAny<CancellationToken>()) as ObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage422", _authorController.ModelState["authorAlreadyExists"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage422", _authorController.ModelState["unprocessableEntity"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -232,14 +232,14 @@ public class AuthorControllerTests
                 _author.FullName.LastName)));
 
         // Act:
-        var result = await _authorController.CreateAuthorAsync(
+        var createdAtActionResult = await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
             MediaTypeConstants.BookRentalManagerHateoasMediaType,
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:
-        dynamic authorWithHateosLinks = (ExpandoObject)result!.Value!;
-        Assert.Equal((int)HttpStatusCode.Created, result!.StatusCode);
+        dynamic authorWithHateosLinks = (ExpandoObject)createdAtActionResult!.Value!;
+        Assert.Equal((int)HttpStatusCode.Created, createdAtActionResult!.StatusCode);
         Assert.Equal(_author.Id, authorWithHateosLinks.id);
         Assert.Equal(_author.FullName.FirstName, (string)authorWithHateosLinks.firstName);
         Assert.Equal(_author.FullName.LastName, (string)authorWithHateosLinks.lastName);
@@ -260,38 +260,38 @@ public class AuthorControllerTests
                 _author.FullName.LastName)));
 
         // Act:
-        var result = await _authorController.CreateAuthorAsync(
+        var createdAtActionResult = await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
             MediaTypeConstants.ApplicationJsonMediaType,
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:
-        var authorCreated = (AuthorCreatedDto)result!.Value!;
-        Assert.Equal((int)HttpStatusCode.Created, result!.StatusCode);
+        var authorCreated = (AuthorCreatedDto)createdAtActionResult!.Value!;
+        Assert.Equal((int)HttpStatusCode.Created, createdAtActionResult!.StatusCode);
         Assert.Equal(_author.Id, authorCreated.Id);
         Assert.Equal(_author.FullName.FirstName, authorCreated.FirstName);
         Assert.Equal(_author.FullName.LastName, authorCreated.LastName);
     }
 
     [Fact]
-    public async Task AddExistingBooksToAuthor_WithPatchAuthorBooksResultUnsuccessful_ReturnsError()
+    public async Task AddExistingBooksToAuthor_WithPatchAuthorBooksResultUnsuccessful_ReturnsNotFound()
     {
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<PatchAuthorBooksCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail("ID error", "errorMessage404"));
+            .ReturnsAsync(Result.Fail("notFound", "errorMessage404"));
 
         // Act:
-        var result = await _authorController.AddExistingBooksToAuthor(
+        var objectResult = await _authorController.AddExistingBooksToAuthor(
             It.IsAny<Guid>(),
             It.IsAny<JsonPatchDocument<PatchAuthorBooksDto>>(),
             It.IsAny<CancellationToken>()) as ObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.NotFound, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["ID error"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -303,31 +303,31 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Success(It.IsAny<Result>()));
 
         // Act:
-        var result = await _authorController.AddExistingBooksToAuthor(
+        var noContentResult = await _authorController.AddExistingBooksToAuthor(
             It.IsAny<Guid>(),
             It.IsAny<JsonPatchDocument<PatchAuthorBooksDto>>(),
             It.IsAny<CancellationToken>()) as NoContentResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.NoContent, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.NoContent, noContentResult!.StatusCode);
     }
 
     [Fact]
-    public async Task DeleteAuthorByIdAsync_WithDeleteAuthorByIdResultUnsuccessful_ReturnsError()
+    public async Task DeleteAuthorByIdAsync_WithDeleteAuthorByIdResultUnsuccessful_ReturnsNotFound()
     {
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<DeleteAuthorByIdCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail("ID error", "errorMessage404"));
+            .ReturnsAsync(Result.Fail("notFound", "errorMessage404"));
 
         // Act:
-        var result = await _authorController.DeleteAuthorByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as ObjectResult;
+        var objectResult = await _authorController.DeleteAuthorByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as ObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.NotFound, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["ID error"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -339,28 +339,28 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Success(It.IsAny<Result>()));
 
         // Act:
-        var result = await _authorController.DeleteAuthorByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as NoContentResult;
+        var noContentResult = await _authorController.DeleteAuthorByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as NoContentResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.NoContent, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.NoContent, noContentResult!.StatusCode);
     }
 
     [Fact]
-    public async Task GetAuthorAddBooksOptionsAsync_WithGetAuthorByIdResultUnsuccessful_ReturnsError()
+    public async Task GetAuthorAddBooksOptionsAsync_WithGetAuthorByIdResultUnsuccessful_ReturnsNotFound()
     {
         // Arrange:
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Fail<GetAuthorDto>("ID error", "errorMessage404"));
+            .ReturnsAsync(Result.Fail<GetAuthorDto>("notFound", "errorMessage404"));
 
         // Act:
-        var result = await _authorController.GetAuthorAddBooksOptionsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as ObjectResult;
+        var objectResult = await _authorController.GetAuthorAddBooksOptionsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as ObjectResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.NotFound, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.NotFound, objectResult!.StatusCode);
         Assert.False(_authorController.ModelState.IsValid);
         Assert.Equal(1, _authorController.ModelState.ErrorCount);
-        Assert.Equal("errorMessage404", _authorController.ModelState["ID error"]!.Errors[0].ErrorMessage);
+        Assert.Equal("errorMessage404", _authorController.ModelState["notFound"]!.Errors[0].ErrorMessage);
     }
 
     [Fact]
@@ -372,10 +372,10 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Success(It.IsAny<GetAuthorDto>()));
 
         // Act:
-        var result = await _authorController.GetAuthorAddBooksOptionsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as OkResult;
+        var okResult = await _authorController.GetAuthorAddBooksOptionsAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()) as OkResult;
 
         // Assert:
-        Assert.Equal((int)HttpStatusCode.OK, result!.StatusCode);
+        Assert.Equal((int)HttpStatusCode.OK, okResult!.StatusCode);
         Assert.Equal("PATCH, OPTIONS", _authorController.Response.Headers["Allow"]);
     }
 }

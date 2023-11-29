@@ -12,12 +12,12 @@ public sealed class BookController : ApiController
     public BookController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        _allowedRestMethodDtos = new List<AllowedRestMethodsDto>
-        {
+        _allowedRestMethodDtos =
+        [
             new(nameof(GetBookByIdAsync), "GET", "self"),
             new(nameof(PatchBookTitleEditionAndIsbnByIdAsync), "PATCH", "patch_book"),
             new(nameof(DeleteBookByIdAsync), "DELETE", "delete_book")
-        };
+        ];
     }
 
     [HttpGet(Name = nameof(GetBooksByQueryParametersAsync))]

@@ -45,7 +45,7 @@ public sealed class DispatcherTests
         // Arrange:
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
-            .Returns(null);
+            .Returns(null!);
 
         // Assert:
         Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
@@ -79,7 +79,7 @@ public sealed class DispatcherTests
         // Arrange:
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
-            .Returns(null);
+            .Returns(null!);
 
         // Assert:
         Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
@@ -114,7 +114,7 @@ public sealed class DispatcherTests
         // Arrange:
         _serviceProviderStub
             .Setup(serviceProvider => serviceProvider.GetService(It.IsAny<Type>()))
-            .Returns(null);
+            .Returns(null!);
 
         // Assert:
         Assert.ThrowsAsync<QueryHandlerObjectCannotBeNullException>(
