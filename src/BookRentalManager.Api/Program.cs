@@ -51,7 +51,7 @@ WebApplication app = builder.Build();
 app.UseExceptionHandler(_ => { }); // .NET 8 bug that needs to be handled with an anonymous function.
 app.UseHttpsRedirection();
 app.MapControllers();
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     using IServiceScope serviceScope = app.Services.CreateScope();
     IServiceProvider serviceProvider = serviceScope.ServiceProvider;
