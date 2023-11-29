@@ -28,10 +28,10 @@ public sealed class Dispatcher : IDispatcher
     {
         Type requestHandlerType = typeof(IRequestHandler<,>);
         Type[] requestHandlerArgumentTypes =
-        {
+        [
             request.GetType(),
             typeof(TResult)
-        };
+        ];
         Type requestHandlerGenericType = requestHandlerType.MakeGenericType(requestHandlerArgumentTypes);
         dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType);
         if (requestHandler is null)

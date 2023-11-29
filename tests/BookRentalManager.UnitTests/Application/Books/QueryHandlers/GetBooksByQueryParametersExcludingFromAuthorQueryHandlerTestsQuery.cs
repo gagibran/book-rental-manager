@@ -69,7 +69,7 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             book.Isbn,
             book.RentedAt,
             book.DueDate,
-            new GetCustomerThatRentedBookDto());
+            null);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<Specification<Author>>(),

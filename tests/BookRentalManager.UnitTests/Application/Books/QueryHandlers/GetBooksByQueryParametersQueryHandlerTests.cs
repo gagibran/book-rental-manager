@@ -43,7 +43,7 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
             book.Isbn,
             book.RentedAt,
             book.DueDate,
-            new GetCustomerThatRentedBookDto());
+            null);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<int>(),

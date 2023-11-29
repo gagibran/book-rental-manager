@@ -20,7 +20,7 @@ public sealed class GetBookByIdQueryHandlerTests
             _book.Isbn,
             _book.RentedAt,
             _book.DueDate,
-            new GetCustomerThatRentedBookDto());
+            null);
         _getBookByIdQuery = new GetBookByIdQuery(_book.Id);
         _bookToGetBookDtoMapperStub = new();
         _bookRepositoryStub = new();

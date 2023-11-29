@@ -7,13 +7,13 @@ public sealed class AuthorSortParameters
 
     public AuthorSortParameters(string propertyNamesSeparatedByComma)
     {
-        ExpectedProperties = new string[]
-        {
+        ExpectedProperties =
+        [
             "FullName",
             "FullNameDesc",
             "CreatedAt",
             "CreatedAtDesc"
-        };
+        ];
         PropertyNamesSeparatedByComma = propertyNamesSeparatedByComma;
     }
 }

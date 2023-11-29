@@ -7,8 +7,8 @@ public sealed class CustomerSortParameters
 
     public CustomerSortParameters(string propertyNamesSeparatedByComma)
     {
-        ExpectedProperties = new string[]
-        {
+        ExpectedProperties =
+        [
             "FullName",
             "FullNameDesc",
             "Email",
@@ -21,7 +21,7 @@ public sealed class CustomerSortParameters
             "CustomerPointsDesc",
             "CreatedAt",
             "CreatedAtDesc"
-        };
+        ];
         PropertyNamesSeparatedByComma = propertyNamesSeparatedByComma;
     }
 }

@@ -3,18 +3,19 @@ namespace BookRentalManager.Application.DtoMappers;
 internal sealed class BookToGetBookDtoMapper : IMapper<Book, GetBookDto>
 {
     private IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> _authorsToGetAuthorFromBookDtosMapper;
-    private IMapper<Customer?, GetCustomerThatRentedBookDto> _customerToGetCustomerThatRentedBookDtoMapper;
 
-    public BookToGetBookDtoMapper(
-        IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> authorsToGetAuthorFromBookDtosMapper,
-        IMapper<Customer?, GetCustomerThatRentedBookDto> customerToGetCustomerThatRentedBookDtoMapper)
+    public BookToGetBookDtoMapper(IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> authorsToGetAuthorFromBookDtosMapper)
     {
         _authorsToGetAuthorFromBookDtosMapper = authorsToGetAuthorFromBookDtosMapper;
-        _customerToGetCustomerThatRentedBookDtoMapper = customerToGetCustomerThatRentedBookDtoMapper;
     }
 
     public GetBookDto Map(Book book)
     {
+        GetCustomerThatRentedBookDto? getCustomerThatRentedBookDto = null;
+        if (book.Customer is not null)
+        {
+            getCustomerThatRentedBookDto = new GetCustomerThatRentedBookDto(book.Customer);
+        }
         return new GetBookDto(
             book.Id,
             book.BookTitle,
@@ -23,6 +24,6 @@ internal sealed class BookToGetBookDtoMapper : IMapper<Book, GetBookDto>
             book.Isbn,
             book.RentedAt,
             book.DueDate,
-            _customerToGetCustomerThatRentedBookDtoMapper.Map(book.Customer));
+            getCustomerThatRentedBookDto);
     }
 }

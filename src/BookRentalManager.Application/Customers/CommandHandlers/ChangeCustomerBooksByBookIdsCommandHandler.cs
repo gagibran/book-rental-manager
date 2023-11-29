@@ -24,7 +24,7 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandl
         var changeCustomerBooksByBookIdsDto = new ChangeCustomerBooksByBookIdsDto(new List<Guid>());
         Result patchAppliedResult = changeCustomerBooksByBookIdsCommand.ChangeCustomerBooksByBookIdsDtoPatchDocument.ApplyTo(
             changeCustomerBooksByBookIdsDto,
-            new string[] { "replace", "remove" });
+            ["replace", "remove"]);
         if (!patchAppliedResult.IsSuccess)
         {
             return patchAppliedResult;

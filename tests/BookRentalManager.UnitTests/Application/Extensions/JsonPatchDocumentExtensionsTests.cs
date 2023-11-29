@@ -38,7 +38,7 @@ public sealed class JsonPatchDocumentExtensionsTests
         Result applyToResult = JsonPatchDocumentExtensions.ApplyTo(
             patchCustomerNameAndPhoneNumberDtoJsonPatchDocument,
             _patchCustomerNameAndPhoneNumberDto,
-            new string[] { "add", "remove" });
+            ["add", "remove"]);
 
         // Assert:
         Assert.Equal(expectedErrorMessage, applyToResult.ErrorMessage);

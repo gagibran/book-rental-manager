@@ -8,7 +8,7 @@ public sealed class GetBookDto : IdentifiableDto
     public string Isbn { get; }
     public DateTime? RentedAt { get; internal set; }
     public DateTime? DueDate { get; internal set; }
-    public GetCustomerThatRentedBookDto RentedBy { get; }
+    public GetCustomerThatRentedBookDto? RentedBy { get; }
 
     public GetBookDto(
         Guid id,
@@ -18,7 +18,7 @@ public sealed class GetBookDto : IdentifiableDto
         Isbn isbn,
         DateTime? rentedAt,
         DateTime? dueDate,
-        GetCustomerThatRentedBookDto rentedBy)
+        GetCustomerThatRentedBookDto? rentedBy)
         : base(id)
     {
         BookTitle = bookTitle;

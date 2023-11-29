@@ -2,34 +2,36 @@ namespace BookRentalManager.UnitTests.Application.DtoMappers;
 
 public sealed class BookToGetBookDtoMapperTests
 {
-    [Fact]
-    public void Map_withValidBook_ReturnsValidGetBookDto()
+    Book _book;
+    Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>> _authorsToGetAuthorFromBookDtosMapperStub;
+    BookToGetBookDtoMapper _bookToGetBookDtoMapper;
+
+    public BookToGetBookDtoMapperTests()
     {
-        // Arrange:
-        Book book = TestFixtures.CreateDummyBook();
-        var authorsToGetAuthorFromBookDtosMapperStub = new Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>>();
-        var customerToGetCustomerThatRentedBookDtoMapperStub = new Mock<IMapper<Customer, GetCustomerThatRentedBookDto>>();
-        authorsToGetAuthorFromBookDtosMapperStub
+        _book = TestFixtures.CreateDummyBook();
+        _authorsToGetAuthorFromBookDtosMapperStub = new();
+        _bookToGetBookDtoMapper = new(_authorsToGetAuthorFromBookDtosMapperStub.Object);
+        _authorsToGetAuthorFromBookDtosMapperStub
             .Setup(authorsToGetAuthorFromBookDtosMapper => authorsToGetAuthorFromBookDtosMapper.Map(It.IsAny<IReadOnlyList<Author>>()))
             .Returns(new List<GetAuthorFromBookDto>());
-        customerToGetCustomerThatRentedBookDtoMapperStub
-            .Setup(customerToGetCustomerThatRentedBookDtoMapper => customerToGetCustomerThatRentedBookDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(new GetCustomerThatRentedBookDto());
-        var bookToGetBookDtoMapper = new BookToGetBookDtoMapper(
-            authorsToGetAuthorFromBookDtosMapperStub.Object,
-            customerToGetCustomerThatRentedBookDtoMapperStub.Object!);
+    }
+
+    [Fact]
+    public void Map_WithBookNotBeingRented_ReturnsGetBookDtoWithNullRentedBy()
+    {
+        // Arrange:
         var expectedGetBookDto = new GetBookDto(
-            book.Id,
-            book.BookTitle,
+            _book.Id,
+            _book.BookTitle,
             new List<GetAuthorFromBookDto>(),
-            book.Edition,
-            book.Isbn,
-            book.RentedAt,
-            book.DueDate,
-            new GetCustomerThatRentedBookDto());
+            _book.Edition,
+            _book.Isbn,
+            _book.RentedAt,
+            _book.DueDate,
+            null);
 
         // Act:
-        GetBookDto actualGetBookDto = bookToGetBookDtoMapper.Map(book);
+        GetBookDto actualGetBookDto = _bookToGetBookDtoMapper.Map(_book);
 
         // Assert:
         Assert.Equal(expectedGetBookDto.BookTitle, actualGetBookDto.BookTitle);
@@ -38,7 +40,36 @@ public sealed class BookToGetBookDtoMapperTests
         Assert.Equal(expectedGetBookDto.Isbn, actualGetBookDto.Isbn);
         Assert.Equal(expectedGetBookDto.RentedAt, actualGetBookDto.RentedAt);
         Assert.Equal(expectedGetBookDto.DueDate, actualGetBookDto.DueDate);
-        Assert.Equal(expectedGetBookDto.RentedBy.FullName, actualGetBookDto.RentedBy.FullName);
+        Assert.Null(expectedGetBookDto.RentedBy);
+    }
+
+    [Fact]
+    public void Map_WithValidBook_ReturnsValidGetBookDto()
+    {
+        // Arrange:
+        Customer customer = TestFixtures.CreateDummyCustomer();
+        _book.SetRentedBy(customer);
+        var expectedGetBookDto = new GetBookDto(
+            _book.Id,
+            _book.BookTitle,
+            new List<GetAuthorFromBookDto>(),
+            _book.Edition,
+            _book.Isbn,
+            _book.RentedAt,
+            _book.DueDate,
+            new GetCustomerThatRentedBookDto(customer));
+
+        // Act:
+        GetBookDto actualGetBookDto = _bookToGetBookDtoMapper.Map(_book);
+
+        // Assert:
+        Assert.Equal(expectedGetBookDto.BookTitle, actualGetBookDto.BookTitle);
+        Assert.Equal(expectedGetBookDto.Authors, actualGetBookDto.Authors);
+        Assert.Equal(expectedGetBookDto.Edition, actualGetBookDto.Edition);
+        Assert.Equal(expectedGetBookDto.Isbn, actualGetBookDto.Isbn);
+        Assert.Equal(expectedGetBookDto.RentedAt, actualGetBookDto.RentedAt);
+        Assert.Equal(expectedGetBookDto.DueDate, actualGetBookDto.DueDate);
+        Assert.Equal(expectedGetBookDto.RentedBy!.FullName, actualGetBookDto.RentedBy!.FullName);
         Assert.Equal(expectedGetBookDto.RentedBy.Email, actualGetBookDto.RentedBy.Email);
     }
 }
