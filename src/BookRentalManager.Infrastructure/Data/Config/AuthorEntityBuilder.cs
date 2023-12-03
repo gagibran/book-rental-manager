@@ -19,7 +19,7 @@ public sealed class AuthorEntityBuilder : IEntityTypeConfiguration<Author>
             .IsRequired();
         authorBuilder
             .HasMany(author => author.Books)
-            .WithMany(books => books.Authors)
+            .WithMany(book => book.Authors)
             .UsingEntity(authorBuilder =>
             {
                 authorBuilder

@@ -91,7 +91,6 @@ public sealed class BookController : ApiController
                 new { createBookResult.Value!.Id },
                 AddHateoasLinks(_allowedRestMethodDtos, createBookResult.Value));
         }
-        // return CreatedAtAction(nameof(GetBookByIdAsync), new { createBookResult.Value!.Id }, _allowedRestMethodDtos);
         return CreatedAtAction(nameof(GetBookByIdAsync) , new { createBookResult.Value!.Id }, createBookResult.Value);
     }
 
