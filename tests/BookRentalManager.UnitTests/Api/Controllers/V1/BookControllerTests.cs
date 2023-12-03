@@ -8,7 +8,8 @@ public class BookControllerTests
 
     public BookControllerTests()
     {
-        var getAuthorFromBookDtos = new List<GetAuthorFromBookDto>
+        var getCustomerThatRentedBookDto = new GetCustomerThatRentedBookDto(TestFixtures.CreateDummyCustomer());
+        var gangOfFour = new List<GetAuthorFromBookDto>
         {
             new(FullName.Create("Erich", "Gamma").Value!),
             new(FullName.Create("John", "Vlissides").Value!),
@@ -20,12 +21,21 @@ public class BookControllerTests
             new(
                 Guid.NewGuid(),
                 "Design Patterns: Elements of Reusable Object-Oriented Software",
-                getAuthorFromBookDtos,
+                gangOfFour,
                 Edition.Create(1).Value!,
                 Isbn.Create("0-201-63361-2").Value!,
+                new DateTime(2020, 1, 1),
+                new DateTime(2020, 2, 1),
+                getCustomerThatRentedBookDto),
+            new(
+                Guid.NewGuid(),
+                "The Shadow Over Innsmouth",
+                new List<GetAuthorFromBookDto> { new(FullName.Create("Howard", "Lovecraft").Value!) },
+                Edition.Create(1).Value!,
+                Isbn.Create("978-1878252180").Value!,
                 null,
                 null,
-                null)
+                getCustomerThatRentedBookDto)
         ];
         var urlHelperStub = new Mock<IUrlHelper>();
         _dispatcherStub = new();
@@ -133,21 +143,9 @@ public class BookControllerTests
     public async Task GetBookByIdAsync_WithMediaTypeVendorSpecific_ReturnsOkWithHateosLinks()
     {
         // Arrange:
-        Customer customer = TestFixtures.CreateDummyCustomer();
-        var getAuthorFromBookDto = new GetAuthorFromBookDto(FullName.Create("Howard", "Lovecraft").Value!);
-        var getBookDto = new GetBookDto(
-            Guid.NewGuid(),
-            "The Shadow Over Innsmouth",
-            new List<GetAuthorFromBookDto> { getAuthorFromBookDto },
-            Edition.Create(1).Value!,
-            Isbn.Create("978-1878252180").Value!,
-            new DateTime(2020, 1, 1),
-            new DateTime(2020, 2, 1),
-            new GetCustomerThatRentedBookDto(customer)
-        );
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetBookByIdQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success(getBookDto));
+            .ReturnsAsync(Result.Success(_getBookDtos[0]));
 
         // Act:
         var okObjectResult = (await _bookController.GetBookByIdAsync(
@@ -158,14 +156,14 @@ public class BookControllerTests
         // Assert:
         dynamic bookWithHateosLinks = (ExpandoObject)okObjectResult!.Value!;
         Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
-        Assert.Equal(getBookDto.Id, bookWithHateosLinks.id);
-        Assert.Equal(getBookDto.BookTitle, bookWithHateosLinks.bookTitle);
-        Assert.Equal(getBookDto.Authors, bookWithHateosLinks.authors);
-        Assert.Equal(getBookDto.Edition, bookWithHateosLinks.edition);
-        Assert.Equal(getBookDto.Isbn, bookWithHateosLinks.isbn);
-        Assert.Equal(getBookDto.RentedBy, bookWithHateosLinks.rentedBy);
-        Assert.Equal(getBookDto.DueDate, bookWithHateosLinks.dueDate);
-        Assert.Equal(getBookDto.RentedBy, bookWithHateosLinks.rentedBy);
+        Assert.Equal(_getBookDtos[0].Id, bookWithHateosLinks.id);
+        Assert.Equal(_getBookDtos[0].BookTitle, bookWithHateosLinks.bookTitle);
+        Assert.Equal(_getBookDtos[0].Authors, bookWithHateosLinks.authors);
+        Assert.Equal(_getBookDtos[0].Edition, bookWithHateosLinks.edition);
+        Assert.Equal(_getBookDtos[0].Isbn, bookWithHateosLinks.isbn);
+        Assert.Equal(_getBookDtos[0].RentedBy, bookWithHateosLinks.rentedBy);
+        Assert.Equal(_getBookDtos[0].DueDate, bookWithHateosLinks.dueDate);
+        Assert.Equal(_getBookDtos[0].RentedBy, bookWithHateosLinks.rentedBy);
         Assert.Equal("self", bookWithHateosLinks.links[0].Rel);
         Assert.Equal("patch_book", bookWithHateosLinks.links[1].Rel);
         Assert.Equal("delete_book", bookWithHateosLinks.links[2].Rel);
@@ -208,5 +206,85 @@ public class BookControllerTests
         Assert.Equal(getBookDto.RentedBy, actualBook!.RentedBy);
         Assert.Equal(getBookDto.DueDate, actualBook!.DueDate);
         Assert.Equal(getBookDto.RentedBy, actualBook!.RentedBy);
+    }
+
+    [Fact]
+    public async Task CreateBookAsync_WithCreateBookResultUnsuccessful_ReturnsUnprocessableEntity()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<CreateBookCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail<BookCreatedDto>("unprocessableEntity", "errorMessage422"));
+
+        // Act:
+        var objectResult = await _bookController.CreateBookAsync(
+            It.IsAny<CreateBookCommand>(),
+            It.IsAny<string>(),
+            It.IsAny<CancellationToken>()) as ObjectResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
+        Assert.False(_bookController.ModelState.IsValid);
+        Assert.Equal(1, _bookController.ModelState.ErrorCount);
+        Assert.Equal("errorMessage422", _bookController.ModelState["unprocessableEntity"]!.Errors[0].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task CreateBookAsync_WithMediaTypeVendorSpecific_ReturnsCreatedAtActionWithHateoasLinks()
+    {
+        // Arrange:
+        var bookCreatedDto = new BookCreatedDto(
+            Guid.NewGuid(),
+            "Clean Code: A Handbook of Agile Software Craftsmanship",
+            1,
+            "978-0132350884");
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<CreateBookCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(bookCreatedDto));
+
+        // Act:
+        var createdAtActionResult = await _bookController.CreateBookAsync(
+            It.IsAny<CreateBookCommand>(),
+            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            It.IsAny<CancellationToken>()) as CreatedAtActionResult;
+
+        // Assert:
+        dynamic bookWithHateosLinks = (ExpandoObject)createdAtActionResult!.Value!;
+        Assert.Equal((int)HttpStatusCode.Created, createdAtActionResult!.StatusCode);
+        Assert.Equal(bookCreatedDto.Id, bookWithHateosLinks.id);
+        Assert.Equal(bookCreatedDto.BookTitle, bookWithHateosLinks.bookTitle);
+        Assert.Equal(bookCreatedDto.Edition, bookWithHateosLinks.edition);
+        Assert.Equal(bookCreatedDto.Isbn, bookWithHateosLinks.isbn);
+        Assert.Equal("self", bookWithHateosLinks.links[0].Rel);
+        Assert.Equal("patch_book", bookWithHateosLinks.links[1].Rel);
+        Assert.Equal("delete_book", bookWithHateosLinks.links[2].Rel);
+    }
+
+    [Fact]
+    public async Task CreateBookAsync_WithMediaTypeNotVendorSpecific_ReturnsCreatedAtActionWithBook()
+    {
+        // Arrange:
+        var bookCreatedDto = new BookCreatedDto(
+            Guid.NewGuid(),
+            "Clean Code: A Handbook of Agile Software Craftsmanship",
+            1,
+            "978-0132350884");
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<CreateBookCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(bookCreatedDto));
+
+        // Act:
+        var createdAtActionResult = await _bookController.CreateBookAsync(
+            It.IsAny<CreateBookCommand>(),
+            MediaTypeConstants.ApplicationJsonMediaType,
+            It.IsAny<CancellationToken>()) as CreatedAtActionResult;
+
+        // Assert:
+        var bookCreated = (BookCreatedDto)createdAtActionResult!.Value!;
+        Assert.Equal((int)HttpStatusCode.Created, createdAtActionResult!.StatusCode);
+        Assert.Equal(bookCreatedDto.Id, bookCreated.Id);
+        Assert.Equal(bookCreatedDto.BookTitle, bookCreated.BookTitle);
+        Assert.Equal(bookCreatedDto.Edition, bookCreated.Edition);
+        Assert.Equal(bookCreatedDto.Isbn, bookCreated.Isbn);
     }
 }
