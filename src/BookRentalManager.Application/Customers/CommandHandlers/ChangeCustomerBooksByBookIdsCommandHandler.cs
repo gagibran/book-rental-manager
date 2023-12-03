@@ -29,8 +29,10 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandl
         {
             return patchAppliedResult;
         }
-        IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(new BooksByIdsSpecification(changeCustomerBooksByBookIdsDto.BookIds));
-        if (books.Count() != changeCustomerBooksByBookIdsDto.BookIds.Count())
+        IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
+            new BooksByIdsSpecification(changeCustomerBooksByBookIdsDto.BookIds),
+            cancellationToken);
+        if (books.Count != changeCustomerBooksByBookIdsDto.BookIds.Count())
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }
@@ -50,7 +52,7 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandl
         {
             return returnBookResults;
         }
-        await _customerRepository.UpdateAsync(customer);
+        await _customerRepository.UpdateAsync(customer, cancellationToken);
         return Result.Success();
     }
 }

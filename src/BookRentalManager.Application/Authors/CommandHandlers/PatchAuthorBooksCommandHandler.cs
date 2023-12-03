@@ -14,7 +14,7 @@ internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuth
     public async Task<Result> HandleAsync(PatchAuthorBooksCommand patchAuthorBooksCommand, CancellationToken cancellationToken)
     {
         var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(patchAuthorBooksCommand.Id);
-        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification);
+        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
         if (author is null)
         {
             return Result.Fail("authorId", $"No author with the ID of '{patchAuthorBooksCommand.Id}' was found.");
@@ -30,7 +30,7 @@ internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuth
         }
         var booksByIdsSpecification = new BooksByIdsSpecification(patchAuthorBooksDto.BookIds);
         IReadOnlyList<Book> booksToAdd = await _bookRepository.GetAllBySpecificationAsync(booksByIdsSpecification, cancellationToken);
-        if (booksToAdd.Count() != patchAuthorBooksDto.BookIds.Count())
+        if (booksToAdd.Count != patchAuthorBooksDto.BookIds.Count())
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }

@@ -18,7 +18,7 @@ internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCusto
         CancellationToken cancellationToken)
     {
         var customerByEmailWithBooksSpecification = new CustomerByEmailWithBooksSpecification(createCustomerCommand.Email);
-        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailWithBooksSpecification);
+        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailWithBooksSpecification, cancellationToken);
         Result existingCustomerWithEmailResult = Result.Success();
         if (existingCustomerWithEmail is not null)
         {

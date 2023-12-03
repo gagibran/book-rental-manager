@@ -41,7 +41,7 @@ public sealed class Customer : Entity
         {
             return checkRentPossibilityByCustomerBooksResult;
         }
-        Result checkRentPossibilityByCustomerTypeResult = CustomerStatus.CheckRentPossibilityByCustomerType(Books.Count());
+        Result checkRentPossibilityByCustomerTypeResult = CustomerStatus.CheckRentPossibilityByCustomerType(Books.Count);
         if (!checkRentPossibilityByCustomerTypeResult.IsSuccess)
         {
             return checkRentPossibilityByCustomerTypeResult;

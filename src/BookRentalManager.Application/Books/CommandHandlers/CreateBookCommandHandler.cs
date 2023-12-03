@@ -27,7 +27,7 @@ internal sealed class CreateBookCommandHandler : IRequestHandler<CreateBookComma
         var authorsByIdsSpecification = new AuthorsByIdsSpecification(createBookCommand.AuthorIds);
         IReadOnlyList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(authorsByIdsSpecification, cancellationToken);
         Result authorsResult = Result.Success();
-        if (authors.Count() != createBookCommand.AuthorIds.Count())
+        if (authors.Count != createBookCommand.AuthorIds.Count())
         {
             authorsResult = Result.Fail("authorIds", "Could not find some of the authors for the provided IDs.");
         }

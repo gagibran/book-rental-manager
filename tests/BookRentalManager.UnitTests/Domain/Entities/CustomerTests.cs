@@ -107,7 +107,7 @@ public sealed class CustomerTests
 
         // Assert:
         Assert.Equal(expectedCustomerType, _customer.CustomerStatus.CustomerType);
-        Assert.Equal(expectedDueDate.Date, _customer.Books.First().DueDate!.Value.Date);
+        Assert.Equal(expectedDueDate.Date, _customer.Books[0].DueDate!.Value.Date);
     }
 
     [Fact]

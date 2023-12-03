@@ -18,7 +18,7 @@ internal sealed class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorC
         CancellationToken cancellationToken)
     {
         var authorByFullNameSpecification = new AuthorByFullNameSpecification(createAuthorCommand.FirstName, createAuthorCommand.LastName);
-        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification);
+        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification, cancellationToken);
         Result existingAuthorResult = Result.Success();
         if (existingAuthor is not null)
         {
