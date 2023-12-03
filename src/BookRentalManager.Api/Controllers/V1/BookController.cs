@@ -88,10 +88,10 @@ public sealed class BookController : ApiController
         {
             return CreatedAtAction(
                 nameof(GetBookByIdAsync),
-                new { Id = createBookResult.Value!.Id },
+                new { createBookResult.Value!.Id },
                 AddHateoasLinks(_allowedRestMethodDtos, createBookResult.Value));
         }
-        return CreatedAtAction(nameof(GetBookByIdAsync), new { Id = createBookResult.Value!.Id }, _allowedRestMethodDtos);
+        return CreatedAtAction(nameof(GetBookByIdAsync), new { createBookResult.Value!.Id }, _allowedRestMethodDtos);
     }
 
     [HttpPatch("{id}", Name = nameof(PatchBookTitleEditionAndIsbnByIdAsync))]

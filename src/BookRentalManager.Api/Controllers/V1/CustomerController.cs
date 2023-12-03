@@ -93,10 +93,10 @@ public sealed class CustomerController : ApiController
         {
             return CreatedAtAction(
                 nameof(GetCustomerByIdAsync),
-                new { Id = createCustomerResult.Value!.Id },
+                new { createCustomerResult.Value!.Id },
                 AddHateoasLinks(_allowedRestMethodDtos, createCustomerResult.Value));
         }
-        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { Id = createCustomerResult.Value!.Id }, createCustomerResult.Value);
+        return CreatedAtAction(nameof(GetCustomerByIdAsync), new { createCustomerResult.Value!.Id }, createCustomerResult.Value);
     }
 
     [HttpPatch("{id}", Name = nameof(PatchCustomerNameAndPhoneNumberByIdAsync))]
