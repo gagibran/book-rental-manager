@@ -42,7 +42,6 @@ builder.Services.Configure<MvcOptions>(config =>
         newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add(MediaTypeConstants.BookRentalManagerHateoasMediaType);
     }
 });
-builder.Services.AddMemoryCache();
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 

@@ -19,14 +19,14 @@ public sealed class Author : Entity
         _books = [];
     }
 
-    public Result AddBook(Book book)
+    public Result AddBook(Book bookToAdd)
     {
-        if (_books.Select(book => book.Id).Contains(book.Id))
+        if (_books.Select(book => book.Isbn).Contains(bookToAdd.Isbn))
         {
-            return Result.Fail("book", $"A book with the ISBN '{book.Isbn}' has already been added to this author.");
+            return Result.Fail("book", $"A book with the ISBN '{bookToAdd.Isbn}' has already been added to '{FullName}'.");
         }
-        book.AddAuthor(this);
-        _books.Add(book);
+        bookToAdd.AddAuthor(this);
+        _books.Add(bookToAdd);
         return Result.Success();
     }
 }

@@ -47,7 +47,7 @@ public abstract class ApiController : ControllerBase
 
     protected ExpandoObject AddHateoasLinks(List<AllowedRestMethodsDto> allowedRestMethodDtos, IdentifiableDto identifiableDto)
     {
-        if (!allowedRestMethodDtos.Any())
+        if (allowedRestMethodDtos.Count == 0)
         {
             throw new ArgumentException($"{allowedRestMethodDtos} cannot be empty.");
         }
