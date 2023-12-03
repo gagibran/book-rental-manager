@@ -37,3 +37,4 @@ global using System.Net;
 global using BookRentalManager.Api.Constants;
 global using BookRentalManager.Application.Common;
 global using Microsoft.AspNetCore.Http;
+global using System.Dynamic;

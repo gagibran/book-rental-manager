@@ -1,6 +1,4 @@
-﻿using System.Dynamic;
-
-namespace BookRentalManager.UnitTests;
+﻿namespace BookRentalManager.UnitTests;
 
 public class AuthorControllerTests
 {
@@ -75,13 +73,13 @@ public class AuthorControllerTests
 
         // Assert:
         var collectionWithHateoasLinksDto = (CollectionWithHateoasLinksDto)okObjectResult!.Value!;
-        dynamic returnedExpandoObject = collectionWithHateoasLinksDto.Values[0];
+        dynamic actualExpandoObject = collectionWithHateoasLinksDto.Values[0];
         Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
         Assert.Equal("previous_page", collectionWithHateoasLinksDto.Links[0].Rel);
         Assert.Equal("next_page", collectionWithHateoasLinksDto.Links[1].Rel);
-        Assert.Equal("url", returnedExpandoObject.links[0].Href);
-        Assert.Equal("url", returnedExpandoObject.links[1].Href);
-        Assert.Equal("url", returnedExpandoObject.links[2].Href);
+        Assert.Equal("url", actualExpandoObject.links[0].Href);
+        Assert.Equal("url", actualExpandoObject.links[1].Href);
+        Assert.Equal("url", actualExpandoObject.links[2].Href);
     }
 
     [Fact]
@@ -112,7 +110,7 @@ public class AuthorControllerTests
     }
 
     [Fact]
-    public async Task GetAuthorByIdAsync_WithUnsuccessfulGetAuthorByIdResult_ReturnsNotFound()
+    public async Task GetAuthorByIdAsync_WithGetAuthorByIdResultUnsuccessful_ReturnsNotFound()
     {
         // Arrange:
         _dispatcherStub
@@ -187,13 +185,13 @@ public class AuthorControllerTests
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
-        var returnedAuthor = okObjectResult!.Value as GetAuthorDto;
+        var actualAuthor = okObjectResult!.Value as GetAuthorDto;
         Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
-        Assert.Equal(_author.Id, returnedAuthor!.Id);
-        Assert.Equal(_author.FullName.ToString(), returnedAuthor.FullName);
-        Assert.Equal(getBookFromAuthorDtos.ElementAt(0).BookTitle, returnedAuthor.Books.ElementAt(0).BookTitle);
-        Assert.Equal(getBookFromAuthorDtos.ElementAt(0).Edition, returnedAuthor.Books.ElementAt(0).Edition);
-        Assert.Equal(getBookFromAuthorDtos.ElementAt(0).Isbn, returnedAuthor.Books.ElementAt(0).Isbn);
+        Assert.Equal(_author.Id, actualAuthor!.Id);
+        Assert.Equal(_author.FullName.ToString(), actualAuthor.FullName);
+        Assert.Equal(getBookFromAuthorDtos.ElementAt(0).BookTitle, actualAuthor.Books.ElementAt(0).BookTitle);
+        Assert.Equal(getBookFromAuthorDtos.ElementAt(0).Edition, actualAuthor.Books.ElementAt(0).Edition);
+        Assert.Equal(getBookFromAuthorDtos.ElementAt(0).Isbn, actualAuthor.Books.ElementAt(0).Isbn);
     }
 
     [Fact]
