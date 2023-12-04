@@ -1,21 +1,14 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBooksByQueryParametersQueryHandler
+internal sealed class GetBooksByQueryParametersQueryHandler(
+    IRepository<Book> bookRepository,
+    IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
+    IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
     : IRequestHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>
 {
-    private readonly IRepository<Book> _bookRepository;
-    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
-    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper;
-
-    public GetBooksByQueryParametersQueryHandler(
-        IRepository<Book> bookRepository,
-        IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
-        IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
-    {
-        _bookRepository = bookRepository;
-        _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
-        _bookSortParametersMapper = bookSortParametersMapper;
-    }
+    private readonly IRepository<Book> _bookRepository = bookRepository;
+    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
+    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper = bookSortParametersMapper;
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
         GetBooksByQueryParametersQuery getBooksByQueryParametersQuery,

@@ -1,15 +1,10 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBookByIdQueryHandler : IRequestHandler<GetBookByIdQuery, GetBookDto>
+internal sealed class GetBookByIdQueryHandler(IRepository<Book> bookRepository, IMapper<Book, GetBookDto> bookToGetBookDtoMapper)
+    : IRequestHandler<GetBookByIdQuery, GetBookDto>
 {
-    private readonly IRepository<Book> _bookRepository;
-    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
-
-    public GetBookByIdQueryHandler(IRepository<Book> bookRepository, IMapper<Book, GetBookDto> bookToGetBookDtoMapper)
-    {
-        _bookRepository = bookRepository;
-        _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
-    }
+    private readonly IRepository<Book> _bookRepository = bookRepository;
+    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
 
     public async Task<Result<GetBookDto>> HandleAsync(GetBookByIdQuery getBookByIdQuery, CancellationToken cancellationToken)
     {

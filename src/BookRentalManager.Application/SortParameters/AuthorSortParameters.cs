@@ -1,19 +1,13 @@
 namespace BookRentalManager.Application.SortParameters;
 
-public sealed class AuthorSortParameters
+public sealed class AuthorSortParameters(string propertyNamesSeparatedByComma)
 {
-    public string[] ExpectedProperties { get; }
-    public string PropertyNamesSeparatedByComma { get; }
-
-    public AuthorSortParameters(string propertyNamesSeparatedByComma)
-    {
-        ExpectedProperties =
-        [
-            "FullName",
-            "FullNameDesc",
-            "CreatedAt",
-            "CreatedAtDesc"
-        ];
-        PropertyNamesSeparatedByComma = propertyNamesSeparatedByComma;
-    }
+    public string[] ExpectedProperties { get; } =
+    [
+        "FullName",
+        "FullNameDesc",
+        "CreatedAt",
+        "CreatedAtDesc"
+    ];
+    public string PropertyNamesSeparatedByComma { get; } = propertyNamesSeparatedByComma;
 }

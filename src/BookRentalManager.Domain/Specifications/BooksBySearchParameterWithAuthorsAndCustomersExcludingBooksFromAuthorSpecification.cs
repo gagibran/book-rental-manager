@@ -9,14 +9,14 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksF
     {
         string formattedSearchParameter = searchParameter.Trim().ToLower();
         Where = book => !books.Contains(book)
-            && (book.BookTitle.ToLower().Contains(formattedSearchParameter)
+            && (book.BookTitle.Contains(formattedSearchParameter, StringComparison.CurrentCultureIgnoreCase)
                 || book.Edition.EditionNumber.ToString().Contains(formattedSearchParameter)
-                || book.Isbn.IsbnValue.ToLower().Contains(formattedSearchParameter)
+                || book.Isbn.IsbnValue.Contains(formattedSearchParameter, StringComparison.CurrentCultureIgnoreCase)
                 || book.RentedAt.ToString()!.Contains(formattedSearchParameter)
                 || book.DueDate.ToString()!.Contains(formattedSearchParameter)
-                || book.Customer!.FullName.FirstName.ToLower().Contains(searchParameter)
-                || book.Customer!.FullName.LastName.ToLower().Contains(searchParameter)
-                || book.Customer.Email.EmailAddress.ToLower().Contains(searchParameter));
+                || book.Customer!.FullName.FirstName.Contains(searchParameter, StringComparison.CurrentCultureIgnoreCase)
+                || book.Customer!.FullName.LastName.Contains(searchParameter, StringComparison.CurrentCultureIgnoreCase)
+                || book.Customer.Email.EmailAddress.Contains(searchParameter, StringComparison.CurrentCultureIgnoreCase));
         IncludeExpressions.Add(book => book.Authors);
         IncludeExpressions.Add(book => book.Customer!);
         OrderByPropertyName = sortParameters;

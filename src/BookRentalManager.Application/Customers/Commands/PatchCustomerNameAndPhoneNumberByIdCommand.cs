@@ -1,13 +1,8 @@
 namespace BookRentalManager.Application.Customers.Commands;
 
-public sealed class PatchCustomerNameAndPhoneNumberByIdCommand : IRequest
+public sealed class PatchCustomerNameAndPhoneNumberByIdCommand(Guid id, JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> patchCustomerNameAndPhoneNumberDtoPatchDocument)
+    : IRequest
 {
-    public Guid Id { get; }
-    public JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> PatchCustomerNameAndPhoneNumberDtoPatchDocument { get; }
-
-    public PatchCustomerNameAndPhoneNumberByIdCommand(Guid id, JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> patchCustomerNameAndPhoneNumberDtoPatchDocument)
-    {
-        Id = id;
-        PatchCustomerNameAndPhoneNumberDtoPatchDocument = patchCustomerNameAndPhoneNumberDtoPatchDocument;
-    }
+    public Guid Id { get; } = id;
+    public JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto> PatchCustomerNameAndPhoneNumberDtoPatchDocument { get; } = patchCustomerNameAndPhoneNumberDtoPatchDocument;
 }

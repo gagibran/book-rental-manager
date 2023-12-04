@@ -2,16 +2,11 @@ using BookRentalManager.Infrastructure.Data;
 
 namespace BookRentalManager.Infrastructure.Common;
 
-public sealed class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
+public sealed class Repository<TEntity>(BookRentalManagerDbContext bookRentalManagerDbContext)
+    : IRepository<TEntity> where TEntity : Entity
 {
-    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
-    private readonly DbSet<TEntity> _dbSet;
-
-    public Repository(BookRentalManagerDbContext bookRentalManagerDbContext)
-    {
-        _bookRentalManagerDbContext = bookRentalManagerDbContext;
-        _dbSet = bookRentalManagerDbContext.Set<TEntity>();
-    }
+    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext = bookRentalManagerDbContext;
+    private readonly DbSet<TEntity> _dbSet = bookRentalManagerDbContext.Set<TEntity>();
 
     public async Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
         Specification<TEntity> specification,

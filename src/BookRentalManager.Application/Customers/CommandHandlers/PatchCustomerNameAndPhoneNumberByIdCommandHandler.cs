@@ -1,17 +1,12 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler : IRequestHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
+internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler(
+    IRepository<Customer> customerRepository,
+    IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> customerToPatchCustomerNameAndPhoneNumberDtoMapper)
+    : IRequestHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> _customerToPatchCustomerNameAndPhoneNumberDtoMapper;
-
-    public PatchCustomerNameAndPhoneNumberByIdCommandHandler(
-        IRepository<Customer> customerRepository,
-        IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> customerToPatchCustomerNameAndPhoneNumberDtoMapper)
-    {
-        _customerRepository = customerRepository;
-        _customerToPatchCustomerNameAndPhoneNumberDtoMapper = customerToPatchCustomerNameAndPhoneNumberDtoMapper;
-    }
+    private readonly IRepository<Customer> _customerRepository = customerRepository;
+    private readonly IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> _customerToPatchCustomerNameAndPhoneNumberDtoMapper = customerToPatchCustomerNameAndPhoneNumberDtoMapper;
 
     public async Task<Result> HandleAsync(PatchCustomerNameAndPhoneNumberByIdCommand patchCustomerNameAndPhoneNumberByIdCommand, CancellationToken cancellationToken)
     {

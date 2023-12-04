@@ -1,15 +1,8 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class AllowedRestMethodsDto
+public sealed class AllowedRestMethodsDto(string method, string methodName, string rel)
 {
-    public string Method { get; }
-    public string MethodName { get; }
-    public string Rel { get; }
-
-    public AllowedRestMethodsDto (string method, string methodName, string rel)
-    {
-        Method = method;
-        MethodName = methodName;
-        Rel = rel;
-    }
+    public string Method { get; } = method;
+    public string MethodName { get; } = methodName;
+    public string Rel { get; } = rel;
 }

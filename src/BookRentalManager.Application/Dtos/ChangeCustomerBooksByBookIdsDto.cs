@@ -1,11 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class ChangeCustomerBooksByBookIdsDto
+public sealed class ChangeCustomerBooksByBookIdsDto(IEnumerable<Guid> bookIds)
 {
-    public IEnumerable<Guid> BookIds { get; set; }
-
-    public ChangeCustomerBooksByBookIdsDto(IEnumerable<Guid> bookIds)
-    {
-        BookIds = bookIds;
-    }
+    public IEnumerable<Guid> BookIds { get; set; } = bookIds;
 }

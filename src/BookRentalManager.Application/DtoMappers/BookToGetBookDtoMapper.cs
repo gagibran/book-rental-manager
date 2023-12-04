@@ -1,13 +1,9 @@
 namespace BookRentalManager.Application.DtoMappers;
 
-internal sealed class BookToGetBookDtoMapper : IMapper<Book, GetBookDto>
+internal sealed class BookToGetBookDtoMapper(IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> authorsToGetAuthorFromBookDtosMapper)
+    : IMapper<Book, GetBookDto>
 {
-    private IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> _authorsToGetAuthorFromBookDtosMapper;
-
-    public BookToGetBookDtoMapper(IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> authorsToGetAuthorFromBookDtosMapper)
-    {
-        _authorsToGetAuthorFromBookDtosMapper = authorsToGetAuthorFromBookDtosMapper;
-    }
+    private IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>> _authorsToGetAuthorFromBookDtosMapper = authorsToGetAuthorFromBookDtosMapper;
 
     public GetBookDto Map(Book book)
     {

@@ -1,17 +1,9 @@
 namespace BookRentalManager.Application.Common;
 
-public class GetAllItemsQuery
+public class GetAllItemsQuery(int pageIndex, int pageSize, string search, string sort)
 {
-    public int PageIndex { get; }
-    public int PageSize { get; }
-    public string SearchParameter { get; }
-    public string SortParameters { get; }
-
-    public GetAllItemsQuery(int pageIndex, int pageSize, string search, string sort)
-    {
-        PageIndex = pageIndex;
-        PageSize = pageSize;
-        SearchParameter = search;
-        SortParameters = sort;
-    }
+    public int PageIndex { get; } = pageIndex;
+    public int PageSize { get; } = pageSize;
+    public string SearchParameter { get; } = search;
+    public string SortParameters { get; } = sort;
 }

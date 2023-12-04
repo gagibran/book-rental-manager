@@ -2,14 +2,9 @@ using BookRentalManager.Application.Exceptions;
 
 namespace BookRentalManager.Application.Common;
 
-public sealed class Dispatcher : IDispatcher
+public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public Dispatcher(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public async Task<Result> DispatchAsync(IRequest request, CancellationToken cancellationToken)
     {

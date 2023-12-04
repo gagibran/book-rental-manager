@@ -1,15 +1,8 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class BookCreatedDto : IdentifiableDto
+public sealed class BookCreatedDto(Guid id, string bookTitle, int edition, string isbn) : IdentifiableDto(id)
 {
-    public string BookTitle { get; }
-    public int Edition { get; }
-    public string Isbn { get; }
-
-    public BookCreatedDto(Guid id, string bookTitle, int edition, string isbn) : base(id)
-    {
-        BookTitle = bookTitle;
-        Edition = edition;
-        Isbn = isbn;
-    }
+    public string BookTitle { get; } = bookTitle;
+    public int Edition { get; } = edition;
+    public string Isbn { get; } = isbn;
 }

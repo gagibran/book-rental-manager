@@ -1,15 +1,9 @@
 namespace BookRentalManager.Application.Books.Commands;
 
-public sealed class PatchBookTitleEditionAndIsbnByIdCommand : IRequest
+public sealed class PatchBookTitleEditionAndIsbnByIdCommand(
+    Guid id,
+    JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> patchBookTitleEditionAndIsbnByIdDtoPatchDocument) : IRequest
 {
-    public Guid Id { get; }
-    public JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> PatchBookTitleEditionAndIsbnByIdDtoPatchDocument { get; }
-
-    public PatchBookTitleEditionAndIsbnByIdCommand(
-        Guid id,
-        JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> patchBookTitleEditionAndIsbnByIdDtoPatchDocument)
-    {
-        Id = id;
-        PatchBookTitleEditionAndIsbnByIdDtoPatchDocument = patchBookTitleEditionAndIsbnByIdDtoPatchDocument;
-    }
+    public Guid Id { get; } = id;
+    public JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> PatchBookTitleEditionAndIsbnByIdDtoPatchDocument { get; } = patchBookTitleEditionAndIsbnByIdDtoPatchDocument;
 }

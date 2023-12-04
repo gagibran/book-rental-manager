@@ -1,15 +1,10 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandler<ChangeCustomerBooksByBookIdsCommand>
+internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Customer> customerRepository, IRepository<Book> bookRepository)
+    : IRequestHandler<ChangeCustomerBooksByBookIdsCommand>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IRepository<Book> _bookRepository;
-
-    public ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Customer> customerRepository, IRepository<Book> bookRepository)
-    {
-        _customerRepository = customerRepository;
-        _bookRepository = bookRepository;
-    }
+    private readonly IRepository<Customer> _customerRepository = customerRepository;
+    private readonly IRepository<Book> _bookRepository = bookRepository;
 
     public async Task<Result> HandleAsync(
         ChangeCustomerBooksByBookIdsCommand changeCustomerBooksByBookIdsCommand,

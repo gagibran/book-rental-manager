@@ -1,13 +1,8 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-public sealed class DeleteBookByIdCommandHandler : IRequestHandler<DeleteBookByIdCommand>
+public sealed class DeleteBookByIdCommandHandler(IRepository<Book> bookRepository) : IRequestHandler<DeleteBookByIdCommand>
 {
-    private readonly IRepository<Book> _bookRepository;
-
-    public DeleteBookByIdCommandHandler(IRepository<Book> bookRepository)
-    {
-        _bookRepository = bookRepository;
-    }
+    private readonly IRepository<Book> _bookRepository = bookRepository;
 
     public async Task<Result> HandleAsync(DeleteBookByIdCommand deleteBookByIdCommand, CancellationToken cancellationToken)
     {

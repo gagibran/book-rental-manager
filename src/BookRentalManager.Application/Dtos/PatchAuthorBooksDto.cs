@@ -1,11 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class PatchAuthorBooksDto
+public sealed class PatchAuthorBooksDto(IEnumerable<Guid> bookIds)
 {
-    public IEnumerable<Guid> BookIds { get; set; }
-
-    public PatchAuthorBooksDto(IEnumerable<Guid> bookIds)
-    {
-        BookIds = bookIds;
-    }
+    public IEnumerable<Guid> BookIds { get; set; } = bookIds;
 }

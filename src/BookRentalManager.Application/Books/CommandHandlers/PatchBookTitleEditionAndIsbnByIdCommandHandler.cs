@@ -1,17 +1,12 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler : IRequestHandler<PatchBookTitleEditionAndIsbnByIdCommand>
+internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(
+    IRepository<Book> bookRepository,
+    IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> bookToPatchBookTitleEditionAndIsbnByIdDtoMapper)
+    : IRequestHandler<PatchBookTitleEditionAndIsbnByIdCommand>
 {
-    private readonly IRepository<Book> _bookRepository;
-    private readonly IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper;
-
-    public PatchBookTitleEditionAndIsbnByIdCommandHandler(
-        IRepository<Book> bookRepository,
-        IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> bookToPatchBookTitleEditionAndIsbnByIdDtoMapper)
-    {
-        _bookRepository = bookRepository;
-        _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper = bookToPatchBookTitleEditionAndIsbnByIdDtoMapper;
-    }
+    private readonly IRepository<Book> _bookRepository = bookRepository;
+    private readonly IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper = bookToPatchBookTitleEditionAndIsbnByIdDtoMapper;
 
     public async Task<Result> HandleAsync(
         PatchBookTitleEditionAndIsbnByIdCommand patchBookTitleEditionAndIsbnByIdCommand,

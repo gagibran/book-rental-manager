@@ -1,24 +1,16 @@
 namespace BookRentalManager.Application.Books.QueryHandlers;
 
-internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler
+internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
+    IRepository<Author> authorRepository,
+    IRepository<Book> bookRepository,
+    IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
+    IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
     : IRequestHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>
 {
-    private readonly IRepository<Author> _authorRepository;
-    private readonly IRepository<Book> _bookRepository;
-    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper;
-    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper;
-
-    public GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
-        IRepository<Author> authorRepository,
-        IRepository<Book> bookRepository,
-        IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
-        IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
-    {
-        _authorRepository = authorRepository;
-        _bookRepository = bookRepository;
-        _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
-        _bookSortParametersMapper = bookSortParametersMapper;
-    }
+    private readonly IRepository<Author> _authorRepository = authorRepository;
+    private readonly IRepository<Book> _bookRepository = bookRepository;
+    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
+    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper = bookSortParametersMapper;
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
         GetBooksByQueryParametersExcludingFromAuthorQuery getBooksByQueryParameterFromAuthor,

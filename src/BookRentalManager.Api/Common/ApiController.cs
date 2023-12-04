@@ -12,7 +12,7 @@ public abstract class ApiController : ControllerBase
     {
         return result.ErrorType switch
         {
-            string error when error.ToLower().Contains("id") => CustomHttpErrorResponse(
+            string error when error.Contains("id", StringComparison.CurrentCultureIgnoreCase) => CustomHttpErrorResponse(
                 result.ErrorType,
                 result.ErrorMessage,
                 HttpStatusCode.NotFound),

@@ -1,11 +1,6 @@
 namespace BookRentalManager.Application.Authors.Commands;
 
-public sealed class DeleteAuthorByIdCommand : IRequest
+public sealed class DeleteAuthorByIdCommand(Guid id) : IRequest
 {
-    public Guid Id { get; }
-
-    public DeleteAuthorByIdCommand(Guid id)
-    {
-        Id = id;
-    }
+    public Guid Id { get; } = id;
 }

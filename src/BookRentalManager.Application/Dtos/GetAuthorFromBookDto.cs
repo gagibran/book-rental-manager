@@ -1,11 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetAuthorFromBookDto
+public sealed class GetAuthorFromBookDto(FullName fullName)
 {
-    public string FullName { get; }
-
-    public GetAuthorFromBookDto(FullName fullName)
-    {
-        FullName = fullName.ToString();
-    }
+    public string FullName { get; } = fullName.ToString();
 }

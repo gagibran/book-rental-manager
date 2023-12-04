@@ -1,21 +1,14 @@
 namespace BookRentalManager.Application.Authors.QueryHandlers;
 
-internal sealed class GetAuthorsByQueryParametersQueryHandler
+internal sealed class GetAuthorsByQueryParametersQueryHandler(
+    IRepository<Author> authorRepository,
+    IMapper<Author, GetAuthorDto> authorToGetAuthorDtoMapper,
+    IMapper<AuthorSortParameters, Result<string>> authorSortParametersMapper)
     : IRequestHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
 {
-    private readonly IRepository<Author> _authorRepository;
-    private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper;
-    private readonly IMapper<AuthorSortParameters, Result<string>> _authorSortParametersMapper;
-
-    public GetAuthorsByQueryParametersQueryHandler(
-        IRepository<Author> authorRepository,
-        IMapper<Author, GetAuthorDto> authorToGetAuthorDtoMapper,
-        IMapper<AuthorSortParameters, Result<string>> authorSortParametersMapper)
-    {
-        _authorRepository = authorRepository;
-        _authorToGetAuthorDtoMapper = authorToGetAuthorDtoMapper;
-        _authorSortParametersMapper = authorSortParametersMapper;
-    }
+    private readonly IRepository<Author> _authorRepository = authorRepository;
+    private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper = authorToGetAuthorDtoMapper;
+    private readonly IMapper<AuthorSortParameters, Result<string>> _authorSortParametersMapper = authorSortParametersMapper;
 
     public async Task<Result<PaginatedList<GetAuthorDto>>> HandleAsync(
         GetAuthorsByQueryParametersQuery getAuthorsByQueryParametersQuery,

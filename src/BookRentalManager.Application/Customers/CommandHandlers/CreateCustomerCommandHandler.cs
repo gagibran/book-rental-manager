@@ -1,17 +1,12 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, CustomerCreatedDto>
+internal sealed class CreateCustomerCommandHandler(
+    IRepository<Customer> customerRepository,
+    IMapper<Customer, CustomerCreatedDto> customerToCustomerCreatedDtoMapper)
+    : IRequestHandler<CreateCustomerCommand, CustomerCreatedDto>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, CustomerCreatedDto> _customerToCustomerCreatedDtoMapper;
-
-    public CreateCustomerCommandHandler(
-        IRepository<Customer> customerRepository,
-        IMapper<Customer, CustomerCreatedDto> customerToCustomerCreatedDtoMapper)
-    {
-        _customerRepository = customerRepository;
-        _customerToCustomerCreatedDtoMapper = customerToCustomerCreatedDtoMapper;
-    }
+    private readonly IRepository<Customer> _customerRepository = customerRepository;
+    private readonly IMapper<Customer, CustomerCreatedDto> _customerToCustomerCreatedDtoMapper = customerToCustomerCreatedDtoMapper;
 
     public async Task<Result<CustomerCreatedDto>> HandleAsync(
         CreateCustomerCommand createCustomerCommand,

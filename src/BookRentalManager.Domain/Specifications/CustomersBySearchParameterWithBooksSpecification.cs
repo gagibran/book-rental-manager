@@ -6,9 +6,9 @@ public sealed class CustomersBySearchParameterWithBooksSpecification : Specifica
     {
         var formattedSearchParameter = searchParameter.ToLower().Trim();
         Where = customer =>
-            customer.FullName.FirstName.ToLower().Contains(formattedSearchParameter)
-            || customer.FullName.LastName.ToLower().Contains(formattedSearchParameter)
-            || customer.Email.EmailAddress.ToLower().Contains(formattedSearchParameter);
+            customer.FullName.FirstName.Contains(formattedSearchParameter, StringComparison.CurrentCultureIgnoreCase)
+            || customer.FullName.LastName.Contains(formattedSearchParameter, StringComparison.CurrentCultureIgnoreCase)
+            || customer.Email.EmailAddress.Contains(formattedSearchParameter, StringComparison.CurrentCultureIgnoreCase);
         IncludeExpressions.Add(customer => customer.Books);
         OrderByPropertyName = sortParameters;
     }

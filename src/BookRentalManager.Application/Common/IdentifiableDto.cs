@@ -1,11 +1,6 @@
 namespace BookRentalManager.Application.Common;
 
-public class IdentifiableDto
+public class IdentifiableDto(Guid id)
 {
-    public Guid Id { get; }
-
-    public IdentifiableDto(Guid id)
-    {
-        Id = id;
-    }
+    public Guid Id { get; } = id;
 }

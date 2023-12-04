@@ -1,15 +1,10 @@
 namespace BookRentalManager.Application.Authors.CommandHandlers;
 
-internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuthorBooksCommand>
+internal sealed class PatchAuthorBooksCommandHandler(IRepository<Author> authorRepository, IRepository<Book> bookRepository)
+    : IRequestHandler<PatchAuthorBooksCommand>
 {
-    private readonly IRepository<Author> _authorRepository;
-    private readonly IRepository<Book> _bookRepository;
-
-    public PatchAuthorBooksCommandHandler(IRepository<Author> authorRepository, IRepository<Book> bookRepository)
-    {
-        _authorRepository = authorRepository;
-        _bookRepository = bookRepository;
-    }
+    private readonly IRepository<Author> _authorRepository = authorRepository;
+    private readonly IRepository<Book> _bookRepository = bookRepository;
 
     public async Task<Result> HandleAsync(PatchAuthorBooksCommand patchAuthorBooksCommand, CancellationToken cancellationToken)
     {
@@ -34,13 +29,14 @@ internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuth
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }
+        Result addBookResults = Result.Success();
         foreach (Book bookToAdd in booksToAdd)
         {
-            Result addBookResult = author!.AddBook(bookToAdd);
-            if (!addBookResult.IsSuccess)
-            {
-                return addBookResult;
-            }
+            addBookResults = Result.Combine(addBookResults, author!.AddBook(bookToAdd));
+        }
+        if (!addBookResults.IsSuccess)
+        {
+            return addBookResults;
         }
         await _authorRepository.UpdateAsync(author!, cancellationToken);
         return Result.Success();

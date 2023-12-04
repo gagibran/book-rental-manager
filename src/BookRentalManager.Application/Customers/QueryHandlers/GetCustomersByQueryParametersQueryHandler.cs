@@ -1,21 +1,14 @@
 namespace BookRentalManager.Application.Customers.QueryHandlers;
 
-internal sealed class GetCustomersByQueryParametersQueryHandler
+internal sealed class GetCustomersByQueryParametersQueryHandler(
+    IRepository<Customer> customerRepository,
+    IMapper<Customer, GetCustomerDto> customerToGetCustomerDtoMapper,
+    IMapper<CustomerSortParameters, Result<string>> customerSortParametersMapper)
     : IRequestHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, GetCustomerDto> _customerToGetCustomerDtoMapper;
-    private readonly IMapper<CustomerSortParameters, Result<string>> _customerSortParametersMapper;
-
-    public GetCustomersByQueryParametersQueryHandler(
-        IRepository<Customer> customerRepository,
-        IMapper<Customer, GetCustomerDto> customerToGetCustomerDtoMapper,
-        IMapper<CustomerSortParameters, Result<string>> customerSortParametersMapper)
-    {
-        _customerRepository = customerRepository;
-        _customerToGetCustomerDtoMapper = customerToGetCustomerDtoMapper;
-        _customerSortParametersMapper = customerSortParametersMapper;
-    }
+    private readonly IRepository<Customer> _customerRepository = customerRepository;
+    private readonly IMapper<Customer, GetCustomerDto> _customerToGetCustomerDtoMapper = customerToGetCustomerDtoMapper;
+    private readonly IMapper<CustomerSortParameters, Result<string>> _customerSortParametersMapper = customerSortParametersMapper;
 
     public async Task<Result<PaginatedList<GetCustomerDto>>> HandleAsync(
         GetCustomersByQueryParametersQuery getCustomersByQueryParametersQuery,
