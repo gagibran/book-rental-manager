@@ -32,16 +32,22 @@ internal sealed class CreateBookCommandHandler(
         {
             return Result.Fail<BookCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
+        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(
+            new BookByTitleEditionAndIsbnSpecification(
+                createBookCommand.BookTitle,
+                editionResult.Value!.EditionNumber,
+                isbnResult.Value!.ToString()),
+            cancellationToken);
+        if (existingBook is not null)
+        {
+            return Result.Fail<BookCreatedDto>(
+                "bookAlreadyExists",
+                $"A book with the title: '{createBookCommand.BookTitle}', edition: '{editionResult.Value!.EditionNumber}' and ISBN: '{isbnResult.Value!}' already exists.");
+        }
         var newBook = new Book(createBookCommand.BookTitle, editionResult.Value!, isbnResult.Value!);
-        Result addAuthorCombinedResults = Result.Success();
         foreach (Author author in authors)
         {
-            Result addAuthorResult = author.AddBook(newBook);
-            addAuthorCombinedResults = Result.Combine(addAuthorCombinedResults, addAuthorResult);
-        }
-        if (!addAuthorCombinedResults.IsSuccess)
-        {
-            return Result.Fail<BookCreatedDto>(addAuthorCombinedResults.ErrorType, addAuthorCombinedResults.ErrorMessage);
+            author.AddBook(newBook);
         }
         await _bookRepository.CreateAsync(newBook, cancellationToken);
         return Result.Success(_bookToBookCreatedDtoMapper.Map(newBook));
