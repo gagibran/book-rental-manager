@@ -32,15 +32,12 @@ builder.Services
     });
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
-builder.Services.Configure<MvcOptions>(config =>
+builder.Services.Configure<MvcOptions>(configureOptions =>
 {
-    NewtonsoftJsonOutputFormatter? newtonsoftJsonOutputFormatter = config.OutputFormatters
+    NewtonsoftJsonOutputFormatter? newtonsoftJsonOutputFormatter = configureOptions.OutputFormatters
         .OfType<NewtonsoftJsonOutputFormatter>()
         .FirstOrDefault();
-    if (newtonsoftJsonOutputFormatter is not null)
-    {
-        newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add(MediaTypeConstants.BookRentalManagerHateoasMediaType);
-    }
+    newtonsoftJsonOutputFormatter?.SupportedMediaTypes.Add(MediaTypeConstants.BookRentalManagerHateoasMediaType);
 });
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
