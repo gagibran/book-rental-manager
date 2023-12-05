@@ -2,20 +2,18 @@ namespace BookRentalManager.Application.Authors.QueryHandlers;
 
 internal sealed class GetAuthorsByQueryParametersQueryHandler(
     IRepository<Author> authorRepository,
-    IMapper<Author, GetAuthorDto> authorToGetAuthorDtoMapper,
-    IMapper<AuthorSortParameters, Result<string>> authorSortParametersMapper)
+    ISortParametersMapper sortParametersMapper)
     : IRequestHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
 {
     private readonly IRepository<Author> _authorRepository = authorRepository;
-    private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper = authorToGetAuthorDtoMapper;
-    private readonly IMapper<AuthorSortParameters, Result<string>> _authorSortParametersMapper = authorSortParametersMapper;
+    private readonly ISortParametersMapper _sortParametersMapper = sortParametersMapper;
 
     public async Task<Result<PaginatedList<GetAuthorDto>>> HandleAsync(
         GetAuthorsByQueryParametersQuery getAuthorsByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        Result<string> convertedSorParametersResult = _authorSortParametersMapper.Map(
-            new AuthorSortParameters(getAuthorsByQueryParametersQuery.SortParameters));
+        Result<string> convertedSorParametersResult = _sortParametersMapper.MapAuthorSortParameters(
+            getAuthorsByQueryParametersQuery.SortParameters);
         if (!convertedSorParametersResult.IsSuccess)
         {
             return Result.Fail<PaginatedList<GetAuthorDto>>(
@@ -30,8 +28,9 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler(
             getAuthorsByQueryParametersQuery.PageSize,
             authorsBySearchParameterWithBooksSpecification,
             cancellationToken);
-        List<GetAuthorDto> getAuthorDtos = (from author in authors
-                                            select _authorToGetAuthorDtoMapper.Map(author)).ToList();
+        List<GetAuthorDto> getAuthorDtos = authors
+            .Select(author => new GetAuthorDto(author))
+            .ToList();
         var paginatedGetAuthorDtos = new PaginatedList<GetAuthorDto>(
             getAuthorDtos,
             authors.TotalAmountOfItems,

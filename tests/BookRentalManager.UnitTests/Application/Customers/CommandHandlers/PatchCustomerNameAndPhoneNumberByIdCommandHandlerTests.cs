@@ -3,7 +3,6 @@ namespace BookRentalManager.UnitTests.Application.Customers.CommandHandlers;
 public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
-    private readonly Mock<IMapper<Customer, PatchCustomerNameAndPhoneNumberDto>> _customerToPatchCustomerNameAndPhoneNumberDtoMapperStub;
     private readonly Customer _customer;
     private readonly PatchCustomerNameAndPhoneNumberByIdCommand _patchCustomerNameAndPhoneNumberByIdCommand;
     private readonly PatchCustomerNameAndPhoneNumberByIdCommandHandler _patchCustomerNameAndPhoneNumberByIdCommandHandler;
@@ -11,7 +10,6 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
     public PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests()
     {
         _customerRepositoryStub = new();
-        _customerToPatchCustomerNameAndPhoneNumberDtoMapperStub = new();
         _customer = TestFixtures.CreateDummyCustomer();
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
@@ -26,12 +24,7 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
             _customer.PhoneNumber.AreaCode,
             _customer.PhoneNumber.PrefixAndLineNumber);
         _patchCustomerNameAndPhoneNumberByIdCommand = new(_customer.Id, patchCustomerNameAndPhoneNumberDtoJsonPatchDocument);
-        _patchCustomerNameAndPhoneNumberByIdCommandHandler = new(
-            _customerRepositoryStub.Object,
-            _customerToPatchCustomerNameAndPhoneNumberDtoMapperStub.Object);
-        _customerToPatchCustomerNameAndPhoneNumberDtoMapperStub
-            .Setup(customerToPatchCustomerNameAndPhoneNumberDtoMapper => customerToPatchCustomerNameAndPhoneNumberDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(patchCustomerNameAndPhoneNumberDto);
+        _patchCustomerNameAndPhoneNumberByIdCommandHandler = new(_customerRepositoryStub.Object);
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<CustomerByIdWithBooksSpecification>(),

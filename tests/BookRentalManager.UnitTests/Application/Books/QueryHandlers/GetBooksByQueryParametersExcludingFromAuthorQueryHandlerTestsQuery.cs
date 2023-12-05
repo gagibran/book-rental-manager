@@ -6,8 +6,7 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
     private readonly Author _author;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
-    private readonly Mock<IMapper<BookSortParameters, Result<string>>> _bookSortParametersMapperStub;
+    private readonly Mock<ISortParametersMapper> _sortParametersMapperStub;
     private readonly GetBooksByQueryParametersExcludingFromAuthorQueryHandler _getBooksByQueryParametersExcludingFromAuthorQueryHandler;
 
     public GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTestsQuery()
@@ -21,13 +20,11 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             It.IsAny<string>());
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
-        _bookToGetBookDtoMapperStub = new();
-        _bookSortParametersMapperStub = new();
+        _sortParametersMapperStub = new();
         _getBooksByQueryParametersExcludingFromAuthorQueryHandler = new GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
             _authorRepositoryStub.Object,
             _bookRepositoryStub.Object,
-            _bookToGetBookDtoMapperStub.Object,
-            _bookSortParametersMapperStub.Object);
+            _sortParametersMapperStub.Object);
     }
 
     [Fact]
@@ -61,8 +58,8 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<int>());
-        var getBookDto = new GetBookDto(
-            Guid.NewGuid(),
+        var expectedGetBookDto = new GetBookDto(
+            book.Id,
             book.BookTitle,
             new List<GetAuthorFromBookDto>(),
             book.Edition,
@@ -82,11 +79,8 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
                 It.IsAny<Specification<Book>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(paginatedBooks);
-        _bookToGetBookDtoMapperStub
-            .Setup(_bookToGetBookDtoMapper => _bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
-            .Returns(getBookDto);
-        _bookSortParametersMapperStub
-            .Setup(bookSortParametersMapper => bookSortParametersMapper.Map(It.IsAny<BookSortParameters>()))
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapBookSortParameters(It.IsAny<string>()))
             .Returns(Result.Success(string.Empty));
 
         // Act:
@@ -96,13 +90,13 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
 
         // Assert:
         GetBookDto actualGetBookDto = handlerResult.Value!.FirstOrDefault()!;
-        Assert.Equal(getBookDto.Id, actualGetBookDto.Id);
-        Assert.Equal(getBookDto.BookTitle, actualGetBookDto.BookTitle);
-        Assert.Equal(getBookDto.Authors, actualGetBookDto.Authors);
-        Assert.Equal(getBookDto.Edition, actualGetBookDto.Edition);
-        Assert.Equal(getBookDto.Isbn, actualGetBookDto.Isbn);
-        Assert.Equal(getBookDto.RentedAt, actualGetBookDto.RentedAt);
-        Assert.Equal(getBookDto.DueDate, actualGetBookDto.DueDate);
-        Assert.Equal(getBookDto.RentedBy, actualGetBookDto.RentedBy);
+        Assert.Equal(expectedGetBookDto.Id, actualGetBookDto.Id);
+        Assert.Equal(expectedGetBookDto.BookTitle, actualGetBookDto.BookTitle);
+        Assert.Equal(expectedGetBookDto.Authors, actualGetBookDto.Authors);
+        Assert.Equal(expectedGetBookDto.Edition, actualGetBookDto.Edition);
+        Assert.Equal(expectedGetBookDto.Isbn, actualGetBookDto.Isbn);
+        Assert.Equal(expectedGetBookDto.RentedAt, actualGetBookDto.RentedAt);
+        Assert.Equal(expectedGetBookDto.DueDate, actualGetBookDto.DueDate);
+        Assert.Equal(expectedGetBookDto.RentedBy, actualGetBookDto.RentedBy);
     }
 }

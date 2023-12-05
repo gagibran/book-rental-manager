@@ -104,10 +104,12 @@ public sealed class IQueryableExtensionsTests
         List<Book> expectedSortedBooks)
     {
         // Act:
-        List<Book> actualSortedBooks = unsortedBooks
+        List<Book> actualSortedBooks =
+        [
+            ..unsortedBooks
             .AsQueryable()
             .OrderByPropertyName(propertyNamesSeparatedByComma)
-            .ToList();
+        ];
 
         // Assert:
         Assert.True(expectedSortedBooks.SequenceEqual(actualSortedBooks));

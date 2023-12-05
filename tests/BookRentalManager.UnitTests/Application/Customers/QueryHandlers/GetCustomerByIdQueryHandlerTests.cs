@@ -3,7 +3,6 @@ namespace BookRentalManager.UnitTests.Application.Customers.QueryHandlers;
 public sealed class GetCustomerByIdQueryHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
-    private readonly Mock<IMapper<Customer, GetCustomerDto>> _customerToGetCustomerDtoMapperStub;
     private readonly GetCustomerByIdQueryHandler _getCustomerByIdQueryHandler;
     private readonly Customer _customer;
     private readonly GetCustomerDto _getCustomerDto;
@@ -19,14 +18,8 @@ public sealed class GetCustomerByIdQueryHandlerTests
             new List<GetBookRentedByCustomerDto>(),
             _customer.CustomerStatus,
             _customer.CustomerPoints);
-        _customerToGetCustomerDtoMapperStub = new();
         _customerRepositoryStub = new();
-        _getCustomerByIdQueryHandler = new(
-            _customerRepositoryStub.Object,
-            _customerToGetCustomerDtoMapperStub.Object);
-        _customerToGetCustomerDtoMapperStub
-            .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(_getCustomerDto);
+        _getCustomerByIdQueryHandler = new(_customerRepositoryStub.Object);
     }
 
     [Fact]

@@ -1,12 +1,9 @@
 namespace BookRentalManager.Application.Books.CommandHandlers;
 
-internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(
-    IRepository<Book> bookRepository,
-    IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> bookToPatchBookTitleEditionAndIsbnByIdDtoMapper)
+internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(IRepository<Book> bookRepository)
     : IRequestHandler<PatchBookTitleEditionAndIsbnByIdCommand>
 {
     private readonly IRepository<Book> _bookRepository = bookRepository;
-    private readonly IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto> _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper = bookToPatchBookTitleEditionAndIsbnByIdDtoMapper;
 
     public async Task<Result> HandleAsync(
         PatchBookTitleEditionAndIsbnByIdCommand patchBookTitleEditionAndIsbnByIdCommand,
@@ -26,7 +23,7 @@ internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(
             return Result.Fail<GetBookDto>(
                 "bookCustomer", $"This book is currently rented by {book.Customer.FullName}. Return the book before updating it.");
         }
-        PatchBookTitleEditionAndIsbnByIdDto patchBookTitleEditionAndIsbnByIdDto = _bookToPatchBookTitleEditionAndIsbnByIdDtoMapper.Map(book);
+        var patchBookTitleEditionAndIsbnByIdDto = new PatchBookTitleEditionAndIsbnByIdDto(book);
         Result patchAppliedResult = patchBookTitleEditionAndIsbnByIdCommand.PatchBookTitleEditionAndIsbnByIdDtoPatchDocument.ApplyTo(
             patchBookTitleEditionAndIsbnByIdDto,
             "add",

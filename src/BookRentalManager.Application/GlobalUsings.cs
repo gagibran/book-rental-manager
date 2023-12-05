@@ -11,7 +11,6 @@ global using BookRentalManager.Domain.Specifications;
 global using BookRentalManager.Application.Books.Queries;
 global using BookRentalManager.Application.Books.Commands;
 global using BookRentalManager.Application.Common;
-global using BookRentalManager.Application.SortParameters;
 global using BookRentalManager.Application.Authors.Commands;
 global using Microsoft.AspNetCore.JsonPatch;
 global using BookRentalManager.Application.Extensions;

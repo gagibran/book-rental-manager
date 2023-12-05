@@ -5,7 +5,6 @@ public sealed class CreateBookCommandHandlerTests
     private readonly Book _book;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
-    private readonly Mock<IMapper<Book, BookCreatedDto>> _bookToBookCreatedDtoMapperStub;
     private readonly BookCreatedDto _bookCreatedDto;
     private readonly IReadOnlyList<Author> _authors;
     private readonly CreateBookCommand _createBookCommand;
@@ -16,7 +15,6 @@ public sealed class CreateBookCommandHandlerTests
         _book = TestFixtures.CreateDummyBook();
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
-        _bookToBookCreatedDtoMapperStub = new();
         _bookCreatedDto = new(_book.Id, _book.BookTitle, _book.Edition.EditionNumber, _book.Isbn.IsbnValue);
         _authors = new List<Author>
         {
@@ -28,18 +26,12 @@ public sealed class CreateBookCommandHandlerTests
             _book.BookTitle,
             _book.Edition.EditionNumber,
             _book.Isbn.IsbnValue);
-        _createBookCommandHandler = new(
-            _bookRepositoryStub.Object,
-            _authorRepositoryStub.Object,
-            _bookToBookCreatedDtoMapperStub.Object);
+        _createBookCommandHandler = new(_bookRepositoryStub.Object, _authorRepositoryStub.Object);
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetAllBySpecificationAsync(
                 It.IsAny<AuthorsByIdsSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(_authors);
-        _bookToBookCreatedDtoMapperStub
-            .Setup(bookToBookCreatedDtoMapper => bookToBookCreatedDtoMapper.Map(It.IsAny<Book>()))
-            .Returns(_bookCreatedDto);
     }
 
     [Fact]

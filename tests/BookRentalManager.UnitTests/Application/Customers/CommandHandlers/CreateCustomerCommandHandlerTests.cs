@@ -3,7 +3,6 @@ namespace BookRentalManager.UnitTests.Application.Customers.CommandHandlers;
 public sealed class CreateCustomerCommandHandlerTests
 {
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
-    private readonly Mock<IMapper<Customer, CustomerCreatedDto>> _customerToCustomerCreatedDtoMapperStub;
     private readonly CustomerCreatedDto _customerCreatedDto;
     private readonly CreateCustomerCommand _createCustomerCommand;
     private readonly CreateCustomerCommandHandler _createCustomerCommandHandler;
@@ -12,7 +11,6 @@ public sealed class CreateCustomerCommandHandlerTests
     {
         Customer customer = TestFixtures.CreateDummyCustomer();
         _customerRepositoryStub = new();
-        _customerToCustomerCreatedDtoMapperStub = new();
         _createCustomerCommand = new("John", "Doe", "john.doe@email.com", new PhoneNumberDto(200, 2_000_000));
         _customerCreatedDto = new(
             customer.Id,
@@ -23,10 +21,7 @@ public sealed class CreateCustomerCommandHandlerTests
             customer.PhoneNumber.PrefixAndLineNumber,
             customer.CustomerStatus.CustomerType.ToString(),
             customer.CustomerPoints);
-        _createCustomerCommandHandler = new(_customerRepositoryStub.Object, _customerToCustomerCreatedDtoMapperStub.Object);
-        _customerToCustomerCreatedDtoMapperStub
-            .Setup(customerToCustomerCreatedDtoMapper => customerToCustomerCreatedDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(_customerCreatedDto);
+        _createCustomerCommandHandler = new(_customerRepositoryStub.Object);
         _customerRepositoryStub
             .Setup(customerRepository =>
                 customerRepository.GetFirstOrDefaultBySpecificationAsync(

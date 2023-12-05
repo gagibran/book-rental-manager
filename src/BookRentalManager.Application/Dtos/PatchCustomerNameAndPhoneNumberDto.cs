@@ -6,4 +6,12 @@ public sealed class PatchCustomerNameAndPhoneNumberDto(string firstName, string 
     public string LastName { get; set; } = lastName;
     public int AreaCode { get; set; } = areaCode;
     public int PrefixAndLineNumber { get; set; } = prefixAndLineNumber;
+
+    public PatchCustomerNameAndPhoneNumberDto(Customer customer) : this(
+        customer.FullName.FirstName,
+        customer.FullName.LastName,
+        customer.PhoneNumber.AreaCode,
+        customer.PhoneNumber.PrefixAndLineNumber)
+    {
+    }
 }

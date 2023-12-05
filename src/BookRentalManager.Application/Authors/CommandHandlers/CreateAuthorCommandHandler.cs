@@ -1,12 +1,8 @@
 namespace BookRentalManager.Application.Authors.CommandHandlers;
 
-internal sealed class CreateAuthorCommandHandler(
-    IRepository<Author> authorRepository,
-    IMapper<Author, AuthorCreatedDto> authorToAuthorCreatedDtoMapper)
-    : IRequestHandler<CreateAuthorCommand, AuthorCreatedDto>
+internal sealed class CreateAuthorCommandHandler(IRepository<Author> authorRepository) : IRequestHandler<CreateAuthorCommand, AuthorCreatedDto>
 {
     private readonly IRepository<Author> _authorRepository = authorRepository;
-    private readonly IMapper<Author, AuthorCreatedDto> _authorToAuthorCreatedDtoMapper = authorToAuthorCreatedDtoMapper;
 
     public async Task<Result<AuthorCreatedDto>> HandleAsync(
         CreateAuthorCommand createAuthorCommand,
@@ -29,6 +25,6 @@ internal sealed class CreateAuthorCommandHandler(
         }
         var newAuthor = new Author(authorFullNameResult.Value!);
         await _authorRepository.CreateAsync(newAuthor, cancellationToken);
-        return Result.Success(_authorToAuthorCreatedDtoMapper.Map(newAuthor));
+        return Result.Success(new AuthorCreatedDto(newAuthor));
     }
 }

@@ -6,7 +6,6 @@ public sealed class GetBookByIdQueryHandlerTests
     private readonly GetBookDto _getBookDto;
     private readonly GetBookByIdQuery _getBookByIdQuery;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
     private readonly GetBookByIdQueryHandler _getBookByIdQueryHandler;
 
     public GetBookByIdQueryHandlerTests()
@@ -22,14 +21,8 @@ public sealed class GetBookByIdQueryHandlerTests
             _book.DueDate,
             null);
         _getBookByIdQuery = new GetBookByIdQuery(_book.Id);
-        _bookToGetBookDtoMapperStub = new();
         _bookRepositoryStub = new();
-        _getBookByIdQueryHandler = new(
-            _bookRepositoryStub.Object,
-            _bookToGetBookDtoMapperStub.Object);
-        _bookToGetBookDtoMapperStub
-            .Setup(bookToGetBookDtoMapper => bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
-            .Returns(_getBookDto);
+        _getBookByIdQueryHandler = new(_bookRepositoryStub.Object);
     }
 
     [Fact]

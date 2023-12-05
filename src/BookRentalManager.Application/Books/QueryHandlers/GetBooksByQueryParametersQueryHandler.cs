@@ -2,20 +2,18 @@ namespace BookRentalManager.Application.Books.QueryHandlers;
 
 internal sealed class GetBooksByQueryParametersQueryHandler(
     IRepository<Book> bookRepository,
-    IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
-    IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
+    ISortParametersMapper sortParametersMapper)
     : IRequestHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>
 {
     private readonly IRepository<Book> _bookRepository = bookRepository;
-    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
-    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper = bookSortParametersMapper;
+    private readonly ISortParametersMapper _sortParametersMapper = sortParametersMapper;
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
         GetBooksByQueryParametersQuery getBooksByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        Result<string> convertedSortParametersResult = _bookSortParametersMapper.Map(
-            new BookSortParameters(getBooksByQueryParametersQuery.SortParameters));
+        Result<string> convertedSortParametersResult = _sortParametersMapper.MapBookSortParameters(
+            getBooksByQueryParametersQuery.SortParameters);
         if (!convertedSortParametersResult.IsSuccess)
         {
             return Result.Fail<PaginatedList<GetBookDto>>(
@@ -30,8 +28,9 @@ internal sealed class GetBooksByQueryParametersQueryHandler(
             getBooksByQueryParametersQuery.PageSize,
             booksBySearchParameterWithAuthorsAndCustomersSpecification,
             cancellationToken);
-        List<GetBookDto> getBookDtos = (from book in books
-                                        select _bookToGetBookDtoMapper.Map(book)).ToList();
+        List<GetBookDto> getBookDtos = books
+            .Select(book => new GetBookDto(book))
+            .ToList();
         var paginatedGetBookDtos = new PaginatedList<GetBookDto>(
             getBookDtos,
             books.TotalAmountOfItems,

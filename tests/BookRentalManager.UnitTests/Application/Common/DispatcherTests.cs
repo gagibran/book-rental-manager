@@ -1,4 +1,3 @@
-using BookRentalManager.Application.Common;
 using BookRentalManager.Application.Exceptions;
 
 namespace BookRentalManager.UnitTests.Application.Common;

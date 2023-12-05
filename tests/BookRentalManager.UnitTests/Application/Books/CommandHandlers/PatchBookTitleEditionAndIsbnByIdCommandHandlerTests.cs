@@ -3,7 +3,6 @@ namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
 public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
 {
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto>> _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub;
     private readonly Book _book;
     private readonly PatchBookTitleEditionAndIsbnByIdCommand _patchBookTitleEditionAndIsbnByIdCommand;
     private readonly PatchBookTitleEditionAndIsbnByIdCommandHandler _patchBookTitleEditionAndIsbnByIdCommandHandler;
@@ -11,7 +10,6 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
     public PatchBookTitleEditionAndIsbnByIdCommandHandlerTests()
     {
         _bookRepositoryStub = new();
-        _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
         var patchBookTitleEditionAndIsbnByIdDto = new PatchBookTitleEditionAndIsbnByIdDto(
             _book.BookTitle,
@@ -25,13 +23,7 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
             operations,
             new DefaultContractResolver());
         _patchBookTitleEditionAndIsbnByIdCommand = new(_book.Id, patchBookTitleEditionAndIsbnByIdDtoPatchDocument);
-        _patchBookTitleEditionAndIsbnByIdCommandHandler = new(
-            _bookRepositoryStub.Object,
-            _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub.Object);
-        _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub
-            .Setup(bookToPatchBookTitleEditionAndIsbnByIdDtoMapper => bookToPatchBookTitleEditionAndIsbnByIdDtoMapper.Map(
-                It.IsAny<Book>()))
-            .Returns(patchBookTitleEditionAndIsbnByIdDto);
+        _patchBookTitleEditionAndIsbnByIdCommandHandler = new(_bookRepositoryStub.Object);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<BookByIdWithAuthorsAndCustomersSpecification>(),

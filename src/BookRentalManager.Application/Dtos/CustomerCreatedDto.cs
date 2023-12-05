@@ -18,4 +18,16 @@ public sealed class CustomerCreatedDto(
     public int PrefixAndLineNumber { get; } = prefixAndLineNumber;
     public string CustomerStatus { get; } = customerStatus;
     public int CustomerPoints { get; } = customerPoints;
+
+    public CustomerCreatedDto(Customer customer) : this(
+        customer.Id,
+        customer.FullName.FirstName,
+        customer.FullName.LastName,
+        customer.Email.ToString(),
+        customer.PhoneNumber.AreaCode,
+        customer.PhoneNumber.PrefixAndLineNumber,
+        customer.CustomerStatus.CustomerType.ToString(),
+        customer.CustomerPoints)
+    {
+    }
 }

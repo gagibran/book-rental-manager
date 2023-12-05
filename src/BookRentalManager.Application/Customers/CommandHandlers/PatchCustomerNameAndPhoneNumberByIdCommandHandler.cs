@@ -1,12 +1,9 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler(
-    IRepository<Customer> customerRepository,
-    IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> customerToPatchCustomerNameAndPhoneNumberDtoMapper)
+internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler(IRepository<Customer> customerRepository)
     : IRequestHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
 {
     private readonly IRepository<Customer> _customerRepository = customerRepository;
-    private readonly IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> _customerToPatchCustomerNameAndPhoneNumberDtoMapper = customerToPatchCustomerNameAndPhoneNumberDtoMapper;
 
     public async Task<Result> HandleAsync(PatchCustomerNameAndPhoneNumberByIdCommand patchCustomerNameAndPhoneNumberByIdCommand, CancellationToken cancellationToken)
     {
@@ -16,7 +13,7 @@ internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler(
         {
             return Result.Fail("customerId", $"No customer with the ID of '{patchCustomerNameAndPhoneNumberByIdCommand.Id}' was found.");
         }
-        PatchCustomerNameAndPhoneNumberDto patchCustomerNameAndPhoneNumberDto = _customerToPatchCustomerNameAndPhoneNumberDtoMapper.Map(customer);
+        var patchCustomerNameAndPhoneNumberDto = new PatchCustomerNameAndPhoneNumberDto(customer);
         Result patchAppliedResult = JsonPatchDocumentExtensions.ApplyTo(
             patchCustomerNameAndPhoneNumberByIdCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument,
             patchCustomerNameAndPhoneNumberDto,

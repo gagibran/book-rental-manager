@@ -5,4 +5,8 @@ public sealed class BookCreatedDto(Guid id, string bookTitle, int edition, strin
     public string BookTitle { get; } = bookTitle;
     public int Edition { get; } = edition;
     public string Isbn { get; } = isbn;
+
+    public BookCreatedDto(Book book) : this(book.Id, book.BookTitle, book.Edition.EditionNumber, book.Isbn.ToString())
+    {
+    }
 }

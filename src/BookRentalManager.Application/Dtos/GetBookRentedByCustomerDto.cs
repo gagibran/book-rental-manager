@@ -7,4 +7,14 @@ public sealed class GetBookRentedByCustomerDto(string bookTitle, Edition edition
     public string Isbn { get; } = isbn.IsbnValue;
     public DateTime RentedAt { get; } = rentedAt;
     public DateTime DueDate { get; } = dueDate;
+
+    public GetBookRentedByCustomerDto(Book book) : this(
+        book.BookTitle,
+        book.Edition,
+        book.Isbn,
+        book.RentedAt!.Value,
+        book.DueDate!.Value
+    )
+    {
+    }
 }

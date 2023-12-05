@@ -3,14 +3,12 @@ namespace BookRentalManager.Application.Books.QueryHandlers;
 internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
     IRepository<Author> authorRepository,
     IRepository<Book> bookRepository,
-    IMapper<Book, GetBookDto> bookToGetBookDtoMapper,
-    IMapper<BookSortParameters, Result<string>> bookSortParametersMapper)
+    ISortParametersMapper sortParametersMapper)
     : IRequestHandler<GetBooksByQueryParametersExcludingFromAuthorQuery, PaginatedList<GetBookDto>>
 {
     private readonly IRepository<Author> _authorRepository = authorRepository;
     private readonly IRepository<Book> _bookRepository = bookRepository;
-    private readonly IMapper<Book, GetBookDto> _bookToGetBookDtoMapper = bookToGetBookDtoMapper;
-    private readonly IMapper<BookSortParameters, Result<string>> _bookSortParametersMapper = bookSortParametersMapper;
+    private readonly ISortParametersMapper _sortParametersMapper = sortParametersMapper;
 
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
         GetBooksByQueryParametersExcludingFromAuthorQuery getBooksByQueryParameterFromAuthor,
@@ -24,8 +22,8 @@ internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
                 "authorId",
                 $"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
-        Result<string> convertedSortParametersResult = _bookSortParametersMapper.Map(
-            new BookSortParameters(getBooksByQueryParameterFromAuthor.SortParameters));
+        Result<string> convertedSortParametersResult = _sortParametersMapper.MapBookSortParameters(
+            getBooksByQueryParameterFromAuthor.SortParameters);
         if (!convertedSortParametersResult.IsSuccess)
         {
             return Result.Fail<PaginatedList<GetBookDto>>(
@@ -41,8 +39,9 @@ internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
             getBooksByQueryParameterFromAuthor.PageSize,
             booksBySearchParameterWithAuthorsAndCustomersExcludingBooksFromAuthorSpecification,
             cancellationToken);
-        List<GetBookDto> getBookDtos = (from book in books
-                                        select _bookToGetBookDtoMapper.Map(book)).ToList();
+        List<GetBookDto> getBookDtos = books
+            .Select(book => new GetBookDto(book))
+            .ToList();
         var paginatedGetBookDtos = new PaginatedList<GetBookDto>(
             getBookDtos,
             books.TotalAmountOfItems,

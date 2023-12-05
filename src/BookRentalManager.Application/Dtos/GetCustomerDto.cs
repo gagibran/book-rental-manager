@@ -15,4 +15,19 @@ public sealed class GetCustomerDto(
     public IReadOnlyList<GetBookRentedByCustomerDto> Books { get; } = books;
     public string CustomerStatus { get; } = customerStatus.CustomerType.ToString();
     public int CustomerPoints { get; } = customerPoints;
+
+    public GetCustomerDto(Customer customer) : this(
+        customer.Id,
+        customer.FullName,
+        customer.Email,
+        customer.PhoneNumber,
+        customer
+            .Books
+            .Select(book => new GetBookRentedByCustomerDto(book))
+            .ToList()
+            .AsReadOnly(),
+        customer.CustomerStatus,
+        customer.CustomerPoints)
+    {
+    }
 }

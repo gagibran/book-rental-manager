@@ -4,8 +4,7 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
 {
     private readonly GetBooksByQueryParametersQuery _getBooksByQueryParametersQuery;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
-    private readonly Mock<IMapper<BookSortParameters, Result<string>>> _bookSortParametersMapperStub;
+    private readonly Mock<ISortParametersMapper> _sortParametersMapperStub;
     private readonly GetBooksByQueryParametersQueryHandler _getBooksByQueryParametersQueryHandler;
 
     public GetBooksByQueryParametersQueryHandlerTests()
@@ -16,12 +15,10 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
             string.Empty,
             It.IsAny<string>());
         _bookRepositoryStub = new();
-        _bookToGetBookDtoMapperStub = new();
-        _bookSortParametersMapperStub = new();
+        _sortParametersMapperStub = new();
         _getBooksByQueryParametersQueryHandler = new GetBooksByQueryParametersQueryHandler(
             _bookRepositoryStub.Object,
-            _bookToGetBookDtoMapperStub.Object,
-            _bookSortParametersMapperStub.Object);
+            _sortParametersMapperStub.Object);
     }
 
     [Fact]
@@ -36,7 +33,7 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
             It.IsAny<int>(),
             It.IsAny<int>());
         var getBookDto = new GetBookDto(
-            Guid.NewGuid(),
+            book.Id,
             book.BookTitle,
             new List<GetAuthorFromBookDto>(),
             book.Edition,
@@ -51,11 +48,8 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Book>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(paginatedBooks);
-        _bookToGetBookDtoMapperStub
-            .Setup(_bookToGetBookDtoMapper => _bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
-            .Returns(getBookDto);
-        _bookSortParametersMapperStub
-            .Setup(bookSortParametersMapper => bookSortParametersMapper.Map(It.IsAny<BookSortParameters>()))
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapBookSortParameters(It.IsAny<string>()))
             .Returns(Result.Success(string.Empty));
 
         // Act:
