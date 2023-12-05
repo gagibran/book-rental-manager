@@ -2,9 +2,9 @@ namespace BookRentalManager.UnitTests.Application.DtoMappers;
 
 public sealed class BookToGetBookDtoMapperTests
 {
-    Book _book;
-    Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>> _authorsToGetAuthorFromBookDtosMapperStub;
-    BookToGetBookDtoMapper _bookToGetBookDtoMapper;
+    private readonly Book _book;
+    private readonly Mock<IMapper<IReadOnlyList<Author>, IReadOnlyList<GetAuthorFromBookDto>>> _authorsToGetAuthorFromBookDtosMapperStub;
+    private readonly BookToGetBookDtoMapper _bookToGetBookDtoMapper;
 
     public BookToGetBookDtoMapperTests()
     {
