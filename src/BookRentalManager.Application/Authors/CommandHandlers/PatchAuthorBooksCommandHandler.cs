@@ -29,14 +29,9 @@ internal sealed class PatchAuthorBooksCommandHandler(IRepository<Author> authorR
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }
-        Result addBookResults = Result.Success();
         foreach (Book bookToAdd in booksToAdd)
         {
-            addBookResults = Result.Combine(addBookResults, author!.AddBook(bookToAdd));
-        }
-        if (!addBookResults.IsSuccess)
-        {
-            return addBookResults;
+            author.AddBook(bookToAdd);
         }
         await _authorRepository.UpdateAsync(author!, cancellationToken);
         return Result.Success();

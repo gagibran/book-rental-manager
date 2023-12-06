@@ -1,4 +1,4 @@
-using BookRentalManager.Infrastructure.Data.Config;
+using BookRentalManager.Infrastructure.Data.Configurations;
 
 namespace BookRentalManager.Infrastructure.Data;
 

@@ -125,23 +125,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WithAuthorWithBookAlreadyRegistered_ReturnsErrorMessage()
-    {
-        // Arrange:
-        var expectedErrorMessage = $"A book with the ISBN '{_book.Isbn}' has already been added to '{_author.FullName}'.";
-        _author.AddBook(_book);
-
-        // Act:
-        Result patchAuthorBooksCommandHandlerResult = await _patchAuthorBooksCommandHandler.HandleAsync(
-            _patchAuthorBooksCommand,
-            It.IsAny<CancellationToken>());
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WithExistingAuthorAndBooksNotRegistered_ReturnsSuccess()
+    public async Task HandleAsync_WithSuccessfulParameters_ReturnsSuccess()
     {
         // Act:
         Result patchAuthorBooksCommandHandlerResult = await _patchAuthorBooksCommandHandler.HandleAsync(

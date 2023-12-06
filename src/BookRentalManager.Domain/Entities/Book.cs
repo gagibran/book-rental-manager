@@ -21,6 +21,7 @@ public sealed class Book : Entity
         Customer = default;
         RentedAt = default;
         DueDate = default;
+        Customer = default;
     }
 
     public Book(string bookTitle, Edition edition, Isbn isbn)

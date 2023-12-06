@@ -13,8 +13,7 @@ public sealed class GetBookRentedByCustomerDto(string bookTitle, Edition edition
         book.Edition,
         book.Isbn,
         book.RentedAt!.Value,
-        book.DueDate!.Value
-    )
+        book.DueDate!.Value)
     {
     }
 }

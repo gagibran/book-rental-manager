@@ -26,7 +26,7 @@ Docker Compose; Needs to have .pfx cert. Fix this later.
 `dotnet watch run` will open up the application with Swagger on http://localhost:5007/swagger/index.html. Starting the application for the first time will also create a database called `BookRentalManager` (in case it does not exist) with some seed data in its tables. For more information on the seed data, check the file `src/BookRentalManager.Infrastructure/Data/Seeds/TestDataSeeder.cs`.
 
 ## Migrations
-In case someone wants to fork or expand on this project, this is how I set up migrations.
+In case someone wants to fork or expand on this project, this is how I set up migrations. We'll need [Entity Framework Core tools](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) installed for this.
 
 ### Create a migration
 `dotnet ef migrations add <MigrationName> -s .\src\BookRentalManager.Api\ -p .\src\BookRentalManager.Infrastructure\ -o Data\Migrations\`.

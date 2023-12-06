@@ -1,6 +1,6 @@
 using BookRentalManager.Domain.Enums;
 
-namespace BookRentalManager.Infrastructure.Data.Config;
+namespace BookRentalManager.Infrastructure.Data.Configurations;
 
 public sealed class CustomerEntityBuilder : IEntityTypeConfiguration<Customer>
 {

@@ -59,7 +59,7 @@ public sealed class Customer : Entity
     {
         if (!Books.Contains(book))
         {
-            return Result.Fail("noBook", $"The book '{book.BookTitle}' does not exist for this customer.");
+            return Result.Fail("noBook", $"The book '{book.BookTitle}' has not been rented by this customer.");
         }
         if (DateTime.UtcNow > book.DueDate && CustomerPoints > 0)
         {

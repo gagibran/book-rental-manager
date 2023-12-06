@@ -6,9 +6,7 @@ internal sealed class CreateBookCommandHandler(IRepository<Book> bookRepository,
     private readonly IRepository<Book> _bookRepository = bookRepository;
     private readonly IRepository<Author> _authorRepository = authorRepository;
 
-    public async Task<Result<BookCreatedDto>> HandleAsync(
-        CreateBookCommand createBookCommand,
-        CancellationToken cancellationToken)
+    public async Task<Result<BookCreatedDto>> HandleAsync(CreateBookCommand createBookCommand, CancellationToken cancellationToken)
     {
         if (!createBookCommand.AuthorIds.Any())
         {
@@ -27,18 +25,6 @@ internal sealed class CreateBookCommandHandler(IRepository<Book> bookRepository,
         if (!combinedResults.IsSuccess)
         {
             return Result.Fail<BookCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
-        }
-        Book? existingBook = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(
-            new BookByTitleEditionAndIsbnSpecification(
-                createBookCommand.BookTitle,
-                editionResult.Value!.EditionNumber,
-                isbnResult.Value!.ToString()),
-            cancellationToken);
-        if (existingBook is not null)
-        {
-            return Result.Fail<BookCreatedDto>(
-                "bookAlreadyExists",
-                $"A book with the title: '{createBookCommand.BookTitle}', edition: '{editionResult.Value!.EditionNumber}' and ISBN: '{isbnResult.Value!}' already exists.");
         }
         var newBook = new Book(createBookCommand.BookTitle, editionResult.Value!, isbnResult.Value!);
         foreach (Author author in authors)

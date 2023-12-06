@@ -114,7 +114,7 @@ public sealed class CustomerTests
     public void ReturnBook_WithNonexistingBook_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = $"The book '{_book.BookTitle}' does not exist for this customer.";
+        var expectedErrorMessage = $"The book '{_book.BookTitle}' has not been rented by this customer.";
 
         // Act:
         Result rentBookResult = _customer.ReturnBook(_book);
