@@ -1,3 +1,4 @@
+using System.Net.Mime;
 using BookRentalManager.Api.ExceptionHandlers;
 using BookRentalManager.Infrastructure.Data;
 using BookRentalManager.Infrastructure.Data.Seeds;
@@ -11,8 +12,8 @@ builder.Services
     .AddControllers(mvcOptions =>
     {
         mvcOptions.Filters.Add(new ProducesAttribute(
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
-            MediaTypeConstants.ApplicationJsonMediaType));
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            MediaTypeNames.Application.Json));
         mvcOptions.ReturnHttpNotAcceptable = true;
     })
     .AddNewtonsoftJson();
@@ -37,7 +38,7 @@ builder.Services.Configure<MvcOptions>(configureOptions =>
     NewtonsoftJsonOutputFormatter? newtonsoftJsonOutputFormatter = configureOptions.OutputFormatters
         .OfType<NewtonsoftJsonOutputFormatter>()
         .FirstOrDefault();
-    newtonsoftJsonOutputFormatter?.SupportedMediaTypes.Add(MediaTypeConstants.BookRentalManagerHateoasMediaType);
+    newtonsoftJsonOutputFormatter?.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 });
 builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

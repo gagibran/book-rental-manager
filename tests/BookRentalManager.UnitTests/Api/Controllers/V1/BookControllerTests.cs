@@ -81,7 +81,7 @@ public class BookControllerTests
         // Act:
         var okObjectResult = (await _bookController.GetBooksByQueryParametersAsync(
             new GetAllItemsQueryParameters(),
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
@@ -150,7 +150,7 @@ public class BookControllerTests
         // Act:
         var okObjectResult = (await _bookController.GetBookByIdAsync(
             It.IsAny<Guid>(),
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
@@ -192,7 +192,7 @@ public class BookControllerTests
         // Act:
         var okObjectResult = (await _bookController.GetBookByIdAsync(
             It.IsAny<Guid>(),
-            MediaTypeConstants.ApplicationJsonMediaType,
+            MediaTypeNames.Application.Json,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
@@ -245,7 +245,7 @@ public class BookControllerTests
         // Act:
         var createdAtActionResult = await _bookController.CreateBookAsync(
             It.IsAny<CreateBookCommand>(),
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:
@@ -276,7 +276,7 @@ public class BookControllerTests
         // Act:
         var createdAtActionResult = await _bookController.CreateBookAsync(
             It.IsAny<CreateBookCommand>(),
-            MediaTypeConstants.ApplicationJsonMediaType,
+            MediaTypeNames.Application.Json,
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:

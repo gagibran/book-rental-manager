@@ -94,7 +94,7 @@ public abstract class ApiController : ControllerBase
     protected bool IsMediaTypeVendorSpecific(string? mediaType)
     {
         return MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue)
-            && mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType);
+            && mediaTypeHeaderValue.MediaType.Equals(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
     }
 
     private List<HateoasLinkDto> CreatePreviousAndNextPagesLinks(

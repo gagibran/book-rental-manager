@@ -68,7 +68,7 @@ public class AuthorControllerTests
         // Act:
         var okObjectResult = (await _authorController.GetAuthorsByQueryParametersAsync(
             new GetAllItemsQueryParameters(),
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
@@ -147,7 +147,7 @@ public class AuthorControllerTests
         // Act:
         var okObjectResult = (await _authorController.GetAuthorByIdAsync(
             It.IsAny<Guid>(),
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
@@ -181,7 +181,7 @@ public class AuthorControllerTests
         // Act:
         var okObjectResult = (await _authorController.GetAuthorByIdAsync(
             It.IsAny<Guid>(),
-            MediaTypeConstants.ApplicationJsonMediaType,
+            MediaTypeNames.Application.Json,
             It.IsAny<CancellationToken>())).Result as OkObjectResult;
 
         // Assert:
@@ -229,7 +229,7 @@ public class AuthorControllerTests
         // Act:
         var createdAtActionResult = await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
-            MediaTypeConstants.BookRentalManagerHateoasMediaType,
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:
@@ -257,7 +257,7 @@ public class AuthorControllerTests
         // Act:
         var createdAtActionResult = await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
-            MediaTypeConstants.ApplicationJsonMediaType,
+            MediaTypeNames.Application.Json,
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:

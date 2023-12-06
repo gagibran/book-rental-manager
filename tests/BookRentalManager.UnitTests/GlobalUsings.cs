@@ -35,3 +35,4 @@ global using BookRentalManager.Api.Constants;
 global using BookRentalManager.Application.Common;
 global using Microsoft.AspNetCore.Http;
 global using System.Dynamic;
+global using System.Net.Mime;
