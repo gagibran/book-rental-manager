@@ -6,6 +6,7 @@ namespace BookRentalManager.Api.Common;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
+[Produces(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson, MediaTypeNames.Application.Json)]
 public abstract class ApiController : ControllerBase
 {
     protected ActionResult HandleError(Result result)

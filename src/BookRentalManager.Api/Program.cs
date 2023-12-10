@@ -1,10 +1,11 @@
-using System.Net.Mime;
+using System.Reflection;
 using BookRentalManager.Api.ExceptionHandlers;
 using BookRentalManager.Infrastructure.Data;
 using BookRentalManager.Infrastructure.Data.Seeds;
 using BookRentalManager.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 // Add services to the container:
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -40,7 +41,17 @@ builder.Services.Configure<MvcOptions>(configureOptions =>
         .FirstOrDefault();
     newtonsoftJsonOutputFormatter?.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 });
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(setupAction =>
+{
+    setupAction.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Book Rental Manager",
+        Description = "A system designed to be used in libraries to manage books and rentals."
+    });
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    setupAction.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Configure the HTTP request pipeline:
@@ -56,6 +67,10 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     await bookRentalManagerDbContext.Database.MigrateAsync();
     await TestDataSeeder.SeedTestDataAsync(bookRentalManagerDbContext);
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(setupAction =>
+    {
+        setupAction.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        setupAction.RoutePrefix = string.Empty;
+    });
 }
 app.Run();

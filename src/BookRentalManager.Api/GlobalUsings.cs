@@ -11,3 +11,4 @@ global using Microsoft.Net.Http.Headers;
 global using BookRentalManager.Application.Common;
 global using BookRentalManager.Api.Constants;
 global using BookRentalManager.Application.Extensions;
+global using System.Net.Mime;

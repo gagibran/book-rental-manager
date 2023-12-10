@@ -12,17 +12,17 @@ internal sealed class GetAuthorsByQueryParametersQueryHandler(
         GetAuthorsByQueryParametersQuery getAuthorsByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        Result<string> convertedSorParametersResult = _sortParametersMapper.MapAuthorSortParameters(
+        Result<string> convertedSortParametersResult = _sortParametersMapper.MapAuthorSortParameters(
             getAuthorsByQueryParametersQuery.SortParameters);
-        if (!convertedSorParametersResult.IsSuccess)
+        if (!convertedSortParametersResult.IsSuccess)
         {
             return Result.Fail<PaginatedList<GetAuthorDto>>(
-                convertedSorParametersResult.ErrorType,
-                convertedSorParametersResult.ErrorMessage);
+                convertedSortParametersResult.ErrorType,
+                convertedSortParametersResult.ErrorMessage);
         }
         var authorsBySearchParameterWithBooksSpecification = new AuthorsBySearchParameterWithBooksSpecification(
             getAuthorsByQueryParametersQuery.SearchParameter,
-            convertedSorParametersResult.Value!);
+            convertedSortParametersResult.Value!);
         PaginatedList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
             getAuthorsByQueryParametersQuery.PageIndex,
             getAuthorsByQueryParametersQuery.PageSize,
