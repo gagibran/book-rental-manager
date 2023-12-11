@@ -16,7 +16,7 @@ internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(IRepository
             cancellationToken);
         if (book is null)
         {
-            return Result.Fail<GetBookDto>("bookId", $"No book with the ID of '{patchBookTitleEditionAndIsbnByIdCommand.Id}' was found.");
+            return Result.Fail<GetBookDto>(RequestErrors.IdNotFoundError, $"No book with the ID of '{patchBookTitleEditionAndIsbnByIdCommand.Id}' was found.");
         }
         if (book.Customer is not null)
         {

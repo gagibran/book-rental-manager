@@ -12,7 +12,7 @@ public sealed class DeleteBookByIdCommandHandler(IRepository<Book> bookRepositor
             cancellationToken);
         if (book is null)
         {
-            return Result.Fail<GetBookDto>("bookId", $"No book with the ID of '{deleteBookByIdCommand.Id}' was found.");
+            return Result.Fail<GetBookDto>(RequestErrors.IdNotFoundError, $"No book with the ID of '{deleteBookByIdCommand.Id}' was found.");
         }
         if (book.Customer is not null)
         {

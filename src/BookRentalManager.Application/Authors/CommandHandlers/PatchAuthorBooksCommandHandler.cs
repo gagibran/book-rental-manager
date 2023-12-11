@@ -12,7 +12,7 @@ internal sealed class PatchAuthorBooksCommandHandler(IRepository<Author> authorR
         Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
         if (author is null)
         {
-            return Result.Fail("authorId", $"No author with the ID of '{patchAuthorBooksCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No author with the ID of '{patchAuthorBooksCommand.Id}' was found.");
         }
         var patchAuthorBooksDto = new PatchAuthorBooksDto(new List<Guid>());
         Result patchAppliedResult = patchAuthorBooksCommand.PatchAuthorBooksDtoPatchDocument.ApplyTo(

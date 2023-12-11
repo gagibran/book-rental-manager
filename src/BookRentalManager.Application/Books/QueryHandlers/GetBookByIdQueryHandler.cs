@@ -11,7 +11,7 @@ internal sealed class GetBookByIdQueryHandler(IRepository<Book> bookRepository)
         Book? book = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(bookByIdWithAuthorsAndCustomersSpecification, cancellationToken);
         if (book is null)
         {
-            return Result.Fail<GetBookDto>("bookId", $"No book with the ID of '{getBookByIdQuery.Id}' was found.");
+            return Result.Fail<GetBookDto>(RequestErrors.IdNotFoundError, $"No book with the ID of '{getBookByIdQuery.Id}' was found.");
         }
         return Result.Success(new GetBookDto(book!));
     }

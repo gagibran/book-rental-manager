@@ -19,7 +19,7 @@ internal sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandler(
         if (author is null)
         {
             return Result.Fail<PaginatedList<GetBookDto>>(
-                "authorId",
+                RequestErrors.IdNotFoundError,
                 $"No author with the ID of '{getBooksByQueryParameterFromAuthor.AuthorId}' was found.");
         }
         Result<string> convertedSortParametersResult = _sortParametersMapper.MapBookSortParameters(

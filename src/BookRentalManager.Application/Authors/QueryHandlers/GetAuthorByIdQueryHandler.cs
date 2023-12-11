@@ -10,7 +10,7 @@ internal sealed class GetAuthorByIdQueryHandler(IRepository<Author> authorReposi
         var author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
         if (author is null)
         {
-            return Result.Fail<GetAuthorDto>("authorId", $"No author with the ID of '{getAuthorByIdQuery.Id}' was found.");
+            return Result.Fail<GetAuthorDto>(RequestErrors.IdNotFoundError, $"No author with the ID of '{getAuthorByIdQuery.Id}' was found.");
         }
         return Result.Success(new GetAuthorDto(author));
     }

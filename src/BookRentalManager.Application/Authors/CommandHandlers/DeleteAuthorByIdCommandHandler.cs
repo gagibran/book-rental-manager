@@ -10,7 +10,7 @@ internal sealed class DeleteAuthorByIdCommandHandler(IRepository<Author> authorR
         Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
         if (author is null)
         {
-            return Result.Fail("authorId", $"No author with the ID of '{deleteAuthorByIdCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No author with the ID of '{deleteAuthorByIdCommand.Id}' was found.");
         }
         Result authorHasRentedBooksResult = Result.Success();
         if (author.Books.Any())

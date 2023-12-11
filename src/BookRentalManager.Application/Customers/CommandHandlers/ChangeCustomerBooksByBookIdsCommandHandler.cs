@@ -14,7 +14,7 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Cus
         Customer? customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
         if (customer is null)
         {
-            return Result.Fail("customerId", $"No customer with the ID of '{changeCustomerBooksByBookIdsCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{changeCustomerBooksByBookIdsCommand.Id}' was found.");
         }
         var changeCustomerBooksByBookIdsDto = new ChangeCustomerBooksByBookIdsDto(new List<Guid>());
         Result patchAppliedResult = changeCustomerBooksByBookIdsCommand.ChangeCustomerBooksByBookIdsDtoPatchDocument.ApplyTo(

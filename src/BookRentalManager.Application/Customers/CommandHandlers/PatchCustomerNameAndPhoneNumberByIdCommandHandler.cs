@@ -11,7 +11,7 @@ internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler(IReposit
         Customer? customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
         if (customer is null)
         {
-            return Result.Fail("customerId", $"No customer with the ID of '{patchCustomerNameAndPhoneNumberByIdCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{patchCustomerNameAndPhoneNumberByIdCommand.Id}' was found.");
         }
         var patchCustomerNameAndPhoneNumberDto = new PatchCustomerNameAndPhoneNumberDto(customer);
         Result patchAppliedResult = JsonPatchDocumentExtensions.ApplyTo(

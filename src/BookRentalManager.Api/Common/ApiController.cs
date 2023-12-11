@@ -1,13 +1,13 @@
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json;
+using BookRentalManager.Application.Constants;
 
 namespace BookRentalManager.Api.Common;
 
 #pragma warning disable CS1591
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-[Produces(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson, MediaTypeNames.Application.Json)]
 public abstract class ApiController : ControllerBase
 {
     public static readonly JsonSerializerOptions s_camelCaseJsonSerialization = new()
@@ -19,7 +19,7 @@ public abstract class ApiController : ControllerBase
     {
         return result.ErrorType switch
         {
-            string error when error.Contains("id", StringComparison.CurrentCultureIgnoreCase) => CustomHttpErrorResponse(
+            string error when error == RequestErrors.IdNotFoundError  => CustomHttpErrorResponse(
                 result.ErrorType,
                 result.ErrorMessage,
                 HttpStatusCode.NotFound),

@@ -15,3 +15,4 @@ global using BookRentalManager.Application.Authors.Commands;
 global using Microsoft.AspNetCore.JsonPatch;
 global using BookRentalManager.Application.Extensions;
 global using Microsoft.Extensions.Logging;
+global using BookRentalManager.Application.Constants;

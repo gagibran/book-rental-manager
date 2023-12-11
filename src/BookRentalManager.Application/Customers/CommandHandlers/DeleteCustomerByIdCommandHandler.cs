@@ -12,7 +12,7 @@ internal sealed class DeleteCustomerByIdCommandHandler(IRepository<Customer> cus
             cancellationToken);
         if (customer is null)
         {
-            return Result.Fail("customerId", $"No customer with the ID of '{deleteCustomerByIdCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{deleteCustomerByIdCommand.Id}' was found.");
         }
         if (customer.Books.Any())
         {

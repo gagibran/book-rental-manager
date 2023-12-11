@@ -11,7 +11,7 @@ internal sealed class GetCustomerByIdQueryHandler(IRepository<Customer> customer
         var customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
         if (customer is null)
         {
-            return Result.Fail<GetCustomerDto>("customerId", $"No customer with the ID of '{getCustomerByIdQuery.Id}' was found.");
+            return Result.Fail<GetCustomerDto>(RequestErrors.IdNotFoundError, $"No customer with the ID of '{getCustomerByIdQuery.Id}' was found.");
         }
         return Result.Success(new GetCustomerDto(customer));
     }
