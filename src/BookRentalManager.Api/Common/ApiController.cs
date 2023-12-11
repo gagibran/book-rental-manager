@@ -10,6 +10,11 @@ namespace BookRentalManager.Api.Common;
 [Produces(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson, MediaTypeNames.Application.Json)]
 public abstract class ApiController : ControllerBase
 {
+    public static readonly JsonSerializerOptions s_camelCaseJsonSerialization = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     protected ActionResult HandleError(Result result)
     {
         return result.ErrorType switch
@@ -34,10 +39,7 @@ public abstract class ApiController : ControllerBase
                 paginatedList.PageSize,
                 TotalAmountOfPages = totalAmountOfPages,
             },
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            s_camelCaseJsonSerialization);
         Response.Headers.Append("X-Pagination", serializedMetadata);
     }
 
