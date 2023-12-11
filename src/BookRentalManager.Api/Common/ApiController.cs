@@ -4,6 +4,7 @@ using System.Text.Json;
 
 namespace BookRentalManager.Api.Common;
 
+#pragma warning disable CS1591
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Produces(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson, MediaTypeNames.Application.Json)]
@@ -139,3 +140,4 @@ public abstract class ApiController : ControllerBase
         }
     }
 }
+#pragma warning restore CS1591

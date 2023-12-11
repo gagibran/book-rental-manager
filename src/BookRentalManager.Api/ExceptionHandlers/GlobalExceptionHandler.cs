@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace BookRentalManager.Api.ExceptionHandlers;
 
+#pragma warning disable CS1591
 public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger = logger;
@@ -19,3 +20,4 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
         return true;
     }
 }
+#pragma warning restore CS1591
