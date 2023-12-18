@@ -1,4 +1,4 @@
-namespace BookRentalManager.Application.Dtos;
+namespace BookRentalManager.Application.Common;
 
 public sealed class HateoasLinkDto(string href, string rel, string method)
 {

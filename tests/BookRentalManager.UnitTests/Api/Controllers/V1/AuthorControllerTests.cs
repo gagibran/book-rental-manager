@@ -203,10 +203,10 @@ public class AuthorControllerTests
             .ReturnsAsync(Result.Fail<AuthorCreatedDto>("unprocessableEntity", "errorMessage422"));
 
         // Act:
-        var objectResult = await _authorController.CreateAuthorAsync(
+        var objectResult = (await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
-            It.IsAny<string>(),
-            It.IsAny<CancellationToken>()) as ObjectResult;
+            It.IsAny<string?>(),
+            It.IsAny<CancellationToken>())).Result as ObjectResult;
 
         // Assert:
         Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
@@ -227,10 +227,10 @@ public class AuthorControllerTests
                 _author.FullName.LastName)));
 
         // Act:
-        var createdAtActionResult = await _authorController.CreateAuthorAsync(
+        var createdAtActionResult = (await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
-            It.IsAny<CancellationToken>()) as CreatedAtActionResult;
+            It.IsAny<CancellationToken>())).Result as CreatedAtActionResult;
 
         // Assert:
         dynamic authorWithHateosLinks = (ExpandoObject)createdAtActionResult!.Value!;
@@ -255,10 +255,10 @@ public class AuthorControllerTests
                 _author.FullName.LastName)));
 
         // Act:
-        var createdAtActionResult = await _authorController.CreateAuthorAsync(
+        var createdAtActionResult = (await _authorController.CreateAuthorAsync(
             It.IsAny<CreateAuthorCommand>(),
             MediaTypeNames.Application.Json,
-            It.IsAny<CancellationToken>()) as CreatedAtActionResult;
+            It.IsAny<CancellationToken>())).Result as CreatedAtActionResult;
 
         // Assert:
         var authorCreated = (AuthorCreatedDto)createdAtActionResult!.Value!;

@@ -35,25 +35,64 @@ public sealed class AuthorController : ApiController
     /// <param name="cancellationToken"></param>
     /// <returns>All the authors based on the query parameters.</returns>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
-    ///     GET/Author?pageSize=1&amp;pageIndex=3&amp;sortBy=FullNameDesc,CreatedAt&amp;searchQuery=Edgar
+    ///     GET/Author?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    /// 
+    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// 
+    ///     {
+    ///       "values": [
+    ///         {
+    ///           "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///           "fullName": "string",
+    ///           "books": [
+    ///             {
+    ///               "bookTitle": "string",
+    ///               "edition": 0,
+    ///               "isbn": "string"
+    ///             }
+    ///           ],
+    ///           "links": [
+    ///             {
+    ///               "href": "string",
+    ///               "rel": "string",
+    ///               "method": "string"
+    ///             }
+    ///           ]
+    ///         }
+    ///       ],
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
+    ///     }
     /// 
     /// Allowed to sort by:
     /// 
     ///     [
-    ///         "FullName",
-    ///         "FullNameDesc",
-    ///         "CreatedAt",
-    ///         "CreatedAtDesc"
+    ///       "FullName",
+    ///       "FullNameDesc",
+    ///       "CreatedAt",
+    ///       "CreatedAtDesc"
     ///     ]
     /// </remarks>
-    /// <response code="200">Returns all the authors based on the query parameters.</response>
-    /// <response code="422">If any of the query parameters does not exist.</response>
     [HttpGet(Name = nameof(GetAuthorsByQueryParametersAsync))]
     [HttpHead]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Returns all the authors based on the query parameters with HATEOAS links.",
+        typeof(PaginatedList<GetAuthorDto>),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If any of the query parameters does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult<PaginatedList<GetAuthorDto>>> GetAuthorsByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         [FromHeader(Name = "Accept")] string? mediaType,
@@ -92,17 +131,45 @@ public sealed class AuthorController : ApiController
     /// <param name="cancellationToken"></param>
     /// <returns>The author if they exist or an error if they do not.</returns>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
-    ///     GET/Author/01426685-8ee0-40b0-8039-57456082ee84
+    ///     GET/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    /// 
+    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// 
+    ///     {
+    ///       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///       "fullName": "string",
+    ///       "books": [
+    ///         {
+    ///           "bookTitle": "string",
+    ///           "edition": 0,
+    ///           "isbn": "string"
+    ///         }
+    ///       ],
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
+    ///     }
     /// </remarks>
-    /// <response code="200">Returns the author based on their ID.</response>
-    /// <response code="404">If the author does not exist.</response>
     [HttpGet("{id}", Name = nameof(GetAuthorByIdAsync))]
     [HttpHead("{id}")]
     [ActionName(nameof(GetAuthorByIdAsync))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Returns the author based on their ID.",
+        typeof(GetAuthorDto),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If the author does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult<GetAuthorDto>> GetAuthorByIdAsync(
         Guid id,
         [FromHeader(Name = "Accept")] string? mediaType,
@@ -130,22 +197,47 @@ public sealed class AuthorController : ApiController
     /// <param name="cancellationToken"></param>
     /// <returns>201 if the author is created successfully or an error if not.</returns>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
     ///     POST /Author
     ///     {
-    ///         "firstName": "John",
-    ///         "lastName": "Doe"
+    ///       "firstName": "John",
+    ///       "lastName": "Doe"
+    ///     }
+    /// 
+    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Content-Type" header:
+    /// 
+    ///     {
+    ///       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///       "firstName": "string",
+    ///       "lastName": "string",
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
     ///     }
     /// </remarks>
-    /// <response code="201">Returns the newly created author.</response>
-    /// <response code="422">If any of the required fields is null.</response>
     [HttpPost(Name = nameof(CreateAuthorAsync))]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<ActionResult> CreateAuthorAsync(
+    [Consumes(
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status201Created,
+        "Returns the newly created author.",
+        typeof(AuthorCreatedDto),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If any of the required fields is null.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    public async Task<ActionResult<AuthorCreatedDto>> CreateAuthorAsync(
         CreateAuthorCommand createAuthorCommand,
-        [FromHeader(Name = "Accept")] string? mediaType,
+        [FromHeader(Name = "Content-Type")] string? mediaType,
         CancellationToken cancellationToken)
     {
         Result<AuthorCreatedDto> createAuthorResult = await _dispatcher.DispatchAsync(
@@ -173,25 +265,38 @@ public sealed class AuthorController : ApiController
     /// <param name="cancellationToken"></param>
     /// <returns>204 if the book is successfully added to the author or an error if not.</returns>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
-    ///     PATCH /Author/9949d99a-0459-49bc-a808-e40b8e294ecd/AddBooks
-    ///     {
+    ///     PATCH /Author/3fa85f64-5717-4562-b3fc-2c963f66afa6/AddBooks
+    ///     [
+    ///       {
     ///         "op": "add",
     ///         "path": "/bookIds",
     ///         "value": [
     ///             "660e76c2-3028-4e65-92c9-8845c233456b",
     ///             "e251bb4d-f9d2-4e34-9ada-070610bad82e"
     ///         ]
-    ///     }
+    ///       }
+    ///     ]
     /// </remarks>
-    /// <response code="204">If the patch operation was successful.</response>
-    /// <response code="400">If any of the patch operations is incorrect.</response>
-    /// <response code="404">If any of the books or the author does not exist.</response>
     [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthor))]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [Consumes(CustomMediaTypeNames.Application.JsonPatchJson)]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "If the patch operation was successful.")]
+    [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If any of the patch operations is incorrect.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If any of the books or the author does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If the JSON patch document is malformed.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> AddExistingBooksToAuthor(
         Guid id,
         JsonPatchDocument<PatchAuthorBooksDto> patchAuthorBooksDtoPatchDocument,
@@ -215,13 +320,11 @@ public sealed class AuthorController : ApiController
     /// <remarks>
     /// Example:
     /// 
-    ///     DELETE /Author/9949d99a-0459-49bc-a808-e40b8e294ecd
+    ///     DELETE /Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
     /// </remarks>
-    /// <response code="204">If the delete operation was successful.</response>
-    /// <response code="404">If the author does not exist.</response>
     [HttpDelete("{id}", Name = nameof(DeleteAuthorByIdAsync))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status200OK, "If the delete operation was successful.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If the author does not exist.")]
     public async Task<ActionResult> DeleteAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         Result deleteAuthorByIdResult = await _dispatcher.DispatchAsync(new DeleteAuthorByIdCommand(id), cancellationToken);
@@ -241,9 +344,8 @@ public sealed class AuthorController : ApiController
     /// 
     ///     OPTIONS /Author
     /// </remarks>
-    /// <response code="200">Returns all of the options in the "Allow" response header.</response>
     [HttpOptions]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns all of the options in the \"Allow\" response header.")]
     public ActionResult GetAuthorOptions()
     {
         Response.Headers.Append("Allow", "GET, HEAD, POST, DELETE, OPTIONS");
@@ -257,13 +359,11 @@ public sealed class AuthorController : ApiController
     /// <remarks>
     /// Example:
     /// 
-    ///     OPTIONS /Author/01426685-8ee0-40b0-8039-57456082ee84/AddBook
+    ///     OPTIONS /Author/3fa85f64-5717-4562-b3fc-2c963f66afa6/AddBook
     /// </remarks>
-    /// <response code="200">Returns all of the options in the "Allow" response header.</response>
-    /// <response code="404">If the author does not exist.</response>
     [HttpOptions("{id}/AddBooks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns all of the options in the \"Allow\" response header.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "If the author does not exist.")]
     public async Task<ActionResult> GetAuthorAddBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
         Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync(

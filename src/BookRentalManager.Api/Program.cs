@@ -10,13 +10,7 @@ using Microsoft.OpenApi.Models;
 // Add services to the container:
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services
-    .AddControllers(mvcOptions =>
-    {
-        mvcOptions.Filters.Add(new ProducesAttribute(
-            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
-            MediaTypeNames.Application.Json));
-        mvcOptions.ReturnHttpNotAcceptable = true;
-    })
+    .AddControllers(mvcOptions => mvcOptions.ReturnHttpNotAcceptable = true)
     .AddNewtonsoftJson();
 builder.Services.AddDbContext<BookRentalManagerDbContext>(dbContextOptionsBuilder =>
 {
@@ -36,21 +30,26 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices();
 builder.Services.Configure<MvcOptions>(configureOptions =>
 {
-    NewtonsoftJsonOutputFormatter? newtonsoftJsonOutputFormatter = configureOptions.OutputFormatters
+    NewtonsoftJsonInputFormatter newtonsoftJsonInputFormatter = configureOptions.InputFormatters
+        .OfType<NewtonsoftJsonInputFormatter>()
+        .First();
+    NewtonsoftJsonOutputFormatter newtonsoftJsonOutputFormatter = configureOptions.OutputFormatters
         .OfType<NewtonsoftJsonOutputFormatter>()
-        .FirstOrDefault();
-    newtonsoftJsonOutputFormatter?.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+        .First();
+    newtonsoftJsonInputFormatter.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+    newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 });
-builder.Services.AddSwaggerGen(setupAction =>
+builder.Services.AddSwaggerGen(swaggerGenOptions =>
 {
-    setupAction.SwaggerDoc("v1", new OpenApiInfo
+    swaggerGenOptions.EnableAnnotations();
+    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
         Title = "Book Rental Manager",
         Description = "A system designed to be used in libraries to manage books and rentals."
     });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    setupAction.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    swaggerGenOptions.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
@@ -67,10 +66,10 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     await bookRentalManagerDbContext.Database.MigrateAsync();
     await TestDataSeeder.SeedTestDataAsync(bookRentalManagerDbContext);
     app.UseSwagger();
-    app.UseSwaggerUI(setupAction =>
+    app.UseSwaggerUI(swaggerUIOptions =>
     {
-        setupAction.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        setupAction.RoutePrefix = string.Empty;
+        swaggerUIOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        swaggerUIOptions.RoutePrefix = string.Empty;
     });
 }
 app.Run();

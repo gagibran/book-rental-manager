@@ -85,7 +85,7 @@ public abstract class ApiController : ControllerBase
             ExpandoObject dtoWithHateoasLinks = AddHateoasLinks(allowedRestMethodDtos, paginatedBaseDto);
             dtosWithHateoasLinks.Add(dtoWithHateoasLinks);
         }
-        var values =  new PaginatedList<ExpandoObject>(
+        var values = new PaginatedList<ExpandoObject>(
             dtosWithHateoasLinks,
             paginatedBaseDtos.TotalAmountOfItems,
             paginatedBaseDtos.TotalAmountOfPages,

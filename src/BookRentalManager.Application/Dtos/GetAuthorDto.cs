@@ -8,8 +8,7 @@ public sealed class GetAuthorDto(Guid id, FullName fullName, IReadOnlyList<GetBo
     public GetAuthorDto(Author author) : this(
         author.Id,
         author.FullName,
-        author
-            .Books
+        author.Books
             .Select(book => new GetBookFromAuthorDto(book))
             .ToList()
             .AsReadOnly())

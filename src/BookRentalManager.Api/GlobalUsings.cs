@@ -12,3 +12,4 @@ global using BookRentalManager.Application.Common;
 global using BookRentalManager.Api.Constants;
 global using BookRentalManager.Application.Extensions;
 global using System.Net.Mime;
+global using Swashbuckle.AspNetCore.Annotations;
