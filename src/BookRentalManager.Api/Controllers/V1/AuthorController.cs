@@ -31,7 +31,10 @@ public sealed class AuthorController : ApiController
     /// Gets all authors based on the query parameters.
     /// </summary>
     /// <param name="queryParameters"></param>
-    /// <param name="mediaType"></param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned list of authors.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the response for the code 200.
+    /// </param>
     /// <param name="cancellationToken"></param>
     /// <returns>All the authors based on the query parameters.</returns>
     /// <remarks>
@@ -126,8 +129,11 @@ public sealed class AuthorController : ApiController
     /// <summary>
     /// Gets an author based on their ID.
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="mediaType"></param>
+    /// <param name="id">The author's ID.</param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned author.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the response for the code 200.
+    /// </param>
     /// <param name="cancellationToken"></param>
     /// <returns>The author if they exist or an error if they do not.</returns>
     /// <remarks>
@@ -193,7 +199,10 @@ public sealed class AuthorController : ApiController
     /// Creates a new author.
     /// </summary>
     /// <param name="createAuthorCommand"></param>
-    /// <param name="mediaType"></param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned body for the 201 response.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the request body.
+    /// </param>
     /// <param name="cancellationToken"></param>
     /// <returns>201 if the author is created successfully or an error if not.</returns>
     /// <remarks>
@@ -260,7 +269,7 @@ public sealed class AuthorController : ApiController
     /// <summary>
     /// Adds an existing book to an existing author.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">The author's ID.</param>
     /// <param name="patchAuthorBooksDtoPatchDocument"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>204 if the book is successfully added to the author or an error if not.</returns>
@@ -278,6 +287,8 @@ public sealed class AuthorController : ApiController
     ///         ]
     ///       }
     ///     ]
+    /// 
+    /// Put the book IDs that will be added to the author in the "value" property.
     /// </remarks>
     [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthor))]
     [Consumes(CustomMediaTypeNames.Application.JsonPatchJson)]
@@ -314,7 +325,7 @@ public sealed class AuthorController : ApiController
     /// <summary>
     /// Deletes an author based on their ID.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">The author's ID.</param>
     /// <param name="cancellationToken"></param>
     /// <returns>204 if the book is successfully delete or an error if not.</returns>
     /// <remarks>
@@ -356,6 +367,8 @@ public sealed class AuthorController : ApiController
     /// Gets all of the allowed operations for the /Author/{authorId}/AddBooks endpoint.
     /// </summary>
     /// <returns>A list of the allowed operations for the /Author/{authorId}/AddBooks endpoint.</returns>
+    /// <param name="id">The author's ID.</param>
+    /// <param name="cancellationToken"></param>
     /// <remarks>
     /// Example:
     /// 
