@@ -87,7 +87,7 @@ public sealed class AuthorController : ApiController
     [HttpHead]
     [SwaggerResponse(
         StatusCodes.Status200OK,
-        "Returns all the authors based on the query parameters with HATEOAS links.",
+        "Returns all the authors based on the query parameters.",
         typeof(PaginatedList<GetAuthorDto>),
         MediaTypeNames.Application.Json,
         CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]

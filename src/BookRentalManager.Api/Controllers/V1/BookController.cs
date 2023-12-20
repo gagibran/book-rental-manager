@@ -3,12 +3,19 @@ using BookRentalManager.Application.Books.Queries;
 
 namespace BookRentalManager.Api.Controllers.V1;
 
+/// <summary>
+/// Controller responsible for processing books.
+/// </summary>
 [ApiVersion("1.0")]
 public sealed class BookController : ApiController
 {
     private readonly IDispatcher _dispatcher;
     private readonly List<AllowedRestMethodsDto> _allowedRestMethodDtos;
 
+    /// <summary>
+    /// This class' controller.
+    /// </summary>
+    /// <param name="dispatcher"></param>
     public BookController(IDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
@@ -20,8 +27,89 @@ public sealed class BookController : ApiController
         ];
     }
 
+    /// <summary>
+    /// Gets all books based on the query parameters.
+    /// </summary>
+    /// <param name="queryParameters"></param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned list of books.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the response for the code 200.
+    /// </param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>All the books based on the query parameters.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     GET/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    /// 
+    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// 
+    ///     {
+    ///       "values": [
+    ///         {
+    ///           "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///           "bookTitle": "string",
+    ///           "authors": [
+    ///             {
+    ///               "fullName": "string"
+    ///             }
+    ///           ],
+    ///           "edition": 0,
+    ///           "isbn": "string",
+    ///           "rentedAt": "datetime",
+    ///           "dueDate": "datetime",
+    ///           "rentedBy": {
+    ///             "fullName": "string",
+    ///             "email": "string"
+    ///           },
+    ///           "links": [
+    ///             {
+    ///               "href": "string",
+    ///               "rel": "string",
+    ///               "method": "string"
+    ///             }
+    ///           ]
+    ///         }
+    ///       ],
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
+    ///     }
+    /// 
+    /// Allowed to sort by:
+    /// 
+    ///     [
+    ///       "BookTitle",
+    ///       "BookTitleDesc",
+    ///       "Edition",
+    ///       "EditionDesc",
+    ///       "Isbn",
+    ///       "IsbnDesc",
+    ///       "RentedAt",
+    ///       "RentedAtDesc",
+    ///       "DueDate",
+    ///       "DueDateDesc",
+    ///       "CreatedAt",
+    ///       "CreatedAtDesc"
+    ///     ]
+    /// </remarks>
     [HttpGet(Name = nameof(GetBooksByQueryParametersAsync))]
     [HttpHead]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Returns all the books based on the query parameters.",
+        typeof(PaginatedList<GetBookDto>),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If any of the query parameters does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersAsync(
         [FromQuery] GetAllItemsQueryParameters queryParameters,
         [FromHeader(Name = "Accept")] string? mediaType,
