@@ -1,4 +1,4 @@
-﻿namespace BookRentalManager.UnitTests;
+﻿namespace BookRentalManager.UnitTests.Api.Controllers.V1;
 
 public class BookControllerTests
 {
