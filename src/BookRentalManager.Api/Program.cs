@@ -52,6 +52,7 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
     swaggerGenOptions.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddSingleton<OutputFormatterSelector, AcceptHeaderOutputFormatterSelector>();
 
 // Configure the HTTP request pipeline:
 WebApplication app = builder.Build();
