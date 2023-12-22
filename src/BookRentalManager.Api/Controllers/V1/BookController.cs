@@ -40,7 +40,7 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     GET /Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
     /// 
     /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
@@ -140,9 +140,58 @@ public sealed class BookController : ApiController
         return Ok(getAllBooksResult.Value);
     }
 
+    /// <summary>
+    /// Gets a book based on its ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned book.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the response for the code 200.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>The book if it exists or an error if it does not.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     GET /Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    /// 
+    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// 
+    ///     {
+    ///       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///       "bookTitle": "string",
+    ///       "authors": [
+    ///         {
+    ///           "fullName": "string"
+    ///         }
+    ///       ],
+    ///       "edition": 0,
+    ///       "isbn": "string",
+    ///       "rentedAt": datetime,
+    ///       "dueDate": datetime,
+    ///       "rentedBy": datetime,
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
+    ///     }
+    /// </remarks>
     [HttpGet("{id}", Name = nameof(GetBookByIdAsync))]
     [HttpHead("{id}")]
     [ActionName(nameof(GetBookByIdAsync))]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Returns the book based on its ID.",
+        typeof(GetBookDto),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If the book does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult<GetBookDto>> GetBookByIdAsync(
         Guid id,
         [FromHeader(Name = "Accept")] string? mediaType,
@@ -161,7 +210,60 @@ public sealed class BookController : ApiController
         return Ok(getBookByIdResult.Value);
     }
 
+    /// <summary>
+    /// Creates new a book.
+    /// </summary>
+    /// <param name="createBookCommand"></param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned body for the 201 response.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the request body.
+    /// </param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>201 if the book is created successfully or an error if not.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     POST /Book
+    ///     {
+    ///       "authorIds": [
+    ///         "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    ///       ],
+    ///       "bookTitle": "Design Patterns: Elements of Reusable Object-Oriented Software",
+    ///       "edition": 1,
+    ///       "isbn": "0-201-63361-2"
+    ///     }
+    /// 
+    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Content-Type" header:
+    /// 
+    ///     {
+    ///       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///       "bookTitle": "string",
+    ///       "edition": 0,
+    ///       "isbn": "string",
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
+    ///     }
+    /// </remarks>
     [HttpPost(Name = nameof(CreateBookAsync))]
+    [Consumes(
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status201Created,
+        "Returns the newly created book.",
+        typeof(BookCreatedDto),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If any of the required fields is null.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> CreateBookAsync(
         CreateBookCommand createBookCommand,
         [FromHeader(Name = "Accept")] string? mediaType,
