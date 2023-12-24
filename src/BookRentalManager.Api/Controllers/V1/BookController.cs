@@ -152,7 +152,7 @@ public sealed class BookController : ApiController
     /// <summary>
     /// Gets a book based on its ID.
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="id">The book's ID.</param>
     /// <param name="mediaType">
     /// Responsible for controlling the shape of the returned book.
     /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the response for the code 200.</param>
@@ -279,7 +279,7 @@ public sealed class BookController : ApiController
         CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> CreateBookAsync(
         CreateBookCommand createBookCommand,
-        [FromHeader(Name = "Accept")] string? mediaType,
+        [FromHeader(Name = "Content-Type")] string? mediaType,
         CancellationToken cancellationToken)
     {
         Result<BookCreatedDto> createBookResult = await _dispatcher.DispatchAsync(createBookCommand, cancellationToken);
@@ -307,7 +307,7 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request replacing all fields:
     /// 
-    ///     PATCH Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    ///     PATCH /api/v1/Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
     ///     [
     ///       {
     ///         "op": "replace",
