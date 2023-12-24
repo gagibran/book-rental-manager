@@ -40,9 +40,13 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET /Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     GET /api/v1/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
     /// 
-    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// Using the HEAD HTTP verb to retrieve information about the endpoint:
+    /// 
+    ///     HEAD /api/v1/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    /// 
+    /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
     ///     {
     ///       "values": [
@@ -106,6 +110,11 @@ public sealed class BookController : ApiController
         MediaTypeNames.Application.Json,
         CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
     [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If any of the query parameters' types is incorrect.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
         StatusCodes.Status422UnprocessableEntity,
         "If any of the query parameters does not exist.",
         typeof(ValidationProblemDetails),
@@ -152,9 +161,13 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET /Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    ///     GET /api/v1/Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
     /// 
-    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// Using the HEAD HTTP verb to retrieve information about the endpoint:
+    /// 
+    ///     HEAD /api/v1/Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    /// 
+    /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
     ///     {
     ///       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -223,7 +236,7 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     POST /Book
+    ///     POST /api/v1/Book
     ///     {
     ///       "authorIds": [
     ///         "3fa85f64-5717-4562-b3fc-2c963f66afa6"
@@ -261,7 +274,7 @@ public sealed class BookController : ApiController
         CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
     [SwaggerResponse(
         StatusCodes.Status422UnprocessableEntity,
-        "If any of the required fields is null.",
+        "If any of the required fields is null or any validation errors happen.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> CreateBookAsync(
@@ -284,7 +297,48 @@ public sealed class BookController : ApiController
         return CreatedAtAction(nameof(GetBookByIdAsync) , new { createBookResult.Value!.Id }, createBookResult.Value);
     }
 
+    /// <summary>
+    /// Updates a book's title, edition and/or ISBN fields.
+    /// </summary>
+    /// <param name="id">The book's ID.</param>
+    /// <param name="patchBookTitleEditionAndIsbnByIdDtoPatchDocument"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>204 if the fields are successfully updated or an error if not.</returns>
+    /// <remarks>
+    /// Sample request replacing all fields:
+    /// 
+    ///     PATCH Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    ///     [
+    ///       {
+    ///         "op": "replace",
+    ///         "path": "/booktitle",
+    ///         "value": "Clean Code: A Handbook of Agile Software Craftsmanship"
+    ///       },
+    ///       {
+    ///         "op": "replace",
+    ///         "path": "/edition",
+    ///         "value": "2"
+    ///       },
+    ///       {
+    ///         "op": "replace",
+    ///         "path": "/isbn",
+    ///         "value": "978-0132350884"
+    ///       }
+    ///     ]
+    /// </remarks>
     [HttpPatch("{id}", Name = nameof(PatchBookTitleEditionAndIsbnByIdAsync))]
+    [Consumes(CustomMediaTypeNames.Application.JsonPatchJson)]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "If the patch operation was successful.")]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If the book does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If the JSON patch document is malformed or any validation errors happen.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> PatchBookTitleEditionAndIsbnByIdAsync(
         Guid id,
         JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto> patchBookTitleEditionAndIsbnByIdDtoPatchDocument,
@@ -303,7 +357,28 @@ public sealed class BookController : ApiController
         return NoContent();
     }
 
+    /// <summary>
+    /// Deletes a book based on its ID.
+    /// </summary>
+    /// <param name="id">The book's ID.</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>204 if the book is successfully deleted or an error if not.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     DELETE /api/v1/Book/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    /// </remarks>
     [HttpDelete("{id}", Name = nameof(DeleteBookByIdAsync))]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "If the delete operation was successful.")]
+    [SwaggerResponse(StatusCodes.Status404NotFound,
+        "If the book does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If the book is currently rented by a customer.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> DeleteBookByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         Result deleteBookByIdResult = await _dispatcher.DispatchAsync(new DeleteBookByIdCommand(id), cancellationToken);
@@ -314,8 +389,105 @@ public sealed class BookController : ApiController
         return NoContent();
     }
 
+    /// <summary>
+    /// Gets all books, based on the query parameters,
+    /// for all authors excluding the author based on their passed ID.
+    /// </summary>
+    /// <param name="authorId">The author's ID that will be excluded from this lookup.</param>
+    /// <param name="queryParameters"></param>
+    /// <param name="mediaType">
+    /// Responsible for controlling the shape of the returned list of books.
+    /// Choose between "application/json" and "application/vnd.bookrentalmanager.hateoas+json" in the response for the code 200.
+    /// </param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>Returns all the books based on the query parameters excluding the books from the author with the passed ID.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     GET /api/v1/Book/ExcludingAuthor/3fa85f64-5717-4562-b3fc-2c963f66afa6?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    /// 
+    /// Using the HEAD HTTP verb to retrieve information about the endpoint:
+    /// 
+    ///     HEAD /api/v1/Book/ExcludingAuthor/3fa85f64-5717-4562-b3fc-2c963f66afa6?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    /// 
+    /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// 
+    ///     {
+    ///       "values": [
+    ///         {
+    ///           "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    ///           "bookTitle": "string",
+    ///           "authors": [
+    ///             {
+    ///               "fullName": "string"
+    ///             }
+    ///           ],
+    ///           "edition": 0,
+    ///           "isbn": "string",
+    ///           "rentedAt": "datetime",
+    ///           "dueDate": "datetime",
+    ///           "rentedBy": {
+    ///             "fullName": "string",
+    ///             "email": "string"
+    ///           },
+    ///           "links": [
+    ///             {
+    ///               "href": "string",
+    ///               "rel": "string",
+    ///               "method": "string"
+    ///             }
+    ///           ]
+    ///         }
+    ///       ],
+    ///       "links": [
+    ///         {
+    ///           "href": "string",
+    ///           "rel": "string",
+    ///           "method": "string"
+    ///         }
+    ///       ]
+    ///     }
+    /// 
+    /// Allowed to sort by:
+    /// 
+    ///     [
+    ///       "BookTitle",
+    ///       "BookTitleDesc",
+    ///       "Edition",
+    ///       "EditionDesc",
+    ///       "Isbn",
+    ///       "IsbnDesc",
+    ///       "RentedAt",
+    ///       "RentedAtDesc",
+    ///       "DueDate",
+    ///       "DueDateDesc",
+    ///       "CreatedAt",
+    ///       "CreatedAtDesc"
+    ///     ]
+    /// </remarks>
     [HttpGet("ExcludingAuthor/{authorId}")]
     [HttpHead("ExcludingAuthor/{authorId}")]
+    [SwaggerResponse(
+        StatusCodes.Status200OK,
+        "Returns all the books based on the query parameters excluding the books from the author with the passed ID.",
+        typeof(PaginatedList<GetBookDto>),
+        MediaTypeNames.Application.Json,
+        CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
+    [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If any of the query parameters' types is incorrect.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If the author does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If any of the query parameters does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult<PaginatedList<GetBookDto>>> GetBooksByQueryParametersExcludingFromAuthorAsync(
         Guid authorId,
         [FromQuery] GetAllItemsQueryParameters queryParameters,
@@ -348,14 +520,34 @@ public sealed class BookController : ApiController
         return Ok(getAllBooksResult.Value);
     }
 
+    /// <summary>
+    /// Gets all of the allowed operations for the /api/v1/Book endpoints.
+    /// </summary>
+    /// <returns>A list of the allowed operations for the /api/v1/Book endpoints.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     OPTIONS /api/v1/Book
+    /// </remarks>
     [HttpOptions]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns all of the options in the \"Allow\" response header.")]
     public ActionResult GetBookOptions()
     {
         Response.Headers.Append("Allow", "GET, HEAD, POST, PATCH, DELETE, OPTIONS");
         return Ok();
     }
 
+    /// <summary>
+    /// Gets all of the allowed operations for the /api/v1/Book/ExcludingAuthor endpoints.
+    /// </summary>
+    /// <returns>A list of the allowed operations for the /api/v1/Book endpoints.</returns>
+    /// <remarks>
+    /// Sample request:
+    /// 
+    ///     OPTIONS /api/v1/Book/ExcludingAuthor
+    /// </remarks>
     [HttpOptions("ExcludingAuthor")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns all of the options in the \"Allow\" response header.")]
     public ActionResult GetExcludingAuthorOptions()
     {
         Response.Headers.Append("Allow", "GET, OPTIONS");

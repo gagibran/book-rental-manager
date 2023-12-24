@@ -8,6 +8,11 @@ namespace BookRentalManager.Api.Common;
 #pragma warning disable CS1591
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
+[SwaggerResponse(
+    StatusCodes.Status500InternalServerError,
+    "If any unexpected errors occur.",
+    typeof(ValidationProblemDetails),
+    CustomMediaTypeNames.Application.ProblemJson)]
 public abstract class ApiController : ControllerBase
 {
     public static readonly JsonSerializerOptions s_camelCaseJsonSerialization = new()

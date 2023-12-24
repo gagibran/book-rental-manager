@@ -40,9 +40,13 @@ public sealed class AuthorController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET/Author?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     GET /api/v1/Author?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
     /// 
-    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// Using the HEAD HTTP verb to retrieve information about the endpoint:
+    /// 
+    ///     HEAD /api/v1/Author?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    /// 
+    /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
     ///     {
     ///       "values": [
@@ -92,6 +96,11 @@ public sealed class AuthorController : ApiController
         MediaTypeNames.Application.Json,
         CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
     [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If any of the query parameters' types is incorrect.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
         StatusCodes.Status422UnprocessableEntity,
         "If any of the query parameters does not exist.",
         typeof(ValidationProblemDetails),
@@ -139,9 +148,13 @@ public sealed class AuthorController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    ///     GET /api/v1/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
     /// 
-    /// Sample response using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
+    /// Using the HEAD HTTP verb to retrieve information about the endpoint:
+    /// 
+    ///     HEAD /api/v1/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    /// 
+    /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
     ///     {
     ///       "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -208,7 +221,7 @@ public sealed class AuthorController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     POST /Author
+    ///     POST /api/v1/Author
     ///     {
     ///       "firstName": "John",
     ///       "lastName": "Doe"
@@ -241,7 +254,7 @@ public sealed class AuthorController : ApiController
         CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)]
     [SwaggerResponse(
         StatusCodes.Status422UnprocessableEntity,
-        "If any of the required fields is null.",
+        "If any of the required fields is null or any validation errors happen.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult<AuthorCreatedDto>> CreateAuthorAsync(
@@ -276,7 +289,7 @@ public sealed class AuthorController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     PATCH /Author/3fa85f64-5717-4562-b3fc-2c963f66afa6/AddBooks
+    ///     PATCH /api/v1/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6/AddBooks
     ///     [
     ///       {
     ///         "op": "add",
@@ -294,18 +307,13 @@ public sealed class AuthorController : ApiController
     [Consumes(CustomMediaTypeNames.Application.JsonPatchJson)]
     [SwaggerResponse(StatusCodes.Status204NoContent, "If the patch operation was successful.")]
     [SwaggerResponse(
-        StatusCodes.Status400BadRequest,
-        "If any of the patch operations is incorrect.",
-        typeof(ValidationProblemDetails),
-        CustomMediaTypeNames.Application.ProblemJson)]
-    [SwaggerResponse(
         StatusCodes.Status404NotFound,
         "If any of the books or the author does not exist.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
     [SwaggerResponse(
         StatusCodes.Status400BadRequest,
-        "If the JSON patch document is malformed.",
+        "If the JSON patch document is malformed or any validation errors happen.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> AddExistingBooksToAuthor(
@@ -327,15 +335,24 @@ public sealed class AuthorController : ApiController
     /// </summary>
     /// <param name="id">The author's ID.</param>
     /// <param name="cancellationToken"></param>
-    /// <returns>204 if the book is successfully delete or an error if not.</returns>
+    /// <returns>204 if the author is successfully deleted or an error if not.</returns>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
-    ///     DELETE /Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
+    ///     DELETE /api/v1/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6
     /// </remarks>
     [HttpDelete("{id}", Name = nameof(DeleteAuthorByIdAsync))]
-    [SwaggerResponse(StatusCodes.Status200OK, "If the delete operation was successful.")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "If the author does not exist.")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "If the delete operation was successful.")]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If the author does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
+        StatusCodes.Status422UnprocessableEntity,
+        "If the author has books.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> DeleteAuthorByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         Result deleteAuthorByIdResult = await _dispatcher.DispatchAsync(new DeleteAuthorByIdCommand(id), cancellationToken);
@@ -347,13 +364,13 @@ public sealed class AuthorController : ApiController
     }
 
     /// <summary>
-    /// Gets all of the allowed operations for the /Author endpoint.
+    /// Gets all of the allowed operations for the /api/v1/Author endpoint.
     /// </summary>
-    /// <returns>A list of the allowed operations for the /Author endpoint.</returns>
+    /// <returns>A list of the allowed operations for the /api/v1/Author endpoints.</returns>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
-    ///     OPTIONS /Author
+    ///     OPTIONS /api/v1/Author
     /// </remarks>
     [HttpOptions]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns all of the options in the \"Allow\" response header.")]
@@ -364,19 +381,23 @@ public sealed class AuthorController : ApiController
     }
 
     /// <summary>
-    /// Gets all of the allowed operations for the /Author/{authorId}/AddBooks endpoint.
+    /// Gets all of the allowed operations for the /api/v1/Author/{authorId}/AddBooks endpoints.
     /// </summary>
-    /// <returns>A list of the allowed operations for the /Author/{authorId}/AddBooks endpoint.</returns>
+    /// <returns>A list of the allowed operations for the /api/v1/Author/{authorId}/AddBooks endpoints.</returns>
     /// <param name="id">The author's ID.</param>
     /// <param name="cancellationToken"></param>
     /// <remarks>
-    /// Example:
+    /// Sample request:
     /// 
-    ///     OPTIONS /Author/3fa85f64-5717-4562-b3fc-2c963f66afa6/AddBook
+    ///     OPTIONS /api/v1/Author/3fa85f64-5717-4562-b3fc-2c963f66afa6/AddBook
     /// </remarks>
     [HttpOptions("{id}/AddBooks")]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns all of the options in the \"Allow\" response header.")]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "If the author does not exist.")]
+    [SwaggerResponse(
+        StatusCodes.Status404NotFound,
+        "If the author does not exist.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> GetAuthorAddBooksOptionsAsync(Guid id, CancellationToken cancellationToken)
     {
         Result<GetAuthorDto> getAuthorByIdResult = await _dispatcher.DispatchAsync(
