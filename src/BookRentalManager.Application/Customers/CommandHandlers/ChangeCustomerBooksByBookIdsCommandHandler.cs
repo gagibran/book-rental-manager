@@ -37,11 +37,9 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Cus
             if (changeCustomerBooksByBookIdsCommand.IsReturn)
             {
                 returnBookResults = Result.Combine(returnBookResults, customer.ReturnBook(book));
+                continue;
             }
-            else
-            {
-                returnBookResults = Result.Combine(returnBookResults, customer.RentBook(book));
-            }
+            returnBookResults = Result.Combine(returnBookResults, customer.RentBook(book));
         }
         if (!returnBookResults.IsSuccess)
         {
