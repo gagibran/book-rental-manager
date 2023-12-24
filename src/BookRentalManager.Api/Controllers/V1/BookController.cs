@@ -40,11 +40,11 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET /api/v1/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     GET /api/v1/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=BookTitleDesc,CreatedAt
     /// 
     /// Using the HEAD HTTP verb to retrieve information about the endpoint:
     /// 
-    ///     HEAD /api/v1/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     HEAD /api/v1/Book?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=BookTitleDesc,CreatedAt
     /// 
     /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
@@ -404,11 +404,11 @@ public sealed class BookController : ApiController
     /// <remarks>
     /// Sample request:
     /// 
-    ///     GET /api/v1/Book/ExcludingAuthor/3fa85f64-5717-4562-b3fc-2c963f66afa6?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     GET /api/v1/Book/ExcludingAuthor/3fa85f64-5717-4562-b3fc-2c963f66afa6?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=BookTitleDesc,CreatedAt
     /// 
     /// Using the HEAD HTTP verb to retrieve information about the endpoint:
     /// 
-    ///     HEAD /api/v1/Book/ExcludingAuthor/3fa85f64-5717-4562-b3fc-2c963f66afa6?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=FullNameDesc,CreatedAt
+    ///     HEAD /api/v1/Book/ExcludingAuthor/3fa85f64-5717-4562-b3fc-2c963f66afa6?pageIndex=2&amp;pageSize=2&amp;searchQuery=e&amp;sortBy=BookTitleDesc,CreatedAt
     /// 
     /// Sample response from GET using "application/vnd.bookrentalmanager.hateoas+json" as the "Accept" header:
     /// 
