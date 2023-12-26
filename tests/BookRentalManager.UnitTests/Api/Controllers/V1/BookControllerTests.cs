@@ -86,16 +86,21 @@ public class BookControllerTests
 
         // Assert:
         var collectionWithHateoasLinksDto = (CollectionWithHateoasLinksDto)okObjectResult!.Value!;
-        dynamic returnedExpandoObject = collectionWithHateoasLinksDto.Values[0];
+        dynamic bookWithHateosLinks = collectionWithHateoasLinksDto.Values[0];
         Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
         Assert.Equal("previous_page", collectionWithHateoasLinksDto.Links[0].Rel);
         Assert.Equal("next_page", collectionWithHateoasLinksDto.Links[1].Rel);
-        Assert.Equal("url", returnedExpandoObject.links[0].Href);
-        Assert.Equal("url", returnedExpandoObject.links[1].Href);
-        Assert.Equal("url", returnedExpandoObject.links[2].Href);
-        Assert.Equal(returnedExpandoObject.authors.Count, 4);
-        Assert.Equal(returnedExpandoObject.bookTitle, "Design Patterns: Elements of Reusable Object-Oriented Software");
-        Assert.Equal(returnedExpandoObject.isbn, "0-201-63361-2");
+        Assert.Equal(_getBookDtos[0].Id, bookWithHateosLinks.id);
+        Assert.Equal(_getBookDtos[0].BookTitle, bookWithHateosLinks.bookTitle);
+        Assert.Equal(_getBookDtos[0].Authors, bookWithHateosLinks.authors);
+        Assert.Equal(_getBookDtos[0].Edition, bookWithHateosLinks.edition);
+        Assert.Equal(_getBookDtos[0].Isbn, bookWithHateosLinks.isbn);
+        Assert.Equal(_getBookDtos[0].RentedBy, bookWithHateosLinks.rentedBy);
+        Assert.Equal(_getBookDtos[0].DueDate, bookWithHateosLinks.dueDate);
+        Assert.Equal(_getBookDtos[0].RentedBy, bookWithHateosLinks.rentedBy);
+        Assert.Equal("self", bookWithHateosLinks.links[0].Rel);
+        Assert.Equal("patch_book", bookWithHateosLinks.links[1].Rel);
+        Assert.Equal("delete_book", bookWithHateosLinks.links[2].Rel);
     }
 
     [Fact]
@@ -199,13 +204,13 @@ public class BookControllerTests
         var actualBook = okObjectResult!.Value as GetBookDto;
         Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
         Assert.Equal(getBookDto.Id, actualBook!.Id);
-        Assert.Equal(getBookDto.BookTitle, actualBook!.BookTitle);
-        Assert.Equal(getBookDto.Authors, actualBook!.Authors);
-        Assert.Equal(getBookDto.Edition, actualBook!.Edition);
-        Assert.Equal(getBookDto.Isbn, actualBook!.Isbn);
-        Assert.Equal(getBookDto.RentedBy, actualBook!.RentedBy);
-        Assert.Equal(getBookDto.DueDate, actualBook!.DueDate);
-        Assert.Equal(getBookDto.RentedBy, actualBook!.RentedBy);
+        Assert.Equal(getBookDto.BookTitle, actualBook.BookTitle);
+        Assert.Equal(getBookDto.Authors, actualBook.Authors);
+        Assert.Equal(getBookDto.Edition, actualBook.Edition);
+        Assert.Equal(getBookDto.Isbn, actualBook.Isbn);
+        Assert.Equal(getBookDto.RentedBy, actualBook.RentedBy);
+        Assert.Equal(getBookDto.DueDate, actualBook.DueDate);
+        Assert.Equal(getBookDto.RentedBy, actualBook.RentedBy);
     }
 
     [Fact]
@@ -264,14 +269,14 @@ public class BookControllerTests
     public async Task CreateBookAsync_WithMediaTypeNotVendorSpecific_ReturnsCreatedAtActionWithBook()
     {
         // Arrange:
-        var bookCreatedDto = new BookCreatedDto(
+        var expectedBookCreatedDto = new BookCreatedDto(
             Guid.NewGuid(),
             "Clean Code: A Handbook of Agile Software Craftsmanship",
             1,
             "978-0132350884");
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<CreateBookCommand>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success(bookCreatedDto));
+            .ReturnsAsync(Result.Success(expectedBookCreatedDto));
 
         // Act:
         var createdAtActionResult = await _bookController.CreateBookAsync(
@@ -280,11 +285,163 @@ public class BookControllerTests
             It.IsAny<CancellationToken>()) as CreatedAtActionResult;
 
         // Assert:
-        var bookCreated = (BookCreatedDto)createdAtActionResult!.Value!;
+        var actualBookCreatedDto = (BookCreatedDto)createdAtActionResult!.Value!;
         Assert.Equal((int)HttpStatusCode.Created, createdAtActionResult!.StatusCode);
-        Assert.Equal(bookCreatedDto.Id, bookCreated.Id);
-        Assert.Equal(bookCreatedDto.BookTitle, bookCreated.BookTitle);
-        Assert.Equal(bookCreatedDto.Edition, bookCreated.Edition);
-        Assert.Equal(bookCreatedDto.Isbn, bookCreated.Isbn);
+        Assert.Equal(expectedBookCreatedDto.Id, actualBookCreatedDto.Id);
+        Assert.Equal(expectedBookCreatedDto.BookTitle, actualBookCreatedDto.BookTitle);
+        Assert.Equal(expectedBookCreatedDto.Edition, actualBookCreatedDto.Edition);
+        Assert.Equal(expectedBookCreatedDto.Isbn, actualBookCreatedDto.Isbn);
+    }
+
+    [Fact]
+    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithPatchBookTitleEditionAndIsbnByIdResultUnsuccessful_ReturnsUnprocessableEntity()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<PatchBookTitleEditionAndIsbnByIdCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail("unprocessableEntity", "errorMessage422"));
+
+        // Act:
+        var objectResult = await _bookController.PatchBookTitleEditionAndIsbnByIdAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>>(),
+            It.IsAny<CancellationToken>()) as ObjectResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
+        Assert.False(_bookController.ModelState.IsValid);
+        Assert.Equal(1, _bookController.ModelState.ErrorCount);
+        Assert.Equal("errorMessage422", _bookController.ModelState["unprocessableEntity"]!.Errors[0].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithPatchBookTitleEditionAndIsbnByIdResultSuccessful_ReturnsNoContent()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<PatchBookTitleEditionAndIsbnByIdCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success());
+
+        // Act:
+        var noContentResult = await _bookController.PatchBookTitleEditionAndIsbnByIdAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>>(),
+            It.IsAny<CancellationToken>()) as NoContentResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.NoContent, noContentResult!.StatusCode);
+    }
+
+    [Fact]
+    public async Task DeleteBookByIdAsync_WithUnavailableBook_ReturnsUnprocessableEntity()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<DeleteBookByIdCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail("unprocessableEntity", "errorMessage422"));
+
+        // Act:
+        var objectResult = await _bookController.DeleteBookByIdAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>()) as ObjectResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
+        Assert.False(_bookController.ModelState.IsValid);
+        Assert.Equal(1, _bookController.ModelState.ErrorCount);
+        Assert.Equal("errorMessage422", _bookController.ModelState["unprocessableEntity"]!.Errors[0].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task DeleteBookByIdAsync_WithAvailableBook_ReturnsNoContent()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<DeleteBookByIdCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success());
+
+        // Act:
+        var noContentResult = await _bookController.DeleteBookByIdAsync(
+            It.IsAny<Guid>(),
+            It.IsAny<CancellationToken>()) as NoContentResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.NoContent, noContentResult!.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersExcludingFromAuthorAsync_WithGetAllBooksResultUnsuccessful_ReturnsUnprocessableEntity()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetBooksByQueryParametersExcludingFromAuthorQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Fail<PaginatedList<GetBookDto>>("unprocessableEntity", "errorMessage422"));
+
+        // Act:
+        var objectResult = (await _bookController.GetBooksByQueryParametersExcludingFromAuthorAsync(
+            It.IsAny<Guid>(),
+            new GetAllItemsQueryParameters(),
+            It.IsAny<string?>(),
+            It.IsAny<CancellationToken>())).Result as ObjectResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.UnprocessableEntity, objectResult!.StatusCode);
+        Assert.False(_bookController.ModelState.IsValid);
+        Assert.Equal(1, _bookController.ModelState.ErrorCount);
+        Assert.Equal("errorMessage422", _bookController.ModelState["unprocessableEntity"]!.Errors[0].ErrorMessage);
+    }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersExcludingFromAuthorAsync_WithMediaTypeVendorSpecific_ReturnsOkWithHateoasLinks()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetBooksByQueryParametersExcludingFromAuthorQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(new PaginatedList<GetBookDto>(_getBookDtos, 3, 3, 2, 1)));
+
+        // Act:
+        var okObjectResult = (await _bookController.GetBooksByQueryParametersExcludingFromAuthorAsync(
+            It.IsAny<Guid>(),
+            new GetAllItemsQueryParameters(),
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            It.IsAny<CancellationToken>())).Result as OkObjectResult;
+
+        // Assert:
+        var collectionWithHateoasLinksDto = (CollectionWithHateoasLinksDto)okObjectResult!.Value!;
+        dynamic bookWithHateosLinks = collectionWithHateoasLinksDto.Values[0];
+        Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
+        Assert.Equal("previous_page", collectionWithHateoasLinksDto.Links[0].Rel);
+        Assert.Equal("next_page", collectionWithHateoasLinksDto.Links[1].Rel);
+        Assert.Equal(_getBookDtos[0].Id, bookWithHateosLinks.id);
+        Assert.Equal(_getBookDtos[0].BookTitle, bookWithHateosLinks.bookTitle);
+        Assert.Equal(_getBookDtos[0].Authors, bookWithHateosLinks.authors);
+        Assert.Equal(_getBookDtos[0].Edition, bookWithHateosLinks.edition);
+        Assert.Equal(_getBookDtos[0].Isbn, bookWithHateosLinks.isbn);
+        Assert.Equal(_getBookDtos[0].RentedBy, bookWithHateosLinks.rentedBy);
+        Assert.Equal(_getBookDtos[0].DueDate, bookWithHateosLinks.dueDate);
+        Assert.Equal(_getBookDtos[0].RentedBy, bookWithHateosLinks.rentedBy);
+        Assert.Equal("self", bookWithHateosLinks.links[0].Rel);
+        Assert.Equal("patch_book", bookWithHateosLinks.links[1].Rel);
+        Assert.Equal("delete_book", bookWithHateosLinks.links[2].Rel);
+    }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersExcludingFromAuthorAsync_WithMediaTypeNotVendorSpecific_ReturnsOkWithHateoasLinks()
+    {
+        // Arrange:
+        _dispatcherStub
+            .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetBooksByQueryParametersExcludingFromAuthorQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(new PaginatedList<GetBookDto>(_getBookDtos, 3, 3, 2, 1)));
+
+        // Act:
+        var okObjectResult = (await _bookController.GetBooksByQueryParametersExcludingFromAuthorAsync(
+            It.IsAny<Guid>(),
+            new GetAllItemsQueryParameters(),
+            It.IsAny<string>(),
+            It.IsAny<CancellationToken>())).Result as OkObjectResult;
+
+        // Assert:
+        Assert.Equal((int)HttpStatusCode.OK, okObjectResult!.StatusCode);
+        Assert.Equal(new PaginatedList<GetBookDto>(_getBookDtos, 3, 3, 2, 1), (PaginatedList<GetBookDto>)okObjectResult!.Value!);
     }
 }

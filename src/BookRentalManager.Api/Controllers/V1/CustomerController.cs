@@ -413,7 +413,7 @@ public sealed class CustomerController : ApiController
         "If the JSON patch document is malformed or any validation errors happen.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
-    public async Task<ActionResult> ChangeCustomerBooksByBookIds(
+    public async Task<ActionResult> ChangeCustomerBooksByBookIdsAsync(
         Guid id,
         JsonPatchDocument<ChangeCustomerBooksByBookIdsDto> changeCustomerBooksByBookIdsDtoPatchDocument,
         CancellationToken cancellationToken)
@@ -423,10 +423,10 @@ public sealed class CustomerController : ApiController
             id,
             changeCustomerBooksByBookIdsDtoPatchDocument,
             isReturn);
-        Result returnBookByBookIdResult = await _dispatcher.DispatchAsync(changeCustomerBooksByBookIdsCommand, cancellationToken);
-        if (!returnBookByBookIdResult.IsSuccess)
+        Result changeCustomerBooksByBookIdsResult = await _dispatcher.DispatchAsync(changeCustomerBooksByBookIdsCommand, cancellationToken);
+        if (!changeCustomerBooksByBookIdsResult.IsSuccess)
         {
-            return HandleError(returnBookByBookIdResult);
+            return HandleError(changeCustomerBooksByBookIdsResult);
         }
         return NoContent();
     }

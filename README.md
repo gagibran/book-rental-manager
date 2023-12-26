@@ -23,7 +23,11 @@ This is required in order to run the application. After installing PostgreSQL on
 ## Running the application
 Docker Compose; Needs to have .pfx cert. Fix this later.
 
-`dotnet watch run` will open up the application with Swagger on http://localhost:5007/swagger/index.html. Starting the application for the first time will also create a database called `BookRentalManager` (in case it does not exist) with some seed data in its tables. For more information on the seed data, check the file `src/BookRentalManager.Infrastructure/Data/Seeds/TestDataSeeder.cs`.
+To generate the required PFX certificate, go to the project's root folder and execute the following commands:
+1. `dotnet dev-certs https -ep httpsdevcert.pfx -p HttpsDevCertPass1!`
+2. `dotnet dev-certs https --trust`.
+
+`dotnet watch run` will open up the application with Swagger on https://localhost:5001/swagger/index.html. Starting the application for the first time will also create a database called `BookRentalManager` (in case it does not exist) with some seed data in its tables. For more information on the seed data, check the file `src/BookRentalManager.Infrastructure/Data/Seeds/TestDataSeeder.cs`.
 
 ## Migrations
 In case someone wants to fork or expand on this project, this is how I set up migrations. We'll need [Entity Framework Core tools](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) installed for this.
