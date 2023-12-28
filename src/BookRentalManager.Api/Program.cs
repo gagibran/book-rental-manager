@@ -74,3 +74,10 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     });
 }
 app.Run();
+
+/// <summary>
+/// Entry point for integration tests.
+/// </summary>
+public partial class Program
+{
+}
