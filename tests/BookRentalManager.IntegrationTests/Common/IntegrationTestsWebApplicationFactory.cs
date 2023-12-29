@@ -4,11 +4,11 @@ using Testcontainers.PostgreSql;
 
 namespace BookRentalManager.IntegrationTests.Common;
 
-public class IntegrationTestsWebbApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class IntegrationTestsWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgreSqlContainer;
 
-    public IntegrationTestsWebbApplicationFactory()
+    public IntegrationTestsWebApplicationFactory()
     {
         _postgreSqlContainer = new PostgreSqlBuilder()
             .WithImage("postgres:16")

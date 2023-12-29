@@ -1,10 +1,10 @@
 ﻿namespace BookRentalManager.IntegrationTests;
 
-public abstract class IntegrationTest : IClassFixture<IntegrationTestsWebbApplicationFactory>
+public abstract class IntegrationTest : IClassFixture<IntegrationTestsWebApplicationFactory>
 {
     protected HttpClient HttpClient { get; }
 
-    protected IntegrationTest(IntegrationTestsWebbApplicationFactory integrationTestsWebbApplicationFactory)
+    protected IntegrationTest(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
     {
         using IServiceScope serviceScope = integrationTestsWebbApplicationFactory.Services.CreateScope();
         IServiceProvider serviceProvider = serviceScope.ServiceProvider;
