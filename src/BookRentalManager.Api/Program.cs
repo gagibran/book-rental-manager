@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 // Add services to the container:
+const string ApplicationName = "Book Rental Manager API";
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddControllers(mvcOptions => mvcOptions.ReturnHttpNotAcceptable = true)
@@ -45,7 +46,7 @@ builder.Services.AddSwaggerGen(swaggerGenOptions =>
     swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "Book Rental Manager",
+        Title = ApplicationName,
         Description = "A system designed to be used in libraries to manage books and rentals."
     });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -67,10 +68,11 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     await bookRentalManagerDbContext.Database.MigrateAsync();
     await TestDataSeeder.SeedTestDataAsync(bookRentalManagerDbContext);
     app.UseSwagger();
-    app.UseSwaggerUI(swaggerUIOptions =>
+    app.UseSwaggerUI(swaggerUiOptions =>
     {
-        swaggerUIOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        swaggerUIOptions.RoutePrefix = string.Empty;
+        swaggerUiOptions.DocumentTitle = ApplicationName;
+        swaggerUiOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        swaggerUiOptions.RoutePrefix = string.Empty;
     });
 }
 app.Run();
