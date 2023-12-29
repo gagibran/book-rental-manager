@@ -1,6 +1,6 @@
 ﻿namespace BookRentalManager.UnitTests.Application.Common;
 
-public class SortParametersMapperTests
+public sealed class SortParametersMapperTests
 {
     private readonly SortParametersMapper _sortParametersMapper;
 

@@ -1,6 +1,6 @@
 ﻿namespace BookRentalManager.UnitTests.Api.Controllers.V1;
 
-public class BookControllerTests
+public sealed class BookControllerTests
 {
     private readonly Mock<IDispatcher> _dispatcherStub;
     private readonly BookController _bookController;

@@ -2,7 +2,7 @@ using BookRentalManager.Domain.Extensions;
 
 namespace BookRentalManager.Domain.Common;
 
-public class PaginatedList<TItem> : List<TItem>
+public sealed class PaginatedList<TItem> : List<TItem>
 {
     private const int MaxItemsPerPage = 50;
 

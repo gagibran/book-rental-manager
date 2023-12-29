@@ -1,6 +1,6 @@
 ﻿namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
-public class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory) : IntegrationTest(integrationTestsWebbApplicationFactory)
+public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory) : IntegrationTest(integrationTestsWebbApplicationFactory)
 {
     [Fact]
     public async Task CreateAuthorAsync_WithMediaTypeVendorSpecific_Returns200WithHateoasLinks()

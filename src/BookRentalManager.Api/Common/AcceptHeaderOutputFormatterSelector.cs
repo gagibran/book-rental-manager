@@ -10,7 +10,7 @@ namespace BookRentalManager.Api.Common;
 /// </summary>
 /// <param name="mvcOptions">Options for the MVC framework.</param>
 /// <param name="loggerFactory"><inheritdoc/></param>
-public class AcceptHeaderOutputFormatterSelector(
+public sealed class AcceptHeaderOutputFormatterSelector(
     IOptions<MvcOptions> mvcOptions,
     ILoggerFactory loggerFactory)
     : OutputFormatterSelector

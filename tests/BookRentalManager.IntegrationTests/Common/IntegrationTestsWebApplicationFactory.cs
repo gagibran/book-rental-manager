@@ -4,7 +4,7 @@ using Testcontainers.PostgreSql;
 
 namespace BookRentalManager.IntegrationTests.Common;
 
-public class IntegrationTestsWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public sealed class IntegrationTestsWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgreSqlContainer;
 

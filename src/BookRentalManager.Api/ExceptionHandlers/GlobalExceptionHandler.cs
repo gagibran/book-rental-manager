@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace BookRentalManager.Api.ExceptionHandlers;
 
 #pragma warning disable CS1591
-public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger = logger;
 
