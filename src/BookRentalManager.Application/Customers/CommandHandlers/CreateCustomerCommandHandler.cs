@@ -3,14 +3,12 @@ namespace BookRentalManager.Application.Customers.CommandHandlers;
 internal sealed class CreateCustomerCommandHandler(IRepository<Customer> customerRepository)
     : IRequestHandler<CreateCustomerCommand, CustomerCreatedDto>
 {
-    private readonly IRepository<Customer> _customerRepository = customerRepository;
-
     public async Task<Result<CustomerCreatedDto>> HandleAsync(
         CreateCustomerCommand createCustomerCommand,
         CancellationToken cancellationToken)
     {
         var customerByEmailWithBooksSpecification = new CustomerByEmailWithBooksSpecification(createCustomerCommand.Email);
-        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailWithBooksSpecification, cancellationToken);
+        Customer? existingCustomerWithEmail = await customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailWithBooksSpecification, cancellationToken);
         Result existingCustomerWithEmailResult = Result.Success();
         if (existingCustomerWithEmail is not null)
         {
@@ -29,7 +27,7 @@ internal sealed class CreateCustomerCommandHandler(IRepository<Customer> custome
             return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-        await _customerRepository.CreateAsync(newCustomer, cancellationToken);
+        await customerRepository.CreateAsync(newCustomer, cancellationToken);
         return Result.Success(new CustomerCreatedDto(newCustomer));
     }
 }

@@ -5,14 +5,11 @@ internal sealed class GetBooksByQueryParametersQueryHandler(
     ISortParametersMapper sortParametersMapper)
     : IRequestHandler<GetBooksByQueryParametersQuery, PaginatedList<GetBookDto>>
 {
-    private readonly IRepository<Book> _bookRepository = bookRepository;
-    private readonly ISortParametersMapper _sortParametersMapper = sortParametersMapper;
-
     public async Task<Result<PaginatedList<GetBookDto>>> HandleAsync(
         GetBooksByQueryParametersQuery getBooksByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        Result<string> convertedSortParametersResult = _sortParametersMapper.MapBookSortParameters(
+        Result<string> convertedSortParametersResult = sortParametersMapper.MapBookSortParameters(
             getBooksByQueryParametersQuery.SortParameters);
         if (!convertedSortParametersResult.IsSuccess)
         {
@@ -23,7 +20,7 @@ internal sealed class GetBooksByQueryParametersQueryHandler(
         var booksBySearchParameterWithAuthorsAndCustomersSpecification = new BooksBySearchParameterWithAuthorsAndCustomersSpecification(
             getBooksByQueryParametersQuery.SearchParameter,
             convertedSortParametersResult.Value!);
-        PaginatedList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
+        PaginatedList<Book> books = await bookRepository.GetAllBySpecificationAsync(
             getBooksByQueryParametersQuery.PageIndex,
             getBooksByQueryParametersQuery.PageSize,
             booksBySearchParameterWithAuthorsAndCustomersSpecification,

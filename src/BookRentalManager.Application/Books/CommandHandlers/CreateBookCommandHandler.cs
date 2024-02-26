@@ -3,9 +3,6 @@ namespace BookRentalManager.Application.Books.CommandHandlers;
 internal sealed class CreateBookCommandHandler(IRepository<Book> bookRepository, IRepository<Author> authorRepository)
     : IRequestHandler<CreateBookCommand, BookCreatedDto>
 {
-    private readonly IRepository<Book> _bookRepository = bookRepository;
-    private readonly IRepository<Author> _authorRepository = authorRepository;
-
     public async Task<Result<BookCreatedDto>> HandleAsync(CreateBookCommand createBookCommand, CancellationToken cancellationToken)
     {
         if (!createBookCommand.AuthorIds.Any())
@@ -13,7 +10,7 @@ internal sealed class CreateBookCommandHandler(IRepository<Book> bookRepository,
             return Result.Fail<BookCreatedDto>("missingAuthorIds", "'authorIds' is a required field");
         }
         var authorsByIdsSpecification = new AuthorsByIdsSpecification(createBookCommand.AuthorIds);
-        IReadOnlyList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(authorsByIdsSpecification, cancellationToken);
+        IReadOnlyList<Author> authors = await authorRepository.GetAllBySpecificationAsync(authorsByIdsSpecification, cancellationToken);
         Result authorsResult = Result.Success();
         if (authors.Count != createBookCommand.AuthorIds.Count())
         {
@@ -31,7 +28,7 @@ internal sealed class CreateBookCommandHandler(IRepository<Book> bookRepository,
         {
             author.AddBook(newBook);
         }
-        await _bookRepository.CreateAsync(newBook, cancellationToken);
+        await bookRepository.CreateAsync(newBook, cancellationToken);
         return Result.Success(new BookCreatedDto(newBook));
     }
 }

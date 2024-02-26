@@ -3,15 +3,12 @@ namespace BookRentalManager.Application.Customers.CommandHandlers;
 internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Customer> customerRepository, IRepository<Book> bookRepository)
     : IRequestHandler<ChangeCustomerBooksByBookIdsCommand>
 {
-    private readonly IRepository<Customer> _customerRepository = customerRepository;
-    private readonly IRepository<Book> _bookRepository = bookRepository;
-
     public async Task<Result> HandleAsync(
         ChangeCustomerBooksByBookIdsCommand changeCustomerBooksByBookIdsCommand,
         CancellationToken cancellationToken)
     {
         var customerByIdWithBooksSpecification = new CustomerByIdWithBooksSpecification(changeCustomerBooksByBookIdsCommand.Id);
-        Customer? customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
+        Customer? customer = await customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
         if (customer is null)
         {
             return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{changeCustomerBooksByBookIdsCommand.Id}' was found.");
@@ -24,7 +21,7 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Cus
         {
             return patchAppliedResult;
         }
-        IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(
+        IReadOnlyList<Book> books = await bookRepository.GetAllBySpecificationAsync(
             new BooksByIdsSpecification(changeCustomerBooksByBookIdsDto.BookIds),
             cancellationToken);
         if (books.Count != changeCustomerBooksByBookIdsDto.BookIds.Count())
@@ -45,7 +42,7 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Cus
         {
             return returnBookResults;
         }
-        await _customerRepository.UpdateAsync(customer, cancellationToken);
+        await customerRepository.UpdateAsync(customer, cancellationToken);
         return Result.Success();
     }
 }

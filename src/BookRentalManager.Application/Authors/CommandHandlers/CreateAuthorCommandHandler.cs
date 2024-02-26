@@ -2,14 +2,12 @@ namespace BookRentalManager.Application.Authors.CommandHandlers;
 
 internal sealed class CreateAuthorCommandHandler(IRepository<Author> authorRepository) : IRequestHandler<CreateAuthorCommand, AuthorCreatedDto>
 {
-    private readonly IRepository<Author> _authorRepository = authorRepository;
-
     public async Task<Result<AuthorCreatedDto>> HandleAsync(
         CreateAuthorCommand createAuthorCommand,
         CancellationToken cancellationToken)
     {
         var authorByFullNameSpecification = new AuthorByFullNameSpecification(createAuthorCommand.FirstName, createAuthorCommand.LastName);
-        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification, cancellationToken);
+        Author? existingAuthor = await authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification, cancellationToken);
         Result existingAuthorResult = Result.Success();
         if (existingAuthor is not null)
         {
@@ -24,7 +22,7 @@ internal sealed class CreateAuthorCommandHandler(IRepository<Author> authorRepos
             return Result.Fail<AuthorCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newAuthor = new Author(authorFullNameResult.Value!);
-        await _authorRepository.CreateAsync(newAuthor, cancellationToken);
+        await authorRepository.CreateAsync(newAuthor, cancellationToken);
         return Result.Success(new AuthorCreatedDto(newAuthor));
     }
 }

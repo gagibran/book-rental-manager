@@ -15,9 +15,6 @@ public sealed class AcceptHeaderOutputFormatterSelector(
     ILoggerFactory loggerFactory)
     : OutputFormatterSelector
 {
-    private readonly IOptions<MvcOptions> _mvcOptions = mvcOptions;
-    private readonly ILoggerFactory _loggerFactory = loggerFactory;
-
     /// <summary>
     /// Returns an existing formatter for the passed media types if it exists,
     /// otherwise selects the first one that can deals with the passed media types.
@@ -31,13 +28,13 @@ public sealed class AcceptHeaderOutputFormatterSelector(
         IList<IOutputFormatter> outputFormatters,
         MediaTypeCollection mediaTypeCollection)
     {
-        IOutputFormatter? selectedFormatter = new DefaultOutputFormatterSelector(_mvcOptions, _loggerFactory)
+        IOutputFormatter? selectedFormatter = new DefaultOutputFormatterSelector(mvcOptions, loggerFactory)
             .SelectFormatter(outputFormatterCanWriteContext, outputFormatters, mediaTypeCollection);
         if (selectedFormatter is not null)
         {
             return selectedFormatter;
         }
-        return _mvcOptions.Value.OutputFormatters.FirstOrDefault(outputFormatter =>
+        return mvcOptions.Value.OutputFormatters.FirstOrDefault(outputFormatter =>
         {
             return outputFormatter.CanWriteResult(outputFormatterCanWriteContext);
         });

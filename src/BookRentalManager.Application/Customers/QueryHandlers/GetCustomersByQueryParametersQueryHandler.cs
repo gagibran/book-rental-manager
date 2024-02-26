@@ -5,14 +5,11 @@ internal sealed class GetCustomersByQueryParametersQueryHandler(
     ISortParametersMapper sortParametersMapper)
     : IRequestHandler<GetCustomersByQueryParametersQuery, PaginatedList<GetCustomerDto>>
 {
-    private readonly IRepository<Customer> _customerRepository = customerRepository;
-    private readonly ISortParametersMapper _sortParametersMapper = sortParametersMapper;
-
     public async Task<Result<PaginatedList<GetCustomerDto>>> HandleAsync(
         GetCustomersByQueryParametersQuery getCustomersByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        Result<string> convertedSortParametersResult = _sortParametersMapper.MapCustomerSortParameters(
+        Result<string> convertedSortParametersResult = sortParametersMapper.MapCustomerSortParameters(
             getCustomersByQueryParametersQuery.SortParameters);
         if (!convertedSortParametersResult.IsSuccess)
         {
@@ -23,7 +20,7 @@ internal sealed class GetCustomersByQueryParametersQueryHandler(
         var customersBySearchParameterWithBooksSpecification = new CustomersBySearchParameterWithBooksSpecification(
             getCustomersByQueryParametersQuery.SearchParameter,
             convertedSortParametersResult.Value!);
-        PaginatedList<Customer> customers = await _customerRepository.GetAllBySpecificationAsync(
+        PaginatedList<Customer> customers = await customerRepository.GetAllBySpecificationAsync(
             getCustomersByQueryParametersQuery.PageIndex,
             getCustomersByQueryParametersQuery.PageSize,
             customersBySearchParameterWithBooksSpecification,

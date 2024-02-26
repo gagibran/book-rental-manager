@@ -5,7 +5,6 @@ namespace BookRentalManager.Infrastructure.Common;
 public sealed class Repository<TEntity>(BookRentalManagerDbContext bookRentalManagerDbContext)
     : IRepository<TEntity> where TEntity : Entity
 {
-    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext = bookRentalManagerDbContext;
     private readonly DbSet<TEntity> _dbSet = bookRentalManagerDbContext.Set<TEntity>();
 
     public async Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
@@ -55,7 +54,7 @@ public sealed class Repository<TEntity>(BookRentalManagerDbContext bookRentalMan
 
     private async Task SaveAsync(CancellationToken cancellationToken)
     {
-        await _bookRentalManagerDbContext.SaveChangesAsync(cancellationToken);
+        await bookRentalManagerDbContext.SaveChangesAsync(cancellationToken);
     }
 
     private static IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification)

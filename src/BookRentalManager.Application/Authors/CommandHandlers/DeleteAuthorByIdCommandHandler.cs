@@ -2,12 +2,10 @@ namespace BookRentalManager.Application.Authors.CommandHandlers;
 
 internal sealed class DeleteAuthorByIdCommandHandler(IRepository<Author> authorRepository) : IRequestHandler<DeleteAuthorByIdCommand>
 {
-    private readonly IRepository<Author> _authorRepository = authorRepository;
-
     public async Task<Result> HandleAsync(DeleteAuthorByIdCommand deleteAuthorByIdCommand, CancellationToken cancellationToken)
     {
         var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(deleteAuthorByIdCommand.Id);
-        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
+        Author? author = await authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
         if (author is null)
         {
             return Result.Fail(RequestErrors.IdNotFoundError, $"No author with the ID of '{deleteAuthorByIdCommand.Id}' was found.");
@@ -21,7 +19,7 @@ internal sealed class DeleteAuthorByIdCommandHandler(IRepository<Author> authorR
         {
             return authorHasRentedBooksResult;
         }
-        await _authorRepository.DeleteAsync(author, cancellationToken);
+        await authorRepository.DeleteAsync(author, cancellationToken);
         return Result.Success();
     }
 }

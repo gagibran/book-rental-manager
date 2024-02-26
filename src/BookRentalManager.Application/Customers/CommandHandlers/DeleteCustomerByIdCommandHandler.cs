@@ -2,12 +2,10 @@ namespace BookRentalManager.Application.Customers.CommandHandlers;
 
 internal sealed class DeleteCustomerByIdCommandHandler(IRepository<Customer> customerRepository) : IRequestHandler<DeleteCustomerByIdCommand>
 {
-    private readonly IRepository<Customer> _customerRepository = customerRepository;
-
     public async Task<Result> HandleAsync(DeleteCustomerByIdCommand deleteCustomerByIdCommand, CancellationToken cancellationToken)
     {
         var customerByIdWithBooksSpecification = new CustomerByIdWithBooksSpecification(deleteCustomerByIdCommand.Id);
-        Customer? customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(
+        Customer? customer = await customerRepository.GetFirstOrDefaultBySpecificationAsync(
             customerByIdWithBooksSpecification,
             cancellationToken);
         if (customer is null)
@@ -18,7 +16,7 @@ internal sealed class DeleteCustomerByIdCommandHandler(IRepository<Customer> cus
         {
             return Result.Fail("customerBooks", "This customer has rented books. Return them before deleting.");
         }
-        await _customerRepository.DeleteAsync(customer, cancellationToken);
+        await customerRepository.DeleteAsync(customer, cancellationToken);
         return Result.Success();
     }
 }

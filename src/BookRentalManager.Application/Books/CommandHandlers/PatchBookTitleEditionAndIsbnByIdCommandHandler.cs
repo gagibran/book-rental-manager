@@ -3,15 +3,13 @@ namespace BookRentalManager.Application.Books.CommandHandlers;
 internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(IRepository<Book> bookRepository)
     : IRequestHandler<PatchBookTitleEditionAndIsbnByIdCommand>
 {
-    private readonly IRepository<Book> _bookRepository = bookRepository;
-
     public async Task<Result> HandleAsync(
         PatchBookTitleEditionAndIsbnByIdCommand patchBookTitleEditionAndIsbnByIdCommand,
         CancellationToken cancellationToken)
     {
         var bookByIdWithAuthorsAndCustomersSpecification = new BookByIdWithAuthorsAndCustomersSpecification(
             patchBookTitleEditionAndIsbnByIdCommand.Id);
-        Book? book = await _bookRepository.GetFirstOrDefaultBySpecificationAsync(
+        Book? book = await bookRepository.GetFirstOrDefaultBySpecificationAsync(
             bookByIdWithAuthorsAndCustomersSpecification,
             cancellationToken);
         if (book is null)
@@ -37,7 +35,7 @@ internal sealed class PatchBookTitleEditionAndIsbnByIdCommandHandler(IRepository
         {
             return combinedResult;
         }
-        await _bookRepository.UpdateAsync(book, cancellationToken);
+        await bookRepository.UpdateAsync(book, cancellationToken);
         return Result.Success();
     }
 }
