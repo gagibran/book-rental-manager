@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   database:
-    container_name: postgresql-db
+    container_name: database
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -12,8 +12,8 @@ services:
        - postgresql:/var/lib/postgresql/data
     ports:
       - 5432:5432
-  book_rental_manager:
-    container_name: book-rental-manager
+  application:
+    container_name: application
     image: book-rental-manager:0.1.0
     build:
       context: ./
