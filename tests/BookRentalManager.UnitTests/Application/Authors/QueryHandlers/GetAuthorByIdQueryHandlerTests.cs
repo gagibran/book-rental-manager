@@ -12,8 +12,8 @@ public sealed class GetAuthorByIdQueryHandlerTests
         _author = TestFixtures.CreateDummyAuthor();
         _getAuthorDto = new(
             _author.Id,
-            _author.FullName,
-            new List<GetBookFromAuthorDto>());
+            _author.FullName.ToString(),
+            []);
         _authorRepositoryStub = new();
         _getAuthorByIdQueryHandler = new(_authorRepositoryStub.Object);
     }

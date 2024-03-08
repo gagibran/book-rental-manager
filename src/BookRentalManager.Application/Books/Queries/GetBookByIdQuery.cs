@@ -1,6 +1,3 @@
 namespace BookRentalManager.Application.Books.Queries;
 
-public sealed class GetBookByIdQuery(Guid id) : IRequest<GetBookDto>
-{
-    public Guid Id { get; } = id;
-}
+public sealed record GetBookByIdQuery(Guid Id) : IRequest<GetBookDto>;

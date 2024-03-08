@@ -12,11 +12,11 @@ public sealed class GetCustomerByIdQueryHandlerTests
         _customer = TestFixtures.CreateDummyCustomer();
         _getCustomerDto = new(
             _customer.Id,
-            _customer.FullName,
-            _customer.Email,
-            _customer.PhoneNumber,
-            new List<GetBookRentedByCustomerDto>(),
-            _customer.CustomerStatus,
+            _customer.FullName.ToString(),
+            _customer.Email.ToString(),
+            _customer.PhoneNumber.ToString(),
+            [],
+            _customer.CustomerStatus.ToString(),
             _customer.CustomerPoints);
         _customerRepositoryStub = new();
         _getCustomerByIdQueryHandler = new(_customerRepositoryStub.Object);

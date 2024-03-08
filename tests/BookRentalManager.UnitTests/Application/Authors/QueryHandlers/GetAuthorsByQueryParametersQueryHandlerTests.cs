@@ -53,7 +53,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     {
         // Arrange:
         Author author = TestFixtures.CreateDummyAuthor();
-        var expectedGetAuthorDto = new GetAuthorDto(author.Id, author.FullName, new List<GetBookFromAuthorDto>());
+        var expectedGetAuthorDto = new GetAuthorDto(author.Id, author.FullName.ToString(), []);
         var paginatedAuthors = new PaginatedList<Author>(
             [author],
             It.IsAny<int>(),

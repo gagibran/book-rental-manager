@@ -35,9 +35,9 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
         var getBookDto = new GetBookDto(
             book.Id,
             book.BookTitle,
-            new List<GetAuthorFromBookDto>(),
-            book.Edition,
-            book.Isbn,
+            [],
+            book.Edition.EditionNumber,
+            book.Isbn.ToString(),
             book.RentedAt,
             book.DueDate,
             null);

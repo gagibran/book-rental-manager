@@ -50,15 +50,15 @@ public sealed class AuthorControllerTests
         {
             new(
                 Guid.NewGuid(),
-                FullName.Create("John", "Doe").Value!,
+                FullName.Create("John", "Doe").Value!.ToString()!,
                 It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>()),
             new(
                 Guid.NewGuid(),
-                FullName.Create("Jane", "Doe").Value!,
+                FullName.Create("Jane", "Doe").Value!.ToString(),
                 It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>()),
             new(
                 Guid.NewGuid(),
-                FullName.Create("Robert", "Plant").Value!,
+                FullName.Create("Robert", "Plant").Value!.ToString(),
                 It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>())
         };
         _dispatcherStub
@@ -90,7 +90,7 @@ public sealed class AuthorControllerTests
         {
             new(
                 Guid.NewGuid(),
-                FullName.Create("John", "Doe").Value!,
+                FullName.Create("John", "Doe").Value!.ToString(),
                 It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>())
         };
         var expectedPaginatedGetAuthorDtos = new PaginatedList<GetAuthorDto>(getAuthorDtos, 1, 1, 1, 1);
@@ -137,9 +137,9 @@ public sealed class AuthorControllerTests
         Book book = TestFixtures.CreateDummyBook();
         var getBookFromAuthorDtos = new List<GetBookFromAuthorDto>
         {
-            new(book.BookTitle, book.Edition, book.Isbn)
+            new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.ToString())
         };
-        var getAuthorDto = new GetAuthorDto(_author.Id, _author.FullName, getBookFromAuthorDtos);
+        var getAuthorDto = new GetAuthorDto(_author.Id, _author.FullName.ToString(), getBookFromAuthorDtos);
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(getAuthorDto));
@@ -171,9 +171,9 @@ public sealed class AuthorControllerTests
         Book book = TestFixtures.CreateDummyBook();
         var getBookFromAuthorDtos = new List<GetBookFromAuthorDto>
         {
-            new(book.BookTitle, book.Edition, book.Isbn)
+            new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.ToString())
         };
-        var getAuthorDto = new GetAuthorDto(_author.Id, _author.FullName, getBookFromAuthorDtos);
+        var getAuthorDto = new GetAuthorDto(_author.Id, _author.FullName.ToString(), getBookFromAuthorDtos);
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetAuthorByIdQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(Result.Success(getAuthorDto));

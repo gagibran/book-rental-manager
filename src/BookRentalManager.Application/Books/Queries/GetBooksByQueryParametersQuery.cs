@@ -1,6 +1,4 @@
 namespace BookRentalManager.Application.Books.Queries;
 
-public sealed class GetBooksByQueryParametersQuery(int pageIndex, int pageSize, string searchParameter, string sortParameters)
-    : GetAllItemsQuery(pageIndex, pageSize, searchParameter, sortParameters), IRequest<PaginatedList<GetBookDto>>
-{
-}
+public sealed record GetBooksByQueryParametersQuery(int PageIndex, int PageSize, string SearchParameter, string SortParameters)
+    : GetAllItemsQuery(PageIndex, PageSize, SearchParameter, SortParameters), IRequest<PaginatedList<GetBookDto>>;

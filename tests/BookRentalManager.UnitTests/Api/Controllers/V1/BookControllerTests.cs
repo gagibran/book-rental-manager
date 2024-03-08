@@ -8,7 +8,10 @@ public sealed class BookControllerTests
 
     public BookControllerTests()
     {
-        var getCustomerThatRentedBookDto = new GetCustomerThatRentedBookDto(TestFixtures.CreateDummyCustomer());
+        Customer customer = TestFixtures.CreateDummyCustomer();
+        var getCustomerThatRentedBookDto = new GetCustomerThatRentedBookDto(
+            customer.FullName.ToString(),
+            customer.Email.ToString());
         var gangOfFour = new List<GetAuthorFromBookDto>
         {
             new(FullName.Create("Erich", "Gamma").Value!),
@@ -22,17 +25,17 @@ public sealed class BookControllerTests
                 Guid.NewGuid(),
                 "Design Patterns: Elements of Reusable Object-Oriented Software",
                 gangOfFour,
-                Edition.Create(1).Value!,
-                Isbn.Create("0-201-63361-2").Value!,
+                Edition.Create(1).Value!.EditionNumber!,
+                Isbn.Create("0-201-63361-2").Value!.ToString()!,
                 new DateTime(2020, 1, 1),
                 new DateTime(2020, 2, 1),
                 getCustomerThatRentedBookDto),
             new(
                 Guid.NewGuid(),
                 "The Shadow Over Innsmouth",
-                new List<GetAuthorFromBookDto> { new(FullName.Create("Howard", "Lovecraft").Value!) },
-                Edition.Create(1).Value!,
-                Isbn.Create("978-1878252180").Value!,
+                [new(FullName.Create("Howard", "Lovecraft").Value!)],
+                Edition.Create(1).Value!.EditionNumber!,
+                Isbn.Create("978-1878252180").Value!.ToString()!,
                 null,
                 null,
                 getCustomerThatRentedBookDto)
@@ -183,12 +186,12 @@ public sealed class BookControllerTests
         var getBookDto = new GetBookDto(
             Guid.NewGuid(),
             "The Shadow Over Innsmouth",
-            new List<GetAuthorFromBookDto> { getAuthorFromBookDto },
-            Edition.Create(1).Value!,
-            Isbn.Create("978-1878252180").Value!,
+            [getAuthorFromBookDto],
+            Edition.Create(1).Value!.EditionNumber,
+            Isbn.Create("978-1878252180").Value!.ToString(),
             new DateTime(2020, 1, 1),
             new DateTime(2020, 2, 1),
-            new GetCustomerThatRentedBookDto(customer)
+            new GetCustomerThatRentedBookDto(customer.FullName.ToString(), customer.Email.ToString())
         );
         _dispatcherStub
             .Setup(dispatcher => dispatcher.DispatchAsync(It.IsAny<GetBookByIdQuery>(), It.IsAny<CancellationToken>()))

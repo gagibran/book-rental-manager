@@ -14,7 +14,7 @@ internal sealed class CreateCustomerCommandHandler(IRepository<Customer> custome
         {
             existingCustomerWithEmailResult = Result.Fail(
                 "customerEmailAlreadyExists",
-                $"A customer with the email '{existingCustomerWithEmail.Email.EmailAddress}' already exists.");
+                $"A customer with the email '{existingCustomerWithEmail.Email}' already exists.");
         }
         Result<FullName> fullNameResult = FullName.Create(createCustomerCommand.FirstName, createCustomerCommand.LastName);
         Result<Email> emailResult = Email.Create(createCustomerCommand.Email);

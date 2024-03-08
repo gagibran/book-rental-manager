@@ -43,7 +43,7 @@ public sealed class CreateBookCommandHandlerTests
         // Act:
         Result handleAsyncResult = await _createBookCommandHandler.HandleAsync(
             new CreateBookCommand(
-                new List<Guid>(),
+                [],
                 It.IsAny<string>(),
                 It.IsAny<int>(),
                 It.IsAny<string>()),

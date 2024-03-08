@@ -11,7 +11,7 @@ internal sealed class PatchAuthorBooksCommandHandler(IRepository<Author> authorR
         {
             return Result.Fail(RequestErrors.IdNotFoundError, $"No author with the ID of '{patchAuthorBooksCommand.Id}' was found.");
         }
-        var patchAuthorBooksDto = new PatchAuthorBooksDto(new List<Guid>());
+        var patchAuthorBooksDto = new PatchAuthorBooksDto([]);
         Result patchAppliedResult = patchAuthorBooksCommand.PatchAuthorBooksDtoPatchDocument.ApplyTo(
             patchAuthorBooksDto,
             "replace",

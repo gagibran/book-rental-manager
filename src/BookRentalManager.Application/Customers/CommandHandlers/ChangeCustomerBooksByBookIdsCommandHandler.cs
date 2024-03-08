@@ -13,7 +13,7 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Cus
         {
             return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{changeCustomerBooksByBookIdsCommand.Id}' was found.");
         }
-        var changeCustomerBooksByBookIdsDto = new ChangeCustomerBooksByBookIdsDto(new List<Guid>());
+        var changeCustomerBooksByBookIdsDto = new ChangeCustomerBooksByBookIdsDto([]);
         Result patchAppliedResult = changeCustomerBooksByBookIdsCommand.ChangeCustomerBooksByBookIdsDtoPatchDocument.ApplyTo(
             changeCustomerBooksByBookIdsDto,
             ["replace", "remove"]);

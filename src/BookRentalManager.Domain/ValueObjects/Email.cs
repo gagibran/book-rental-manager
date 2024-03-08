@@ -2,10 +2,7 @@ namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed partial class Email : ValueObject
 {
-    public string EmailAddress { get; }
-
-    [GeneratedRegex("^(\\w|\\d).*@(\\d|\\w)+(\\d|\\w|-)+\\.\\w{2,3}$")]
-    private static partial Regex IsEmailValidRegex();
+    public string EmailAddress { get; set; }
 
     private Email()
     {
@@ -36,4 +33,7 @@ public sealed partial class Email : ValueObject
     {
         return EmailAddress;
     }
+
+    [GeneratedRegex("^(\\w|\\d).*@(\\d|\\w)+(\\d|\\w|-)+\\.\\w{2,3}$")]
+    private static partial Regex IsEmailValidRegex();
 }

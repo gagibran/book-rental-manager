@@ -55,6 +55,11 @@ public sealed class CustomerStatus : ValueObject
         return Result.Success();
     }
 
+    public override string ToString()
+    {
+        return CustomerType.ToString();
+    }
+
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return CustomerType;

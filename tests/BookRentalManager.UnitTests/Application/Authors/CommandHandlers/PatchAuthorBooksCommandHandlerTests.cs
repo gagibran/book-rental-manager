@@ -36,7 +36,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<BooksByIdsSpecification>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Book> { _book, anotherBook });
+            .ReturnsAsync([_book, anotherBook]);
     }
 
     [Fact]

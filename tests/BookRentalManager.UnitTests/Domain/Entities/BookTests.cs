@@ -23,7 +23,7 @@ public sealed class BookTests
 
         // Assert:
         Assert.Equal(expectedBookTitle, book.BookTitle);
-        Assert.Equal(new List<Author>(), book.Authors);
+        Assert.Equal([], book.Authors);
         Assert.Null(book.RentedAt);
         Assert.Null(book.DueDate);
     }

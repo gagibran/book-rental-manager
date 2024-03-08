@@ -38,7 +38,7 @@ public sealed class PhoneNumber : ValueObject
         return Result.Success(new PhoneNumber(areaCode, prefixAndLineNumber));
     }
 
-    public string GetCompletePhoneNumber()
+    public override string ToString()
     {
         return $"+1{AreaCode}{PrefixAndLineNumber}";
     }

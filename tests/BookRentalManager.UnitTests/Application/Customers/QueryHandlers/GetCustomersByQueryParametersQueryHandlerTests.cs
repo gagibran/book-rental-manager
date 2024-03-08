@@ -55,11 +55,11 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
         Customer customer = TestFixtures.CreateDummyCustomer();
         var expectedGetCustomerDto = new GetCustomerDto(
             customer.Id,
-            customer.FullName,
-            customer.Email,
-            customer.PhoneNumber,
-            new List<GetBookRentedByCustomerDto>(),
-            customer.CustomerStatus,
+            customer.FullName.ToString(),
+            customer.Email.ToString(),
+            customer.PhoneNumber.ToString(),
+            [],
+            customer.CustomerStatus.ToString(),
             customer.CustomerPoints);
         var paginatedCustomers = new PaginatedList<Customer>(
             [customer],

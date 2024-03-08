@@ -32,7 +32,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<BooksByIdsSpecification>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Book> { _book, _anotherBook });
+            .ReturnsAsync([_book, _anotherBook]);
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<CustomerByIdWithBooksSpecification>(),
@@ -100,7 +100,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<BooksByIdsSpecification>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Book>());
+            .ReturnsAsync([]);
 
         // Act:
         Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(

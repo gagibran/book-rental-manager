@@ -14,9 +14,9 @@ public sealed class GetBookByIdQueryHandlerTests
         _getBookDto = new(
             _book.Id,
             _book.BookTitle,
-            new List<GetAuthorFromBookDto>(),
-            _book.Edition,
-            _book.Isbn,
+            [],
+            _book.Edition.EditionNumber,
+            _book.Isbn.ToString(),
             _book.RentedAt,
             _book.DueDate,
             null);

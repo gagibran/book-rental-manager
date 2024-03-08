@@ -4,9 +4,6 @@ public sealed partial class Isbn : ValueObject
 {
     public string IsbnValue { get; }
 
-    [GeneratedRegex("\\s+|-+")]
-    private static partial Regex FormattedIsbn();
-
     private Isbn()
     {
         IsbnValue = string.Empty;
@@ -36,4 +33,7 @@ public sealed partial class Isbn : ValueObject
     {
         return IsbnValue;
     }
+
+    [GeneratedRegex("\\s+|-+")]
+    private static partial Regex FormattedIsbn();
 }
