@@ -15,7 +15,7 @@ namespace BookRentalManager.Api.Common;
     CustomMediaTypeNames.Application.ProblemJson)]
 public abstract class ApiController : ControllerBase
 {
-    public static readonly JsonSerializerOptions s_camelCaseJsonSerialization = new()
+    private static readonly JsonSerializerOptions s_camelCaseJsonSerialization = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
@@ -24,7 +24,7 @@ public abstract class ApiController : ControllerBase
     {
         return result.ErrorType switch
         {
-            string error when error == RequestErrors.IdNotFoundError  => CustomHttpErrorResponse(
+            string error when error == RequestErrors.IdNotFoundError => CustomHttpErrorResponse(
                 result.ErrorType,
                 result.ErrorMessage,
                 HttpStatusCode.NotFound),
