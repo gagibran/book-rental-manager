@@ -6,7 +6,7 @@
 The backend of a fake book rental management system created with .NET, PostgreSQL, Swagger, clean architecture with CQRS and some domain-driven design techniques. I am also using HATEOAS in order to improve API discoverability. The goal of this project is to practice these technologies and techniques. I have not implemented authentication nor the frontend for this project.
 
 ## Requirements
-* .NET 7.0.x;
+* .NET 8.0.x;
 * PostgreSQL 16.0.
 
 ## Creating an admin user on PostgreSQL
