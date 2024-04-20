@@ -3,14 +3,16 @@ using System.Net.Mime;
 using BookRentalManager.Api.Constants;
 using BookRentalManager.Application.Dtos;
 using BookRentalManager.Domain.ValueObjects;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
-public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory) : IntegrationTest(integrationTestsWebbApplicationFactory)
+public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
+    : IntegrationTest(integrationTestsWebbApplicationFactory)
 {
     [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200WithHateoasLinks()
+    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
     {
         // Arrange:
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
@@ -33,7 +35,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeNotVendorSpecific_Returns200WithObject()
+    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObject()
     {
         // Arrange:
         var expectedAuthors = new List<GetAuthorDto>
@@ -94,5 +96,57 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
             Assert.True(expectedAuthors.ElementAt(authorIndex).Books.SequenceEqual(
                 actualAuthors.ElementAt(authorIndex).Books.OrderBy(book => book.BookTitle)));
         }
+    }
+
+    [Fact]
+    public async Task GetAuthorsByQueryParametersAsync_WithIncorrectParameterType_Returns400BadRequest()
+    {
+        // Arrange:
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "PageSize", ["The value 'notANumber' is not valid for PageSize."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+            Title = "One or more validation errors occurred.",
+            Status = 400
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author?pageSize=notANumber");
+
+        // Assert:
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
+    }
+
+    [Fact]
+    public async Task GetAuthorsByQueryParametersAsync_WithNonexistingQueryParameter_Returns422UnprocessableEntity()
+    {
+        // Arrange:
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "invalidProperty", ["The property 'notAValidParameter' does not exist for 'GetAuthorDto'."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author?sortBy=notAValidParameter");
+
+        // Assert:
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
     }
 }
