@@ -11,33 +11,8 @@ namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
     : IntegrationTest(integrationTestsWebbApplicationFactory)
 {
-    [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
+    public static TheoryData<string, Func<GetAuthorDto, string>, List<GetAuthorDto>, IEnumerable<string>> GetAuthorsByQueryParametersAsyncTestData()
     {
-        // Arrange:
-        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
-
-        // Act:
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author");
-
-        // Assert:
-        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        (List<object> values, List<object> links) = GetValuesAndLinksFromHateoasResponse(responseContent);
-        httpResponseMessage.EnsureSuccessStatusCode();
-        Assert.Contains(
-            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
-            httpResponseMessage.Content.Headers.ContentType!.ToString());
-        Assert.NotEqual(string.Empty, ((dynamic)values.ElementAt(0)).id);
-        Assert.Equal("Erich Gamma", ((dynamic)values.ElementAt(0)).fullName);
-        Assert.NotEmpty(((dynamic)values.ElementAt(0)).books);
-        Assert.NotEmpty(((dynamic)values.ElementAt(0)).links);
-        Assert.Empty(links);
-    }
-
-    [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObject()
-    {
-        // Arrange:
         var expectedAuthors = new List<GetAuthorDto>
         {
             new(
@@ -82,14 +57,72 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
                     new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
                 ]),
         };
-        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        return new()
+        {
+            {
+                "",
+                getAuthorDto => getAuthorDto.FullName,
+                expectedAuthors,
+                new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}" }
+            },
+            {
+                "?sortBy=FullName",
+                getAuthorDto => getAuthorDto.FullName,
+                expectedAuthors,
+                new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}" }
+            },
+            {
+                "?sortBy=FullName&pageSize=1&pageIndex=2",
+                getAuthorDto => getAuthorDto.FullName,
+                expectedAuthors.Skip(1).Take(1).ToList(),
+                new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}" }
+            },
+        };
+    }
+
+    [Fact]
+    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
+    {
+        // Arrange:
+        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author");
 
         // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        (List<object> values, List<object> links) = GetValuesAndLinksFromHateoasResponse(responseContent);
+        Assert.Contains(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            httpResponseMessage.Content.Headers.ContentType!.ToString());
+        Assert.NotEqual(string.Empty, ((dynamic)values.ElementAt(0)).id);
+        Assert.Equal("Erich Gamma", ((dynamic)values.ElementAt(0)).fullName);
+        Assert.NotEmpty(((dynamic)values.ElementAt(0)).books);
+        Assert.NotEmpty(((dynamic)values.ElementAt(0)).links);
+        Assert.Empty(links);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetAuthorsByQueryParametersAsyncTestData))]
+    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObjectAndXPaginationHeaders(
+        string queryParameters,
+        Func<GetAuthorDto, string> orderBy,
+        List<GetAuthorDto> expectedAuthors,
+        IEnumerable<string> expectedXPaginationHeaders)
+    {
+        // Arrange:
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"api/v1/author{queryParameters}");
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
         IOrderedEnumerable<GetAuthorDto> actualAuthors = (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
-            .OrderBy(actualAuthor => actualAuthor.FullName);
+            .OrderBy(orderBy);
+        Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
         for (int authorIndex = 0; authorIndex < expectedAuthors.Count; authorIndex++)
         {
             Assert.Equal(expectedAuthors.ElementAt(authorIndex).FullName, actualAuthors.ElementAt(authorIndex).FullName);
@@ -148,5 +181,27 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
         Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
         Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
+    }
+
+    [Theory]
+    [InlineData("", "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}")]
+    [InlineData("?sortBy=FullName", "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}")]
+    [InlineData("?sortBy=FullName&pageSize=1&pageIndex=2", "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}")]
+    public async Task GetAuthorsByQueryParametersAsync_WithHead_Returns200OkWithXPaginationHeaders(
+        string queryParameters,
+        string expectedReturnedXPaginationHeaders)
+    {
+        // Arrange:
+        var expectedXPaginationHeaders = new List<string> { expectedReturnedXPaginationHeaders };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Head,
+            $"api/v1/author{queryParameters}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
+        Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
     }
 }
