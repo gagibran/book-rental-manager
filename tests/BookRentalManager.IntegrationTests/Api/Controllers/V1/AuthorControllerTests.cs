@@ -11,70 +11,71 @@ namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
     : IntegrationTest(integrationTestsWebbApplicationFactory)
 {
+    private static readonly List<GetAuthorDto> s_expectedAuthors =
+    [
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("Bob", "Martin").Value!.ToString()),
+            [
+                new("Clean Code: A Handbook of Agile Software Craftsmanship", 1, "978-0132350884")
+            ]),
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("Edgar Allan", "Poe").Value!.ToString()),
+            []),
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("Erich", "Gamma").Value!.ToString()),
+            [
+                new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
+            ]),
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("Howard", "Lovecraft").Value!.ToString()),
+            [
+                new("The Call Of Cthulhu", 1, "978-1515424437"),
+                new("The Shadow Over Innsmouth", 1, "978-1878252180")
+            ]),
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("John", "Vlissides").Value!.ToString()),
+            [
+                new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
+            ]),
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("Ralph", "Johnson").Value!.ToString()),
+            [
+                new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
+            ]),
+        new(
+            It.IsAny<Guid>(),
+            new(FullName.Create("Richard", "Helm").Value!.ToString()),
+            [
+                new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
+            ]),
+    ];
+
     public static TheoryData<string, Func<GetAuthorDto, string>, List<GetAuthorDto>, IEnumerable<string>> GetAuthorsByQueryParametersAsyncTestData()
     {
-        var expectedAuthors = new List<GetAuthorDto>
-        {
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("Bob", "Martin").Value!.ToString()),
-                [
-                    new("Clean Code: A Handbook of Agile Software Craftsmanship", 1, "978-0132350884")
-                ]),
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("Edgar Allan", "Poe").Value!.ToString()),
-                []),
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("Erich", "Gamma").Value!.ToString()),
-                [
-                    new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
-                ]),
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("Howard", "Lovecraft").Value!.ToString()),
-                [
-                    new("The Call Of Cthulhu", 1, "978-1515424437"),
-                    new("The Shadow Over Innsmouth", 1, "978-1878252180")
-                ]),
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("John", "Vlissides").Value!.ToString()),
-                [
-                    new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
-                ]),
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("Ralph", "Johnson").Value!.ToString()),
-                [
-                    new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
-                ]),
-            new(
-                It.IsAny<Guid>(),
-                new(FullName.Create("Richard", "Helm").Value!.ToString()),
-                [
-                    new("Design Patterns: Elements of Reusable Object-Oriented Software", 1, "0-201-63361-2")
-                ]),
-        };
         return new()
         {
             {
                 "",
                 getAuthorDto => getAuthorDto.FullName,
-                expectedAuthors,
+                s_expectedAuthors,
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}" }
             },
             {
                 "?sortBy=FullName",
                 getAuthorDto => getAuthorDto.FullName,
-                expectedAuthors,
+                s_expectedAuthors,
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}" }
             },
             {
                 "?sortBy=FullName&pageSize=1&pageIndex=2",
                 getAuthorDto => getAuthorDto.FullName,
-                expectedAuthors.Skip(1).Take(1).ToList(),
+                s_expectedAuthors.Skip(1).Take(1).ToList(),
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}" }
             },
         };
@@ -203,5 +204,33 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         httpResponseMessage.EnsureSuccessStatusCode();
         IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
         Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public async Task GetAuthorByIdAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObject(int currentAuthorIndex)
+    {
+        // Arrange:
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"api/v1/author");
+        Guid expectedId = (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
+            .OrderBy(getAuthorDto => getAuthorDto.FullName)
+            .ElementAt(currentAuthorIndex).Id;
+
+        // Act:
+        httpResponseMessage = await HttpClient.GetAsync($"api/v1/author/{expectedId}");
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetAuthorDto? actualAuthor = await httpResponseMessage.Content.ReadFromJsonAsync<GetAuthorDto>();
+        Assert.Equal(s_expectedAuthors.ElementAt(currentAuthorIndex).FullName, actualAuthor!.FullName);
+        Assert.True(s_expectedAuthors.ElementAt(currentAuthorIndex).Books.SequenceEqual(
+                actualAuthor.Books.OrderBy(book => book.BookTitle)));
     }
 }
