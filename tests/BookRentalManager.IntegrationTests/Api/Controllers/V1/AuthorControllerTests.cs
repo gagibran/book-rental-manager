@@ -4,6 +4,7 @@ using BookRentalManager.Api.Constants;
 using BookRentalManager.Application.Dtos;
 using BookRentalManager.Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Moq;
 
 namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
@@ -271,7 +272,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     [InlineData(4)]
     [InlineData(5)]
     [InlineData(6)]
-    public async Task GetAuthorByIdAsync_WithHeadAndHateoas_Returns200OkWithContentTypeHeaders(int currentAuthorIndex)
+    public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeVendorSpecific_Returns200OkWithContentTypeHeaders(int currentAuthorIndex)
     {
         // Arrange:
         Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
@@ -279,6 +280,35 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         var expectedContentTypeHeaders = new List<string>
         {
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson + "; charset=utf-8"
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Head,
+            $"api/v1/author/{id}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualContentTypeHeaders = httpResponseMessage.Content.Headers.GetValues("content-type");
+        Assert.Equal(expectedContentTypeHeaders, actualContentTypeHeaders);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeNotVendorSpecific_Returns200OkWithContentTypeHeaders(int currentAuthorIndex)
+    {
+        // Arrange:
+        Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        var expectedContentTypeHeaders = new List<string>
+        {
+            MediaTypeNames.Application.Json + "; charset=utf-8"
         };
 
         // Act:
