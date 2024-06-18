@@ -93,15 +93,15 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        (List<object> values, List<object> links) = GetValuesAndLinksFromHateoasResponse(responseContent);
+        CollectionWithLinks collectionWithLinks = GetValuesWithLinksFromHateoasCollectionResponse(responseContent);
         Assert.Contains(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             httpResponseMessage.Content.Headers.ContentType!.ToString());
-        Assert.NotEqual(string.Empty, ((dynamic)values.ElementAt(0)).id);
-        Assert.Equal("Erich Gamma", ((dynamic)values.ElementAt(0)).fullName);
-        Assert.NotEmpty(((dynamic)values.ElementAt(0)).books);
-        Assert.NotEmpty(((dynamic)values.ElementAt(0)).links);
-        Assert.Empty(links);
+        Assert.NotEqual(string.Empty, ((dynamic)collectionWithLinks.Collection.ElementAt(0)).id);
+        Assert.Equal("Erich Gamma", ((dynamic)collectionWithLinks.Collection.ElementAt(0)).fullName);
+        Assert.NotEmpty(((dynamic)collectionWithLinks.Collection.ElementAt(0)).books);
+        Assert.NotEmpty(((dynamic)collectionWithLinks.Collection.ElementAt(0)).links);
+        Assert.Empty(collectionWithLinks.Links);
     }
 
     [Theory]
@@ -204,6 +204,43 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         httpResponseMessage.EnsureSuccessStatusCode();
         IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
         Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public async Task GetAuthorByIdAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks(int currentAuthorIndex)
+    {
+        // Arrange:
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author");
+        Guid expectedId = (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
+            .OrderBy(getAuthorDto => getAuthorDto.FullName)
+            .ElementAt(currentAuthorIndex).Id;
+        HttpClient.DefaultRequestHeaders.Clear();
+        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+
+        // Act:
+        httpResponseMessage = await HttpClient.GetAsync($"api/v1/author/{expectedId}");
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        AuthorWithLinks authorWithLinks = GetVAuthorWithLinksFromHateoasAuthorResponse(responseContent);
+        Assert.Contains(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            httpResponseMessage.Content.Headers.ContentType!.ToString());
+        Assert.Equal(s_expectedAuthors.ElementAt(currentAuthorIndex).FullName, authorWithLinks.FullName);
+        Assert.True(s_expectedAuthors.ElementAt(currentAuthorIndex).Books.SequenceEqual(
+            s_expectedAuthors.ElementAt(currentAuthorIndex).Books.OrderBy(book => book.BookTitle)));
+        Assert.Equal("self", ((dynamic)authorWithLinks.Links.ElementAt(0)).rel);
+        Assert.Equal("add_existing_books_to_author", ((dynamic)authorWithLinks.Links.ElementAt(1)).rel);
+        Assert.Equal("delete_author", ((dynamic)authorWithLinks.Links.ElementAt(2)).rel);
     }
 
     [Theory]

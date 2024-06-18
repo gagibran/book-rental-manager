@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9131BC39
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookRentalManager.UnitTests", "tests\BookRentalManager.UnitTests\BookRentalManager.UnitTests.csproj", "{B21B6361-4F69-4CA7-A629-7FB8D65BE5EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookRentalManager.IntegrationTests", "tests\BookRentalManager.IntegrationTests\BookRentalManager.IntegrationTests.csproj", "{0A33C976-207E-4AAB-A620-743B24561F6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookRentalManager.IntegrationTests", "tests\BookRentalManager.IntegrationTests\BookRentalManager.IntegrationTests.csproj", "{0A33C976-207E-4AAB-A620-743B24561F6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
