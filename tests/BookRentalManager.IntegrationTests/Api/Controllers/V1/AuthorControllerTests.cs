@@ -217,16 +217,11 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorByIdAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks(int currentAuthorIndex)
     {
         // Arrange:
-        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author");
-        Guid expectedId = (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
-            .OrderBy(getAuthorDto => getAuthorDto.FullName)
-            .ElementAt(currentAuthorIndex).Id;
-        HttpClient.DefaultRequestHeaders.Clear();
+        Guid expectedId = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 
         // Act:
-        httpResponseMessage = await HttpClient.GetAsync($"api/v1/author/{expectedId}");
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"api/v1/author/{expectedId}");
 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
@@ -254,14 +249,11 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorByIdAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObject(int currentAuthorIndex)
     {
         // Arrange:
+        Guid expectedId = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"api/v1/author");
-        Guid expectedId = (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
-            .OrderBy(getAuthorDto => getAuthorDto.FullName)
-            .ElementAt(currentAuthorIndex).Id;
 
         // Act:
-        httpResponseMessage = await HttpClient.GetAsync($"api/v1/author/{expectedId}");
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"api/v1/author/{expectedId}");
 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
@@ -269,5 +261,44 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(s_expectedAuthors.ElementAt(currentAuthorIndex).FullName, actualAuthor!.FullName);
         Assert.True(s_expectedAuthors.ElementAt(currentAuthorIndex).Books.SequenceEqual(
                 actualAuthor.Books.OrderBy(book => book.BookTitle)));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public async Task GetAuthorByIdAsync_WithHeadAndHateoas_Returns200OkWithContentTypeHeaders(int currentAuthorIndex)
+    {
+        // Arrange:
+        Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
+        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+        var expectedContentTypeHeaders = new List<string>
+        {
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson + "; charset=utf-8"
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Head,
+            $"api/v1/author/{id}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualContentTypeHeaders = httpResponseMessage.Content.Headers.GetValues("content-type");
+        Assert.Equal(expectedContentTypeHeaders, actualContentTypeHeaders);
+    }
+
+    private async Task<Guid> GetAuthorIdOrderedByFullNameAsync(int authorIndex)
+    {
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync("api/v1/author");
+        HttpClient.DefaultRequestHeaders.Clear();
+        return (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
+            .OrderBy(getAuthorDto => getAuthorDto.FullName)
+            .ElementAt(authorIndex).Id;
     }
 }
