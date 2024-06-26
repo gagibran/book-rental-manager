@@ -1,4 +1,7 @@
-﻿namespace BookRentalManager.IntegrationTests.Common;
+﻿using BookRentalManager.Application.Common;
+using BookRentalManager.Application.Dtos;
 
-public record CollectionWithLinks(List<object> Collection, List<object> Links);
-public record AuthorWithLinks(string FullName, List<object> Books, List<object> Links);
+namespace BookRentalManager.IntegrationTests.Common;
+
+public sealed record AuthorsWithHateoasLinks(List<AuthorWithHateoasLinks> Values, List<HateoasLinkDto> Links);
+public sealed record AuthorWithHateoasLinks(string FullName, Guid Id, List<GetBookDto> Books, List<HateoasLinkDto> Links);

@@ -1,5 +1,6 @@
 namespace BookRentalManager.Application.Dtos;
 
+[method: JsonConstructor]
 public sealed record GetBookDto(
     Guid Id,
     string BookTitle,
