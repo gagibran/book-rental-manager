@@ -13,7 +13,6 @@ public sealed class IntegrationTestsWebApplicationFactory : WebApplicationFactor
     {
         _postgreSqlContainer = new PostgreSqlBuilder()
             .WithImage("postgres:16")
-            .WithName("book_rental_manager_integration_tests")
             .WithDatabase("BookRentalManager")
             .WithUsername("admin")
             .WithPassword("admin")
