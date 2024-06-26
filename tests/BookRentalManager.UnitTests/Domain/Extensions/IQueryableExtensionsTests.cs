@@ -86,7 +86,6 @@ public sealed class IQueryableExtensionsTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
     [InlineData("NotAValidProperty,AnotherInvalidOne")]

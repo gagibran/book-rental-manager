@@ -11,7 +11,7 @@ public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
         Type requestHandlerType = typeof(IRequestHandler<>);
         Type requestType = request.GetType();
         Type requestHandlerGenericType = requestHandlerType.MakeGenericType(requestType);
-        dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType) ?? throw new CommandHandlerObjectCannotBeNullException();
+        dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType) ?? throw new HandlerObjectCannotBeNullException();
         return await requestHandler.HandleAsync((dynamic)request, cancellationToken);
     }
 
@@ -24,7 +24,7 @@ public sealed class Dispatcher(IServiceProvider serviceProvider) : IDispatcher
             typeof(TResult)
         ];
         Type requestHandlerGenericType = requestHandlerType.MakeGenericType(requestHandlerArgumentTypes);
-        dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType) ?? throw new CommandHandlerObjectCannotBeNullException();
+        dynamic? requestHandler = _serviceProvider.GetService(requestHandlerGenericType) ?? throw new HandlerObjectCannotBeNullException();
         return await requestHandler.HandleAsync((dynamic)request, cancellationToken);
     }
 }

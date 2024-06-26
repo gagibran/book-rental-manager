@@ -32,14 +32,14 @@ public sealed class DispatcherTests
             .Returns(requestHandlerStub.Object);
 
         // Act:
-        Result dispatcherResult = await _dispatcher.DispatchAsync(_requestStub.Object, default);
+        Result dispatcherResult = await _dispatcher.DispatchAsync(_requestStub.Object, It.IsAny<CancellationToken>());
 
         // Assert:
         Assert.True(dispatcherResult.IsSuccess);
     }
 
     [Fact]
-    public void DispatchAsync_WithNullCommandHandler_ThrowsException()
+    public async Task DispatchAsync_WithNullCommandHandler_ThrowsException()
     {
         // Arrange:
         _serviceProviderStub
@@ -47,8 +47,9 @@ public sealed class DispatcherTests
             .Returns(null!);
 
         // Assert:
-        Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
-            () => _dispatcher.DispatchAsync(It.IsAny<IRequest>(), It.IsAny<CancellationToken>()));
+        await Assert.ThrowsAsync<HandlerObjectCannotBeNullException>(() => _dispatcher.DispatchAsync(
+            new DeleteCustomerByIdCommand(It.IsAny<Guid>()),
+            It.IsAny<CancellationToken>()));
     }
 
     [Fact]
@@ -65,7 +66,7 @@ public sealed class DispatcherTests
             .Returns(requestHandlerStub.Object);
 
         // Act:
-        Result<Customer> dispatcherResult = await _dispatcher.DispatchAsync<Customer>(requestStub.Object, default);
+        Result<Customer> dispatcherResult = await _dispatcher.DispatchAsync(requestStub.Object, default);
 
         // Assert:
         Assert.True(dispatcherResult.IsSuccess);
@@ -73,7 +74,7 @@ public sealed class DispatcherTests
     }
 
     [Fact]
-    public void DispatchAsync_WithNullCommandHandlerReturningResult_ThrowsException()
+    public async Task DispatchAsync_WithNullCommandHandlerReturningResult_ThrowsException()
     {
         // Arrange:
         _serviceProviderStub
@@ -81,8 +82,9 @@ public sealed class DispatcherTests
             .Returns(null!);
 
         // Assert:
-        Assert.ThrowsAsync<CommandHandlerObjectCannotBeNullException>(
-            () => _dispatcher.DispatchAsync<Customer>(It.IsAny<IRequest<Customer>>(), It.IsAny<CancellationToken>()));
+        await Assert.ThrowsAsync<HandlerObjectCannotBeNullException>(() => _dispatcher.DispatchAsync(
+            new CreateCustomerCommand(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<PhoneNumberDto>()),
+            It.IsAny<CancellationToken>()));
     }
 
     [Fact]
@@ -101,14 +103,14 @@ public sealed class DispatcherTests
             .Returns(requestResponseHandlerStub.Object);
 
         // Act:
-        Result dispatcherResult = await _dispatcher.DispatchAsync<Customer>(_requestResponseStub.Object, default);
+        Result dispatcherResult = await _dispatcher.DispatchAsync(_requestResponseStub.Object, default);
 
         // Assert:
         Assert.True(dispatcherResult.IsSuccess);
     }
 
     [Fact]
-    public void DispatchAsync_WithNullQueryHandler_ThrowsException()
+    public async Task DispatchAsync_WithNullQueryHandler_ThrowsException()
     {
         // Arrange:
         _serviceProviderStub
@@ -116,9 +118,8 @@ public sealed class DispatcherTests
             .Returns(null!);
 
         // Assert:
-        Assert.ThrowsAsync<QueryHandlerObjectCannotBeNullException>(
-            () => _dispatcher.DispatchAsync(
-                It.IsAny<IRequest<Customer>>(),
-                It.IsAny<CancellationToken>()));
+        await Assert.ThrowsAsync<HandlerObjectCannotBeNullException>(() => _dispatcher.DispatchAsync(
+            new GetCustomerByIdQuery(It.IsAny<Guid>()),
+            It.IsAny<CancellationToken>()));
     }
 }
