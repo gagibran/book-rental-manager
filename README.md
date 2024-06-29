@@ -6,6 +6,11 @@
 The backend of a fake book rental management system created with .NET, PostgreSQL, Swagger, clean architecture with CQRS and some domain-driven design techniques. I am also using HATEOAS in order to improve API discoverability. The goal of this project is to practice these technologies and techniques. I have not implemented authentication nor the frontend for this project.
 
 ## Requirements
+
+### Running it with Docker
+* Docker.
+
+### Running it without Docker
 * .NET 8.0.x;
 * PostgreSQL 16.0.
 
@@ -21,13 +26,15 @@ This is required in order to run the application. After installing PostgreSQL on
     3. Run `CREATE ROLE admin WITH CREATEDB LOGIN PASSWORD 'admin';`.
 
 ## Running the application
-Docker Compose; Needs to have .pfx cert. Fix this later.
-
 To generate the required PFX certificate, go to the project's root folder and execute the following commands:
 1. `dotnet dev-certs https -ep httpsdevcert.pfx -p HttpsDevCertPass1!`
-2. `dotnet dev-certs https --trust`.
+2. `dotnet dev-certs https --trust`
 
-`dotnet watch run` will open up the application with Swagger on https://localhost:5001/swagger/index.html. Starting the application for the first time will also create a database called `BookRentalManager` (in case it does not exist) with some seed data in its tables. For more information on the seed data, check the file `src/BookRentalManager.Infrastructure/Data/Seeds/TestDataSeeder.cs`.
+After generating the certificate, use Docker to start the application by running `docker compose up -d`. The application uses Swagger and will be available at https://localhost:5001/swagger/index.html.
+
+If you want to use the application without using Docker, run `dotnet watch run`. This will also start the application with Swagger on https://localhost:5001/swagger/index.html.
+
+Starting the application for the first time will also create a database called `BookRentalManager` (in case it does not exist) with some seed data in its tables. For more information on the seed data, check the file `src/BookRentalManager.Infrastructure/Data/Seeds/TestDataSeeder.cs`.
 
 ## Migrations
 In case someone wants to fork or expand on this project, this is how I set up migrations. We'll need [Entity Framework Core tools](https://learn.microsoft.com/en-us/ef/core/cli/dotnet) installed for this.
