@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -367,6 +368,63 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(expectedHateoasLinks.ElementAt(0).Method, actualAuthorWithLinks.Links.ElementAt(0).Method);
         Assert.Equal(expectedHateoasLinks.ElementAt(1).Method, actualAuthorWithLinks.Links.ElementAt(1).Method);
         Assert.Equal(expectedHateoasLinks.ElementAt(2).Method, actualAuthorWithLinks.Links.ElementAt(2).Method);
+
+        // Clean up:
+        await HttpClient.DeleteAsync(new Uri($"{AuthorBaseUri}/{actualCreatedAuthorId}", UriKind.Relative));
+    }
+
+    [Fact]
+    public async Task CreateAuthorAsync_WithMediaTypeNotVendorSpecific_Returns201WithResponseBody()
+    {
+        // Arrange:
+        const string ExpectedFirstName = "John";
+        const string ExpectedLastName = "Doe";
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, AuthorBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"firstName\": \"{ExpectedFirstName}\", \"lastName\": \"{ExpectedLastName}\"}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, s_jsonSerializerOptions)!.Id;
+        GetAuthorDto actualAuthor = await GetAuthorByIdAsync(actualCreatedAuthorId);
+        Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualAuthor.FullName);
+        Assert.Equal(actualCreatedAuthorId, actualAuthor.Id);
+        Assert.Empty(actualAuthor.Books);
+
+        // Clean up:
+        await HttpClient.DeleteAsync(new Uri($"{AuthorBaseUri}/{actualCreatedAuthorId}", UriKind.Relative));
+    }
+
+    [Theory]
+    [InlineData("John", "", "Last name cannot be empty.")]
+    [InlineData("", "Doe", "First name cannot be empty.")]
+    [InlineData("", "", "name cannot be empty.")]
+    public async Task CreateAuthorAsync_WithMissingParameter_Returns422WithErrorMessage(string firstName, string lastName, string expectedErrorMessage)
+    {
+        // Arrange:
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, AuthorBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"firstName\": \"{firstName}\", \"lastName\": \"{lastName}\"}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        Assert.Contains(expectedErrorMessage, responseContent);
     }
 
     private async Task<Guid> GetAuthorIdOrderedByFullNameAsync(int authorIndex)
@@ -386,5 +444,14 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpClient.DefaultRequestHeaders.Clear();
         string authorWithLinks = await httpResponseMessage.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<AuthorWithHateoasLinks>(authorWithLinks, s_jsonSerializerOptions)!;
+    }
+
+    private async Task<GetAuthorDto> GetAuthorByIdAsync(Guid id)
+    {
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}/{id}");
+        HttpClient.DefaultRequestHeaders.Clear();
+        string author = await httpResponseMessage.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<GetAuthorDto>(author, s_jsonSerializerOptions)!;
     }
 }
