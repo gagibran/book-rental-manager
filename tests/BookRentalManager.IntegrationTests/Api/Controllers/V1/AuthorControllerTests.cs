@@ -427,6 +427,28 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Contains(expectedErrorMessage, responseContent);
     }
 
+    [Fact]
+    public async Task GetAuthorOptions_WithoutParameters_returnsOkWithHeaders()
+    {
+        // Arrange:
+        var expectedAllowHeader = new List<string>
+        {
+            "GET",
+            "HEAD",
+            "POST",
+            "DELETE",
+            "OPTIONS"
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, AuthorBaseUri);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        Assert.Equal(expectedAllowHeader, httpResponseMessage.Content.Headers.GetValues("allow"));
+    }
+
     private async Task<Guid> GetAuthorIdOrderedByFullNameAsync(int authorIndex)
     {
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
