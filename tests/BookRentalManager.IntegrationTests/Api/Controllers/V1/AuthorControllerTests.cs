@@ -428,6 +428,23 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Fact]
+    public async Task DeleteAuthorByIdAsync_WithExistingAuthor_DeletesAuthorAndReturns201()
+    {
+        // Arrange:
+        Guid createdAuthorId = await CreateAuthorAndGetIdAsync();
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"{AuthorBaseUri}/{createdAuthorId}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetAuthorDto? author = await GetAuthorByIdAsync(createdAuthorId);
+        Assert.Equal(Guid.Empty, author.Id);
+    }
+
+    [Fact]
     public async Task GetAuthorOptions_WithoutParameters_returnsOkWithHeaders()
     {
         // Arrange:
@@ -475,5 +492,16 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpClient.DefaultRequestHeaders.Clear();
         string author = await httpResponseMessage.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<GetAuthorDto>(author, s_jsonSerializerOptions)!;
+    }
+
+    private async Task<Guid> CreateAuthorAndGetIdAsync()
+    {
+        var stringContent = new StringContent(
+                $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json);
+        var httpResponseMessage = await HttpClient.PostAsync(new Uri(AuthorBaseUri, UriKind.Relative), stringContent);
+        string author = await httpResponseMessage.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<AuthorCreatedDto>(author, s_jsonSerializerOptions)!.Id;
     }
 }
