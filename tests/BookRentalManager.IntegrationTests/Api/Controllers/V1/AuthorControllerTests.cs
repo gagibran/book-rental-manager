@@ -428,7 +428,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Fact]
-    public async Task DeleteAuthorByIdAsync_WithExistingAuthor_DeletesAuthorAndReturns201()
+    public async Task DeleteAuthorByIdAsync_WithExistingAuthor_DeletesAuthorAndReturns204()
     {
         // Arrange:
         Guid createdAuthorId = await CreateAuthorAndGetIdAsync();
@@ -442,6 +442,42 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         httpResponseMessage.EnsureSuccessStatusCode();
         GetAuthorDto? author = await GetAuthorByIdAsync(createdAuthorId);
         Assert.Equal(Guid.Empty, author.Id);
+    }
+
+    [Fact]
+    public async Task DeleteAuthorByIdAsync_WithNonexistingAuthor_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingAuthorId = Guid.NewGuid();
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"{AuthorBaseUri}/{nonexistingAuthorId}"));
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains($"No author with the ID of '{nonexistingAuthorId}' was found.", responseContent);
+    }
+
+    [Fact]
+    public async Task DeleteAuthorByIdAsync_WithAuthorWithBooks_Returns422WithErrorMessage()
+    {
+        // Arrange:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(new Uri(AuthorBaseUri, UriKind.Relative));
+        string authors = await httpResponseMessage.Content.ReadAsStringAsync();
+        Guid existingAuthorWithBooksId = JsonSerializer.Deserialize<List<GetAuthorDto>>(authors, s_jsonSerializerOptions)!.First().Id;
+
+        // Act:
+        httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"{AuthorBaseUri}/{existingAuthorWithBooksId}"));
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains("This author has books. Please, delete the books before deleting the author.", responseContent);
     }
 
     [Fact]
