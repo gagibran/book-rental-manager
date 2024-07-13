@@ -1,3 +1,5 @@
+global using System.Text;
+global using System.Text.Json;
 global using Xunit;
 global using BookRentalManager.IntegrationTests.Common;
 global using BookRentalManager.Infrastructure.Data;

@@ -277,7 +277,7 @@ public sealed class AuthorControllerTests
             .ReturnsAsync(Result.Fail("idNotFound", "errorMessage404"));
 
         // Act:
-        var objectResult = await _authorController.AddExistingBooksToAuthor(
+        var objectResult = await _authorController.AddExistingBooksToAuthorAsync(
             It.IsAny<Guid>(),
             It.IsAny<JsonPatchDocument<PatchAuthorBooksDto>>(),
             It.IsAny<CancellationToken>()) as ObjectResult;
@@ -298,7 +298,7 @@ public sealed class AuthorControllerTests
             .ReturnsAsync(Result.Success(It.IsAny<Result>()));
 
         // Act:
-        var noContentResult = await _authorController.AddExistingBooksToAuthor(
+        var noContentResult = await _authorController.AddExistingBooksToAuthorAsync(
             It.IsAny<Guid>(),
             It.IsAny<JsonPatchDocument<PatchAuthorBooksDto>>(),
             It.IsAny<CancellationToken>()) as NoContentResult;

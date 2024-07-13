@@ -22,7 +22,7 @@ public sealed class AuthorController : ApiController
         _allowedRestMethodDtos =
         [
             new(nameof(GetAuthorByIdAsync), "GET", "self"),
-            new(nameof(AddExistingBooksToAuthor), "PATCH", "add_existing_books_to_author"),
+            new(nameof(AddExistingBooksToAuthorAsync), "PATCH", "add_existing_books_to_author"),
             new(nameof(DeleteAuthorByIdAsync), "DELETE", "delete_author")
         ];
     }
@@ -303,7 +303,7 @@ public sealed class AuthorController : ApiController
     /// 
     /// Put the book IDs that will be added to the author in the "value" property.
     /// </remarks>
-    [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthor))]
+    [HttpPatch("{id}/AddBooks", Name = nameof(AddExistingBooksToAuthorAsync))]
     [Consumes(CustomMediaTypeNames.Application.JsonPatchJson)]
     [SwaggerResponse(StatusCodes.Status204NoContent, "If the patch operation was successful.")]
     [SwaggerResponse(
@@ -316,7 +316,7 @@ public sealed class AuthorController : ApiController
         "If the JSON patch document is malformed or any validation errors happen.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
-    public async Task<ActionResult> AddExistingBooksToAuthor(
+    public async Task<ActionResult> AddExistingBooksToAuthorAsync(
         Guid id,
         JsonPatchDocument<PatchAuthorBooksDto> patchAuthorBooksDtoPatchDocument,
         CancellationToken cancellationToken)

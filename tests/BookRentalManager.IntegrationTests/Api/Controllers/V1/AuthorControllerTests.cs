@@ -1,8 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
 using BookRentalManager.Api.Constants;
 using BookRentalManager.Application.Common;
 using BookRentalManager.Application.Dtos;
@@ -15,12 +13,6 @@ namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
     : IntegrationTest(integrationTestsWebbApplicationFactory)
 {
-    private const string AuthorBaseUri = "api/v1/author";
-
-    private static readonly JsonSerializerOptions s_jsonSerializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    };
     private static readonly List<GetAuthorDto> s_expectedAuthors =
     [
         new(
@@ -103,7 +95,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        AuthorsWithHateoasLinks authorsWithHateoasLinks = JsonSerializer.Deserialize<AuthorsWithHateoasLinks>(responseContent, s_jsonSerializerOptions)!;
+        AuthorsWithHateoasLinks authorsWithHateoasLinks = JsonSerializer.Deserialize<AuthorsWithHateoasLinks>(responseContent, jsonSerializerOptions)!;
         Assert.Contains(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             httpResponseMessage.Content.Headers.ContentType!.ToString());
@@ -236,7 +228,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        AuthorWithHateoasLinks authorWithLinks = JsonSerializer.Deserialize<AuthorWithHateoasLinks>(responseContent, s_jsonSerializerOptions)!;
+        AuthorWithHateoasLinks authorWithLinks = JsonSerializer.Deserialize<AuthorWithHateoasLinks>(responseContent, jsonSerializerOptions)!;
         Assert.Contains(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             httpResponseMessage.Content.Headers.ContentType!.ToString());
@@ -357,8 +349,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, s_jsonSerializerOptions)!.Id;
-        AuthorWithHateoasLinks actualAuthorWithLinks = await GetAuthorWithHateoasLinksByIdAsync(actualCreatedAuthorId);
+        Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
+        var actualAuthorWithLinks = await GetAsync<AuthorWithHateoasLinks>(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            $"{AuthorBaseUri}/{actualCreatedAuthorId}");
         Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualAuthorWithLinks.FullName);
         Assert.Equal(actualCreatedAuthorId, actualAuthorWithLinks.Id);
         Assert.Empty(actualAuthorWithLinks.Books);
@@ -393,14 +387,17 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, s_jsonSerializerOptions)!.Id;
-        GetAuthorDto actualAuthor = await GetAuthorByIdAsync(actualCreatedAuthorId);
+        Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
+        var uriWithCreatedAuthorId = $"{AuthorBaseUri}/{actualCreatedAuthorId}";
+        var actualAuthor = await GetAsync<GetAuthorDto>(
+            MediaTypeNames.Application.Json,
+            uriWithCreatedAuthorId);
         Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualAuthor.FullName);
         Assert.Equal(actualCreatedAuthorId, actualAuthor.Id);
         Assert.Empty(actualAuthor.Books);
 
         // Clean up:
-        await HttpClient.DeleteAsync(new Uri($"{AuthorBaseUri}/{actualCreatedAuthorId}", UriKind.Relative));
+        await HttpClient.DeleteAsync(new Uri(uriWithCreatedAuthorId, UriKind.Relative));
     }
 
     [Theory]
@@ -431,16 +428,20 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task DeleteAuthorByIdAsync_WithExistingAuthor_DeletesAuthorAndReturns204()
     {
         // Arrange:
-        Guid createdAuthorId = await CreateAuthorAndGetIdAsync();
+        Guid createdAuthorId = (await CreateAsync<AuthorCreatedDto>(
+            $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        var uriWithCreatedAuthorId = $"{AuthorBaseUri}/{createdAuthorId}";
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
             HttpMethod.Delete,
-            $"{AuthorBaseUri}/{createdAuthorId}"));
+            uriWithCreatedAuthorId));
 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
-        GetAuthorDto? author = await GetAuthorByIdAsync(createdAuthorId);
+        var author = await GetAsync<GetAuthorDto>(MediaTypeNames.Application.Json, uriWithCreatedAuthorId);
         Assert.Equal(Guid.Empty, author.Id);
     }
 
@@ -467,7 +468,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Arrange:
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(new Uri(AuthorBaseUri, UriKind.Relative));
         string authors = await httpResponseMessage.Content.ReadAsStringAsync();
-        Guid existingAuthorWithBooksId = JsonSerializer.Deserialize<List<GetAuthorDto>>(authors, s_jsonSerializerOptions)!.First().Id;
+        Guid existingAuthorWithBooksId = JsonSerializer.Deserialize<List<GetAuthorDto>>(authors, jsonSerializerOptions)!.First().Id;
 
         // Act:
         httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
@@ -504,40 +505,8 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
 
     private async Task<Guid> GetAuthorIdOrderedByFullNameAsync(int authorIndex)
     {
-        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(AuthorBaseUri);
-        HttpClient.DefaultRequestHeaders.Clear();
-        return (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
+        return (await GetAsync<List<GetAuthorDto>>(MediaTypeNames.Application.Json, AuthorBaseUri))
             .OrderBy(getAuthorDto => getAuthorDto.FullName)
             .ElementAt(authorIndex).Id;
-    }
-
-    private async Task<AuthorWithHateoasLinks> GetAuthorWithHateoasLinksByIdAsync(Guid id)
-    {
-        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}/{id}");
-        HttpClient.DefaultRequestHeaders.Clear();
-        string authorWithLinks = await httpResponseMessage.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<AuthorWithHateoasLinks>(authorWithLinks, s_jsonSerializerOptions)!;
-    }
-
-    private async Task<GetAuthorDto> GetAuthorByIdAsync(Guid id)
-    {
-        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}/{id}");
-        HttpClient.DefaultRequestHeaders.Clear();
-        string author = await httpResponseMessage.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<GetAuthorDto>(author, s_jsonSerializerOptions)!;
-    }
-
-    private async Task<Guid> CreateAuthorAndGetIdAsync()
-    {
-        var stringContent = new StringContent(
-                $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
-                Encoding.UTF8,
-                MediaTypeNames.Application.Json);
-        var httpResponseMessage = await HttpClient.PostAsync(new Uri(AuthorBaseUri, UriKind.Relative), stringContent);
-        string author = await httpResponseMessage.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<AuthorCreatedDto>(author, s_jsonSerializerOptions)!.Id;
     }
 }
