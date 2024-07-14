@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace BookRentalManager.IntegrationTests.Common;
+﻿namespace BookRentalManager.IntegrationTests.Common;
 
 public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
     : IClassFixture<IntegrationTestsWebApplicationFactory>

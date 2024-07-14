@@ -364,7 +364,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(expectedHateoasLinks.ElementAt(2).Method, actualAuthorWithLinks.Links.ElementAt(2).Method);
 
         // Clean up:
-        await HttpClient.DeleteAsync(new Uri($"{AuthorBaseUri}/{actualCreatedAuthorId}", UriKind.Relative));
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{actualCreatedAuthorId}");
     }
 
     [Fact]
@@ -397,7 +397,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Empty(actualAuthor.Books);
 
         // Clean up:
-        await HttpClient.DeleteAsync(new Uri(uriWithCreatedAuthorId, UriKind.Relative));
+        await HttpClient.DeleteAsync(uriWithCreatedAuthorId);
     }
 
     [Theory]
@@ -422,6 +422,47 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
         Assert.Contains(expectedErrorMessage, responseContent);
+    }
+
+    [Fact]
+    public async Task AddExistingBooksToAuthorAsync_WithExistingAuthorAndBook_Returns204AndAddsBookToAuthor()
+    {
+        // Arrange:
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        Guid authorThatBookWillBeAddedToId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"Jane\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        BookCreatedDto book = await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri);
+        var uriWithAuthorThatBookWillBeAddedToId = $"{AuthorBaseUri}/{authorThatBookWillBeAddedToId}";
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{uriWithAuthorThatBookWillBeAddedToId}/AddBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{book.Id}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetAuthorDto updatedAuthor = await GetAsync<GetAuthorDto>(
+            MediaTypeNames.Application.Json,
+            uriWithAuthorThatBookWillBeAddedToId);
+        Assert.Equal(book.BookTitle, updatedAuthor.Books[0].BookTitle);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
+        await HttpClient.DeleteAsync(uriWithAuthorThatBookWillBeAddedToId);
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
     }
 
     [Fact]
@@ -466,7 +507,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task DeleteAuthorByIdAsync_WithAuthorWithBooks_Returns422WithErrorMessage()
     {
         // Arrange:
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(new Uri(AuthorBaseUri, UriKind.Relative));
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(AuthorBaseUri);
         string authors = await httpResponseMessage.Content.ReadAsStringAsync();
         Guid existingAuthorWithBooksId = JsonSerializer.Deserialize<List<GetAuthorDto>>(authors, jsonSerializerOptions)!.First().Id;
 
