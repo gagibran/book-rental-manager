@@ -581,7 +581,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Fact]
-    public async Task GetAuthorOptions_WithoutParameters_returnsOkWithHeaders()
+    public async Task GetAuthorOptions_WithoutParameters_Returns200WithHeaders()
     {
         // Arrange:
         var expectedAllowHeader = new List<string>
@@ -600,6 +600,40 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         Assert.Equal(expectedAllowHeader, httpResponseMessage.Content.Headers.GetValues("allow"));
+    }
+
+    [Fact]
+    public async Task GetAuthorAddBooksOptionsAsync_WithExistingAuthor_Returns200WithHeaders()
+    {
+        // Arrange:
+        var expectedAllowHeader = new List<string> { "PATCH", "OPTIONS" };
+        Guid existingAuthorId = (await GetAsync<List<GetAuthorDto>>(MediaTypeNames.Application.Json, AuthorBaseUri))
+            .First()
+            .Id;
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, $"{AuthorBaseUri}/{existingAuthorId}/AddBooks");
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        Assert.Equal(expectedAllowHeader, httpResponseMessage.Content.Headers.GetValues("allow"));
+    }
+
+    [Fact]
+    public async Task GetAuthorAddBooksOptionsAsync_WithNonexistingAuthor_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonExistingAuthorId = Guid.NewGuid();
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, $"{AuthorBaseUri}/{nonExistingAuthorId}/AddBooks");
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains($"No author with the ID of '{nonExistingAuthorId}' was found.", errorMessage);
     }
 
     private async Task<Guid> GetAuthorIdOrderedByFullNameAsync(int authorIndex)
