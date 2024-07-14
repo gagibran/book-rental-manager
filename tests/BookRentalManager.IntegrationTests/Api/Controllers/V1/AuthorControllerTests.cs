@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using System.Net.Mime;
-using BookRentalManager.Api.Constants;
 using BookRentalManager.Application.Common;
 using BookRentalManager.Application.Dtos;
 using BookRentalManager.Domain.ValueObjects;
@@ -10,8 +9,8 @@ using Moq;
 
 namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
-public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
-    : IntegrationTest(integrationTestsWebbApplicationFactory)
+public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebApplicationFactory)
+    : IntegrationTest(integrationTestsWebApplicationFactory)
 {
     private static readonly List<GetAuthorDto> s_expectedAuthors =
     [
@@ -99,10 +98,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Contains(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             httpResponseMessage.Content.Headers.ContentType!.ToString());
-        Assert.NotEqual(Guid.Empty, authorsWithHateoasLinks.Values.ElementAt(0).Id);
-        Assert.Equal("Erich Gamma", authorsWithHateoasLinks.Values.ElementAt(0).FullName);
-        Assert.NotEmpty(authorsWithHateoasLinks.Values.ElementAt(0).Books);
-        Assert.NotEmpty(authorsWithHateoasLinks.Values.ElementAt(0).Links);
+        Assert.NotEqual(Guid.Empty, authorsWithHateoasLinks.Values[0].Id);
+        Assert.Equal("Erich Gamma", authorsWithHateoasLinks.Values[0].FullName);
+        Assert.NotEmpty(authorsWithHateoasLinks.Values[0].Books);
+        Assert.NotEmpty(authorsWithHateoasLinks.Values[0].Links);
         Assert.Empty(authorsWithHateoasLinks.Links);
     }
 
@@ -128,8 +127,8 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
         for (int authorIndex = 0; authorIndex < expectedAuthors.Count; authorIndex++)
         {
-            Assert.Equal(expectedAuthors.ElementAt(authorIndex).FullName, actualAuthors.ElementAt(authorIndex).FullName);
-            Assert.True(expectedAuthors.ElementAt(authorIndex).Books.SequenceEqual(
+            Assert.Equal(expectedAuthors[authorIndex].FullName, actualAuthors.ElementAt(authorIndex).FullName);
+            Assert.True(expectedAuthors[authorIndex].Books.SequenceEqual(
                 actualAuthors.ElementAt(authorIndex).Books.OrderBy(book => book.BookTitle)));
         }
     }
@@ -232,12 +231,12 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Contains(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             httpResponseMessage.Content.Headers.ContentType!.ToString());
-        Assert.Equal(s_expectedAuthors.ElementAt(currentAuthorIndex).FullName, authorWithLinks.FullName);
-        Assert.True(s_expectedAuthors.ElementAt(currentAuthorIndex).Books.SequenceEqual(
-            s_expectedAuthors.ElementAt(currentAuthorIndex).Books.OrderBy(book => book.BookTitle)));
-        Assert.Equal("self", authorWithLinks.Links.ElementAt(0).Rel);
-        Assert.Equal("add_existing_books_to_author", authorWithLinks.Links.ElementAt(1).Rel);
-        Assert.Equal("delete_author", authorWithLinks.Links.ElementAt(2).Rel);
+        Assert.Equal(s_expectedAuthors[currentAuthorIndex].FullName, authorWithLinks.FullName);
+        Assert.True(s_expectedAuthors[currentAuthorIndex].Books.SequenceEqual(
+            s_expectedAuthors[currentAuthorIndex].Books.OrderBy(book => book.BookTitle)));
+        Assert.Equal("self", authorWithLinks.Links[0].Rel);
+        Assert.Equal("add_existing_books_to_author", authorWithLinks.Links[1].Rel);
+        Assert.Equal("delete_author", authorWithLinks.Links[2].Rel);
     }
 
     [Theory]
@@ -260,8 +259,8 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         GetAuthorDto? actualAuthor = await httpResponseMessage.Content.ReadFromJsonAsync<GetAuthorDto>();
-        Assert.Equal(s_expectedAuthors.ElementAt(currentAuthorIndex).FullName, actualAuthor!.FullName);
-        Assert.True(s_expectedAuthors.ElementAt(currentAuthorIndex).Books.SequenceEqual(
+        Assert.Equal(s_expectedAuthors[currentAuthorIndex].FullName, actualAuthor!.FullName);
+        Assert.True(s_expectedAuthors[currentAuthorIndex].Books.SequenceEqual(
                 actualAuthor.Books.OrderBy(book => book.BookTitle)));
     }
 
@@ -356,12 +355,12 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualAuthorWithLinks.FullName);
         Assert.Equal(actualCreatedAuthorId, actualAuthorWithLinks.Id);
         Assert.Empty(actualAuthorWithLinks.Books);
-        Assert.Equal(expectedHateoasLinks.ElementAt(0).Rel, actualAuthorWithLinks.Links.ElementAt(0).Rel);
-        Assert.Equal(expectedHateoasLinks.ElementAt(1).Rel, actualAuthorWithLinks.Links.ElementAt(1).Rel);
-        Assert.Equal(expectedHateoasLinks.ElementAt(2).Rel, actualAuthorWithLinks.Links.ElementAt(2).Rel);
-        Assert.Equal(expectedHateoasLinks.ElementAt(0).Method, actualAuthorWithLinks.Links.ElementAt(0).Method);
-        Assert.Equal(expectedHateoasLinks.ElementAt(1).Method, actualAuthorWithLinks.Links.ElementAt(1).Method);
-        Assert.Equal(expectedHateoasLinks.ElementAt(2).Method, actualAuthorWithLinks.Links.ElementAt(2).Method);
+        Assert.Equal(expectedHateoasLinks[0].Rel, actualAuthorWithLinks.Links[0].Rel);
+        Assert.Equal(expectedHateoasLinks[1].Rel, actualAuthorWithLinks.Links[1].Rel);
+        Assert.Equal(expectedHateoasLinks[2].Rel, actualAuthorWithLinks.Links[2].Rel);
+        Assert.Equal(expectedHateoasLinks[0].Method, actualAuthorWithLinks.Links[0].Method);
+        Assert.Equal(expectedHateoasLinks[1].Method, actualAuthorWithLinks.Links[1].Method);
+        Assert.Equal(expectedHateoasLinks[2].Method, actualAuthorWithLinks.Links[2].Method);
 
         // Clean up:
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{actualCreatedAuthorId}");

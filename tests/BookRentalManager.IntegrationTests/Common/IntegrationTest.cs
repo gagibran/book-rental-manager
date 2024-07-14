@@ -1,6 +1,6 @@
 ﻿namespace BookRentalManager.IntegrationTests.Common;
 
-public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory integrationTestsWebbApplicationFactory)
+public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory integrationTestsWebApplicationFactory)
     : IClassFixture<IntegrationTestsWebApplicationFactory>
 {
     protected const string AuthorBaseUri = "api/v1/author";
@@ -11,7 +11,7 @@ public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory inte
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     };
 
-    protected HttpClient HttpClient { get; } = integrationTestsWebbApplicationFactory.CreateClient();
+    protected HttpClient HttpClient { get; } = integrationTestsWebApplicationFactory.CreateClient();
 
     protected async Task<TReturn> GetAsync<TReturn>(string acceptHeaderValue, string uri)
         where TReturn : class
