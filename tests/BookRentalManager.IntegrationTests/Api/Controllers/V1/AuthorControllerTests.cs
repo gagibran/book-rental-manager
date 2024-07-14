@@ -466,6 +466,64 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Fact]
+    public async Task AddExistingBooksToAuthorAsync_WithNonexistingAuthor_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingAuthorId = Guid.NewGuid();
+        BookCreatedDto book = await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{nonexistingAuthorId}\"], \"bookTitle\": \"Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri);
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{AuthorBaseUri}/{nonexistingAuthorId}/AddBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{book.Id}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains($"No author with the ID of '{nonexistingAuthorId}' was found.", errorMessage);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
+    }
+
+    [Fact]
+    public async Task AddExistingBooksToAuthorAsync_WithNonexistingBook_Returns422WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingBookId = Guid.NewGuid();
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"James\", \"lastName\": \"Smith\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{AuthorBaseUri}/{authorId}/AddBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{nonexistingBookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains("Could not find some of the books for the provided IDs.", errorMessage);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{authorId}");
+    }
+
+    [Fact]
     public async Task DeleteAuthorByIdAsync_WithExistingAuthor_DeletesAuthorAndReturns204()
     {
         // Arrange:
