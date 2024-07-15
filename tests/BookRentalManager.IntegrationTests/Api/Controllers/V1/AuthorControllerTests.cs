@@ -1,11 +1,6 @@
 ﻿using System.Net;
-using System.Net.Http.Json;
-using System.Net.Mime;
 using BookRentalManager.Application.Common;
-using BookRentalManager.Application.Dtos;
-using BookRentalManager.Domain.ValueObjects;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 
 namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
@@ -57,33 +52,25 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
             ]),
     ];
 
-    public static TheoryData<string, Func<GetAuthorDto, string>, List<GetAuthorDto>, IEnumerable<string>> GetAuthorsByQueryParametersAsyncTestData()
+    public static TheoryData<string, List<GetAuthorDto>, IEnumerable<string>> GetAuthorsByQueryParametersAsyncTestData()
     {
         return new()
         {
             {
-                "",
-                getAuthorDto => getAuthorDto.FullName,
-                s_expectedAuthors,
+                "sortBy=FullName",
+                s_expectedAuthors.OrderBy(author => author.FullName).ToList(),
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}" }
             },
             {
-                "?sortBy=FullName",
-                getAuthorDto => getAuthorDto.FullName,
-                s_expectedAuthors,
-                new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}" }
-            },
-            {
-                "?sortBy=FullName&pageSize=1&pageIndex=2",
-                getAuthorDto => getAuthorDto.FullName,
-                s_expectedAuthors.Skip(1).Take(1).ToList(),
+                "sortBy=FullName&pageSize=1&pageIndex=2",
+                s_expectedAuthors.Skip(1).Take(1).OrderBy(author => author.FullName).ToList(),
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}" }
             },
         };
     }
 
     [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
+    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200WithHateoasLinks()
     {
         // Arrange:
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
@@ -107,9 +94,8 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
 
     [Theory]
     [MemberData(nameof(GetAuthorsByQueryParametersAsyncTestData))]
-    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObjectAndXPaginationHeaders(
+    public async Task GetAuthorsByQueryParametersAsync_WithMediaTypeNotVendorSpecific_Returns200WithObjectAndXPaginationHeaders(
         string queryParameters,
-        Func<GetAuthorDto, string> orderBy,
         List<GetAuthorDto> expectedAuthors,
         IEnumerable<string> expectedXPaginationHeaders)
     {
@@ -117,24 +103,23 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
 
         // Act:
-        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}{queryParameters}");
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}?{queryParameters}");
 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
         IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
-        IOrderedEnumerable<GetAuthorDto> actualAuthors = (await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>())!
-            .OrderBy(orderBy);
+        List<GetAuthorDto>? actualAuthors = await httpResponseMessage.Content.ReadFromJsonAsync<List<GetAuthorDto>>();
         Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
         for (int authorIndex = 0; authorIndex < expectedAuthors.Count; authorIndex++)
         {
-            Assert.Equal(expectedAuthors[authorIndex].FullName, actualAuthors.ElementAt(authorIndex).FullName);
+            Assert.Equal(expectedAuthors[authorIndex].FullName, actualAuthors!.ElementAt(authorIndex).FullName);
             Assert.True(expectedAuthors[authorIndex].Books.SequenceEqual(
-                actualAuthors.ElementAt(authorIndex).Books.OrderBy(book => book.BookTitle)));
+                actualAuthors!.ElementAt(authorIndex).Books.OrderBy(book => book.BookTitle)));
         }
     }
 
     [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithIncorrectParameterType_Returns400BadRequest()
+    public async Task GetAuthorsByQueryParametersAsync_WithIncorrectParameterType_Returns400WithErrors()
     {
         // Arrange:
         var expectedValidationProblemDetails = new ValidationProblemDetails
@@ -160,7 +145,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Fact]
-    public async Task GetAuthorsByQueryParametersAsync_WithNonexistingQueryParameter_Returns422UnprocessableEntity()
+    public async Task GetAuthorsByQueryParametersAsync_WithNonexistingQueryParameter_Returns422WithError()
     {
         // Arrange:
         var expectedValidationProblemDetails = new ValidationProblemDetails
@@ -189,7 +174,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     [InlineData("", "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}")]
     [InlineData("?sortBy=FullName", "{\"totalAmountOfItems\":7,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}")]
     [InlineData("?sortBy=FullName&pageSize=1&pageIndex=2", "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}")]
-    public async Task GetAuthorsByQueryParametersAsync_WithHead_Returns200OkWithXPaginationHeaders(
+    public async Task GetAuthorsByQueryParametersAsync_WithHead_Returns200WithXPaginationHeaders(
         string queryParameters,
         string expectedReturnedXPaginationHeaders)
     {
@@ -215,7 +200,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     [InlineData(4)]
     [InlineData(5)]
     [InlineData(6)]
-    public async Task GetAuthorByIdAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks(int currentAuthorIndex)
+    public async Task GetAuthorByIdAsync_WithMediaTypeVendorSpecific_Returns200WithHateoasLinks(int currentAuthorIndex)
     {
         // Arrange:
         Guid expectedId = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
@@ -247,7 +232,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     [InlineData(4)]
     [InlineData(5)]
     [InlineData(6)]
-    public async Task GetAuthorByIdAsync_WithMediaTypeNotVendorSpecific_Returns200OkWithObject(int currentAuthorIndex)
+    public async Task GetAuthorByIdAsync_WithMediaTypeNotVendorSpecific_Returns200WithObject(int currentAuthorIndex)
     {
         // Arrange:
         Guid expectedId = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
@@ -272,7 +257,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     [InlineData(4)]
     [InlineData(5)]
     [InlineData(6)]
-    public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeVendorSpecific_Returns200OkWithContentTypeHeaders(int currentAuthorIndex)
+    public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeVendorSpecific_Returns200WithContentTypeHeaders(int currentAuthorIndex)
     {
         // Arrange:
         Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
@@ -301,7 +286,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     [InlineData(4)]
     [InlineData(5)]
     [InlineData(6)]
-    public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeNotVendorSpecific_Returns200OkWithContentTypeHeaders(int currentAuthorIndex)
+    public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeNotVendorSpecific_Returns200WithContentTypeHeaders(int currentAuthorIndex)
     {
         // Arrange:
         Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
