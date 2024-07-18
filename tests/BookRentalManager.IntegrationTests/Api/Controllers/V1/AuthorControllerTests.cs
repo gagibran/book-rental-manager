@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using BookRentalManager.Application.Common;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 

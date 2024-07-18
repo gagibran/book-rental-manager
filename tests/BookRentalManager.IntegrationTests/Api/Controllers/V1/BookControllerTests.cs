@@ -131,4 +131,78 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             Assert.Equal(expectedBooks[bookIndex].RentedBy, actualBooks!.ElementAt(bookIndex).RentedBy);
         }
     }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersAsync_WithIncorrectParameterType_Returns400WithErrors()
+    {
+        // Arrange:
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "PageSize", ["The value 'notANumber' is not valid for PageSize."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+            Title = "One or more validation errors occurred.",
+            Status = 400
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}?pageSize=notANumber");
+
+        // Assert:
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
+    }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersAsync_WithNonexistingQueryParameter_Returns422WithError()
+    {
+        // Arrange:
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "invalidProperty", ["The property 'notAValidParameter' does not exist for 'GetBookDto'."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}?sortBy=notAValidParameter");
+
+        // Assert:
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
+    }
+
+    [Theory]
+    [InlineData("", "{\"totalAmountOfItems\":4,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}")]
+    [InlineData("?sortBy=BookTitle", "{\"totalAmountOfItems\":4,\"pageIndex\":1,\"pageSize\":50,\"totalAmountOfPages\":1}")]
+    [InlineData("?sortBy=BookTitle&pageSize=1&pageIndex=2", "{\"totalAmountOfItems\":4,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":4}")]
+    public async Task GetBooksByQueryParametersAsync_WithHead_Returns200WithXPaginationHeaders(
+        string queryParameters,
+        string expectedReturnedXPaginationHeaders)
+    {
+        // Arrange:
+        var expectedXPaginationHeaders = new List<string> { expectedReturnedXPaginationHeaders };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Head,
+            $"{BookBaseUri}{queryParameters}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
+        Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
+    }
 }
