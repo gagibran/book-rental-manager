@@ -14,10 +14,10 @@ public sealed class BookControllerTests
             customer.Email.ToString());
         var gangOfFour = new List<GetAuthorFromBookDto>
         {
-            new(FullName.Create("Erich", "Gamma").Value!),
-            new(FullName.Create("John", "Vlissides").Value!),
-            new(FullName.Create("Ralph", "Johnson").Value!),
-            new(FullName.Create("Richard", "Helm").Value!),
+            new("Erich Gamma"),
+            new("John Vlissides"),
+            new("Ralph Johnson"),
+            new("Richard Helm"),
         };
         _getBookDtos =
         [
@@ -33,7 +33,7 @@ public sealed class BookControllerTests
             new(
                 Guid.NewGuid(),
                 "The Shadow Over Innsmouth",
-                [new(FullName.Create("Howard", "Lovecraft").Value!)],
+                [new("Howard Lovecraft")],
                 Edition.Create(1).Value!.EditionNumber!,
                 Isbn.Create("978-1878252180").Value!.ToString()!,
                 null,
@@ -182,7 +182,7 @@ public sealed class BookControllerTests
     {
         // Arrange:
         Customer customer = TestFixtures.CreateDummyCustomer();
-        var getAuthorFromBookDto = new GetAuthorFromBookDto(FullName.Create("Howard", "Lovecraft").Value!);
+        var getAuthorFromBookDto = new GetAuthorFromBookDto("Howard Lovecraft");
         var getBookDto = new GetBookDto(
             Guid.NewGuid(),
             "The Shadow Over Innsmouth",

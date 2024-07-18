@@ -7,23 +7,9 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
     [
         new(
             It.IsAny<Guid>(),
-            "Design Patterns: Elements of Reusable Object-Oriented Software",
-            [
-                new(FullName.Create("Erich", "Gamma").Value!),
-                new(FullName.Create("Ralph", "Johnson").Value!),
-                new(FullName.Create("Richard", "Helm").Value!),
-                new(FullName.Create("John", "Vlissides").Value!)
-            ],
-            1,
-            "0-201-63361-2",
-            null,
-            null,
-            null),
-        new(
-            It.IsAny<Guid>(),
             "Clean Code: A Handbook of Agile Software Craftsmanship",
             [
-                new(FullName.Create("Bob", "Martin").Value!)
+                new("Bob Martin")
             ],
             1,
             "978-0132350884",
@@ -32,9 +18,23 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             new("Rosanne Johnson", "rosane.johnson@email.com")),
         new(
             It.IsAny<Guid>(),
+            "Design Patterns: Elements of Reusable Object-Oriented Software",
+            [
+                new("Erich Gamma"),
+                new("John Vlissides"),
+                new("Ralph Johnson"),
+                new("Richard Helm")
+            ],
+            1,
+            "0-201-63361-2",
+            null,
+            null,
+            null),
+        new(
+            It.IsAny<Guid>(),
             "The Call Of Cthulhu",
             [
-                new(FullName.Create("Howard", "Lovecraft").Value!)
+                new("Howard Lovecraft")
             ],
             1,
             "978-1515424437",
@@ -45,7 +45,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             It.IsAny<Guid>(),
             "The Shadow Over Innsmouth",
             [
-                new(FullName.Create("Howard", "Lovecraft").Value!)
+                new("Howard Lovecraft")
             ],
             1,
             "978-1878252180",
@@ -66,10 +66,10 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             {
                 "sortBy=EditionDesc,Isbn&pageSize=1&pageIndex=2",
                 s_expectedBooks
-                    .Skip(1)
-                    .Take(1)
                     .OrderByDescending(book => book.Edition)
                     .ThenBy(book => book.Isbn)
+                    .Skip(1)
+                    .Take(1)
                     .ToList(),
                 new List<string> { "{\"totalAmountOfItems\":4,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":4}" }
             },
@@ -125,7 +125,8 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         for (int bookIndex = 0; bookIndex < expectedBooks.Count; bookIndex++)
         {
             Assert.Equal(expectedBooks[bookIndex].BookTitle, actualBooks!.ElementAt(bookIndex).BookTitle);
-            Assert.Equal(expectedBooks[bookIndex].Authors.Count, actualBooks!.ElementAt(bookIndex).Authors.Count);
+            Assert.True(expectedBooks[bookIndex].Authors.SequenceEqual(
+                actualBooks!.ElementAt(bookIndex).Authors.OrderBy(author => author.FullName)));
             Assert.Equal(expectedBooks[bookIndex].Edition, actualBooks!.ElementAt(bookIndex).Edition);
             Assert.Equal(expectedBooks[bookIndex].Isbn, actualBooks!.ElementAt(bookIndex).Isbn);
             Assert.Equal(expectedBooks[bookIndex].RentedBy, actualBooks!.ElementAt(bookIndex).RentedBy);
@@ -204,5 +205,126 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         httpResponseMessage.EnsureSuccessStatusCode();
         IEnumerable<string> actualXPaginationHeaders = httpResponseMessage.Headers.GetValues("x-pagination");
         Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task GetBookByIdAsync_WithMediaTypeVendorSpecific_Returns200WithHateoasLinks(int currentBookIndex)
+    {
+        // Arrange:
+        Guid expectedId = await GetIdOrderedByConditionAsync<GetBookDto>(
+            currentBookIndex,
+            BookBaseUri,
+            getAuthorDto => getAuthorDto.BookTitle);
+        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}/{expectedId}");
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        BookWithHateoasLinks bookWithLinks = JsonSerializer.Deserialize<BookWithHateoasLinks>(responseContent, jsonSerializerOptions)!;
+        Assert.Contains(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            httpResponseMessage.Content.Headers.ContentType!.ToString());
+        Assert.Equal(s_expectedBooks[currentBookIndex].BookTitle, bookWithLinks.BookTitle);
+        Assert.True(s_expectedBooks[currentBookIndex].Authors.SequenceEqual(
+            s_expectedBooks[currentBookIndex].Authors.OrderBy(author => author.FullName)));
+        Assert.Equal(s_expectedBooks[currentBookIndex].Edition, bookWithLinks.Edition);
+        Assert.Equal(s_expectedBooks[currentBookIndex].Isbn, bookWithLinks.Isbn);
+        Assert.Equal(s_expectedBooks[currentBookIndex].RentedBy, bookWithLinks.RentedBy);
+        Assert.Equal("self", bookWithLinks.Links[0].Rel);
+        Assert.Equal("patch_book", bookWithLinks.Links[1].Rel);
+        Assert.Equal("delete_book", bookWithLinks.Links[2].Rel);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task GetBookByIdAsync_WithMediaTypeNotVendorSpecific_Returns200WithObject(int currentBookIndex)
+    {
+        // Arrange:
+        Guid expectedId = await GetIdOrderedByConditionAsync<GetBookDto>(
+            currentBookIndex,
+            BookBaseUri,
+            getAuthorDto => getAuthorDto.BookTitle);
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}/{expectedId}");
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetBookDto? actualBook = await httpResponseMessage.Content.ReadFromJsonAsync<GetBookDto>();
+        Assert.Equal(s_expectedBooks[currentBookIndex].BookTitle, actualBook!.BookTitle);
+        Assert.True(s_expectedBooks[currentBookIndex].Authors.SequenceEqual(actualBook.Authors.OrderBy(
+            author => author.FullName)));
+        Assert.Equal(s_expectedBooks[currentBookIndex].Edition, actualBook.Edition);
+        Assert.Equal(s_expectedBooks[currentBookIndex].Isbn, actualBook.Isbn);
+        Assert.Equal(s_expectedBooks[currentBookIndex].RentedBy, actualBook.RentedBy);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task GetBookByIdAsync_WithHeadAndMediaTypeVendorSpecific_Returns200WithContentTypeHeaders(int currentBookIndex)
+    {
+        // Arrange:
+        Guid id = await GetIdOrderedByConditionAsync<GetBookDto>(
+            currentBookIndex,
+            BookBaseUri,
+            getAuthorDto => getAuthorDto.BookTitle);
+        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+        var expectedContentTypeHeaders = new List<string>
+        {
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson + "; charset=utf-8"
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Head,
+            $"{BookBaseUri}/{id}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualContentTypeHeaders = httpResponseMessage.Content.Headers.GetValues("content-type");
+        Assert.Equal(expectedContentTypeHeaders, actualContentTypeHeaders);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task GetBookByIdAsync_WithHeadAndMediaTypeNotVendorSpecific_Returns200WithContentTypeHeaders(int currentBookIndex)
+    {
+        // Arrange:
+        Guid id = await GetIdOrderedByConditionAsync<GetBookDto>(
+            currentBookIndex,
+            BookBaseUri,
+            getAuthorDto => getAuthorDto.BookTitle);
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+        var expectedContentTypeHeaders = new List<string>
+        {
+            MediaTypeNames.Application.Json + "; charset=utf-8"
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Head,
+            $"{BookBaseUri}/{id}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        IEnumerable<string> actualContentTypeHeaders = httpResponseMessage.Content.Headers.GetValues("content-type");
+        Assert.Equal(expectedContentTypeHeaders, actualContentTypeHeaders);
     }
 }

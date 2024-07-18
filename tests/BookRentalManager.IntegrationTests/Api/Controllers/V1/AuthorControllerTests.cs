@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using BookRentalManager.Application.Common;
 
 namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
@@ -62,7 +61,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
             },
             {
                 "sortBy=FullName&pageSize=1&pageIndex=2",
-                s_expectedAuthors.Skip(1).Take(1).OrderBy(author => author.FullName).ToList(),
+                s_expectedAuthors.OrderBy(author => author.FullName).Skip(1).Take(1).ToList(),
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}" }
             },
         };
@@ -202,7 +201,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorByIdAsync_WithMediaTypeVendorSpecific_Returns200WithHateoasLinks(int currentAuthorIndex)
     {
         // Arrange:
-        Guid expectedId = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
+        Guid expectedId = await GetIdOrderedByConditionAsync<GetAuthorDto>(
+            currentAuthorIndex,
+            AuthorBaseUri,
+            getAuthorDto => getAuthorDto.FullName);
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 
         // Act:
@@ -234,7 +236,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorByIdAsync_WithMediaTypeNotVendorSpecific_Returns200WithObject(int currentAuthorIndex)
     {
         // Arrange:
-        Guid expectedId = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
+        Guid expectedId = await GetIdOrderedByConditionAsync<GetAuthorDto>(
+            currentAuthorIndex,
+            AuthorBaseUri,
+            getAuthorDto => getAuthorDto.FullName);
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
 
         // Act:
@@ -259,7 +264,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeVendorSpecific_Returns200WithContentTypeHeaders(int currentAuthorIndex)
     {
         // Arrange:
-        Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
+        Guid id = await GetIdOrderedByConditionAsync<GetAuthorDto>(
+            currentAuthorIndex,
+            AuthorBaseUri,
+            getAuthorDto => getAuthorDto.FullName);
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
         var expectedContentTypeHeaders = new List<string>
         {
@@ -288,7 +296,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorByIdAsync_WithHeadAndMediaTypeNotVendorSpecific_Returns200WithContentTypeHeaders(int currentAuthorIndex)
     {
         // Arrange:
-        Guid id = await GetAuthorIdOrderedByFullNameAsync(currentAuthorIndex);
+        Guid id = await GetIdOrderedByConditionAsync<GetAuthorDto>(
+            currentAuthorIndex,
+            AuthorBaseUri,
+            getAuthorDto => getAuthorDto.FullName);
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
         var expectedContentTypeHeaders = new List<string>
         {
@@ -617,12 +628,5 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
         string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
         Assert.Contains($"No author with the ID of '{nonExistingAuthorId}' was found.", errorMessage);
-    }
-
-    private async Task<Guid> GetAuthorIdOrderedByFullNameAsync(int authorIndex)
-    {
-        return (await GetAsync<List<GetAuthorDto>>(MediaTypeNames.Application.Json, AuthorBaseUri))
-            .OrderBy(getAuthorDto => getAuthorDto.FullName)
-            .ElementAt(authorIndex).Id;
     }
 }

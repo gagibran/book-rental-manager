@@ -23,6 +23,14 @@ public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory inte
         return JsonSerializer.Deserialize<TReturn>(content, jsonSerializerOptions)!;
     }
 
+    protected async Task<Guid> GetIdOrderedByConditionAsync<TDto>(int index, string baseUri, Func<TDto, string> condition)
+        where TDto : IdentifiableDto
+    {
+        return (await GetAsync<List<TDto>>(MediaTypeNames.Application.Json, baseUri))
+            .OrderBy(condition)
+            .ElementAt(index).Id;
+    }
+
     protected async Task<TReturn> CreateAsync<TReturn>(string content, string contentType, string uri)
         where TReturn : class
     {
