@@ -327,4 +327,96 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         IEnumerable<string> actualContentTypeHeaders = httpResponseMessage.Content.Headers.GetValues("content-type");
         Assert.Equal(expectedContentTypeHeaders, actualContentTypeHeaders);
     }
+
+    [Fact]
+    public async Task CreateBookAsync_WithMediaTypeVendorSpecific_Returns201WithResponseBody()
+    {
+        // Arrange:
+        const string ExpectedBookTitle = "A Cool Book";
+        const int ExpectedEdition = 1;
+        const string ExpectedIsbn = "0-201-63361-1";
+        AuthorCreatedDto expectedAuthor = await CreateAsync<AuthorCreatedDto>(
+            $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri);
+        var expectedHateoasLinks = new List<HateoasLinkDto>
+        {
+            new(It.IsAny<string>(), "self", "GET"),
+            new(It.IsAny<string>(), "patch_book", "PATCH"),
+            new(It.IsAny<string>(), "delete_book", "DELETE"),
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, BookBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"authorIds\": [\"{expectedAuthor.Id}\"],\"bookTitle\": \"{ExpectedBookTitle}\",\"edition\": {ExpectedEdition},\"isbn\": \"{ExpectedIsbn}\"}}",
+                Encoding.UTF8,
+                CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Guid actualCreatedBookId = JsonSerializer.Deserialize<BookCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
+        var actualBookWithLinks = await GetAsync<BookWithHateoasLinks>(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            $"{BookBaseUri}/{actualCreatedBookId}");
+        Assert.Equal(ExpectedBookTitle, actualBookWithLinks.BookTitle);
+        Assert.Equal(ExpectedEdition, actualBookWithLinks.Edition);
+        Assert.Equal(ExpectedIsbn, actualBookWithLinks.Isbn);
+        Assert.Equal(actualCreatedBookId, actualBookWithLinks.Id);
+        Assert.Equal(expectedAuthor.FirstName + " " + expectedAuthor.LastName, actualBookWithLinks.Authors[0].FullName);
+        Assert.Equal(expectedHateoasLinks[0].Rel, actualBookWithLinks.Links[0].Rel);
+        Assert.Equal(expectedHateoasLinks[1].Rel, actualBookWithLinks.Links[1].Rel);
+        Assert.Equal(expectedHateoasLinks[2].Rel, actualBookWithLinks.Links[2].Rel);
+        Assert.Equal(expectedHateoasLinks[0].Method, actualBookWithLinks.Links[0].Method);
+        Assert.Equal(expectedHateoasLinks[1].Method, actualBookWithLinks.Links[1].Method);
+        Assert.Equal(expectedHateoasLinks[2].Method, actualBookWithLinks.Links[2].Method);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{actualCreatedBookId}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{expectedAuthor.Id}");
+    }
+
+    [Fact]
+    public async Task CreateBookAsync_WithMediaTypeNotVendorSpecific_Returns201WithResponseBody()
+    {
+        // Arrange:
+        const string ExpectedBookTitle = "A Cool Book";
+        const int ExpectedEdition = 1;
+        const string ExpectedIsbn = "0-201-63361-1";
+        AuthorCreatedDto expectedAuthor = await CreateAsync<AuthorCreatedDto>(
+            $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri);
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, BookBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"authorIds\": [\"{expectedAuthor.Id}\"],\"bookTitle\": \"{ExpectedBookTitle}\",\"edition\": {ExpectedEdition},\"isbn\": \"{ExpectedIsbn}\"}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Guid actualCreatedBookId = JsonSerializer.Deserialize<BookCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
+        GetBookDto actualBook = await GetAsync<GetBookDto>(
+            MediaTypeNames.Application.Json,
+            $"{BookBaseUri}/{actualCreatedBookId}");
+        Assert.Equal(ExpectedBookTitle, actualBook.BookTitle);
+        Assert.Equal(ExpectedEdition, actualBook.Edition);
+        Assert.Equal(ExpectedIsbn, actualBook.Isbn);
+        Assert.Equal(actualCreatedBookId, actualBook.Id);
+        Assert.Equal(expectedAuthor.FirstName + " " + expectedAuthor.LastName, actualBook.Authors[0].FullName);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{actualCreatedBookId}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{expectedAuthor.Id}");
+    }
 }

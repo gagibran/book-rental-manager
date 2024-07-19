@@ -344,7 +344,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
         Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
-        var actualAuthorWithLinks = await GetAsync<AuthorWithHateoasLinks>(
+        AuthorWithHateoasLinks actualAuthorWithLinks = await GetAsync<AuthorWithHateoasLinks>(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             $"{AuthorBaseUri}/{actualCreatedAuthorId}");
         Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualAuthorWithLinks.FullName);
@@ -383,7 +383,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
         Guid actualCreatedAuthorId = JsonSerializer.Deserialize<AuthorCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
         var uriWithCreatedAuthorId = $"{AuthorBaseUri}/{actualCreatedAuthorId}";
-        var actualAuthor = await GetAsync<GetAuthorDto>(
+        GetAuthorDto actualAuthor = await GetAsync<GetAuthorDto>(
             MediaTypeNames.Application.Json,
             uriWithCreatedAuthorId);
         Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualAuthor.FullName);
