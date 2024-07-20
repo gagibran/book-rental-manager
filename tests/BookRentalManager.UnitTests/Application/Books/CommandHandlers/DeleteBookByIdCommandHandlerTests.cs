@@ -37,6 +37,7 @@ public sealed class DeleteBookByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
@@ -54,6 +55,7 @@ public sealed class DeleteBookByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("bookCustomer", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 

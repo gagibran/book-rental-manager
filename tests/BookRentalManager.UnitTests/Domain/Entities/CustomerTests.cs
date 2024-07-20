@@ -12,11 +12,11 @@ public sealed class CustomerTests
         _customer = TestFixtures.CreateDummyCustomer();
         _book = TestFixtures.CreateDummyBook();
         _book2 = new Book(
-            "Design Patterns: Elements of Reusable Object-Oriented Software",
+            BookTitle.Create("Design Patterns: Elements of Reusable Object-Oriented Software").Value!,
             Edition.Create(1).Value!,
             Isbn.Create("978-0201633610 ").Value!);
         _book3 = new Book(
-            "Introduction to Algorithms",
+            BookTitle.Create("Introduction to Algorithms").Value!,
             Edition.Create(3).Value!,
             Isbn.Create("978-0262033848").Value!);
     }
@@ -42,6 +42,7 @@ public sealed class CustomerTests
         Result rentBookResult = _customer.RentBook(_book);
 
         // Assert:
+        Assert.Equal("bookNotAvailable", rentBookResult.ErrorType);
         Assert.Equal(expectedErrorMessage, rentBookResult.ErrorMessage);
     }
 
@@ -59,6 +60,7 @@ public sealed class CustomerTests
         Result rentBookResult = _customer.RentBook(_book);
 
         // Assert:
+        Assert.Equal("dueDate|dueDate", rentBookResult.ErrorType);
         Assert.Equal(expectedErrorMessage, rentBookResult.ErrorMessage);
     }
 
@@ -66,7 +68,6 @@ public sealed class CustomerTests
     public void RentBook_WithMaximumAmountOfBooksByCustomerTypeReached_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = "The customer has reached the maximum amount of books per customer category (Explorer: 2).";
         _customer.RentBook(_book);
         _customer.RentBook(_book2);
 
@@ -74,7 +75,10 @@ public sealed class CustomerTests
         Result rentBookResult = _customer.RentBook(_book3);
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, rentBookResult.ErrorMessage);
+        Assert.Equal("explorerMaximumAmountReached", rentBookResult.ErrorType);
+        Assert.Equal(
+            "The customer has reached the maximum amount of books per customer category (Explorer: 2).",
+            rentBookResult.ErrorMessage);
     }
 
     [Theory]
@@ -120,6 +124,7 @@ public sealed class CustomerTests
         Result rentBookResult = _customer.ReturnBook(_book);
 
         // Assert:
+        Assert.Equal("noBook", rentBookResult.ErrorType);
         Assert.Equal(expectedErrorMessage, rentBookResult.ErrorMessage);
     }
 

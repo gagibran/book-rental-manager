@@ -15,11 +15,11 @@ public sealed class IQueryableExtensionsTests
     {
         Book book1 = TestFixtures.CreateDummyBook();
         Book book2 = new(
-            "Clean Code: A Handbook of Agile Software Craftsmanship",
+            BookTitle.Create("Clean Code: A Handbook of Agile Software Craftsmanship").Value!,
             Edition.Create(1).Value!,
             Isbn.Create("978-0132350884").Value!);
         Book book3 = new(
-            "Design Patterns: Elements of Reusable Object-Oriented Software",
+            BookTitle.Create("Design Patterns: Elements of Reusable Object-Oriented Software").Value!,
             Edition.Create(1).Value!,
             Isbn.Create("0-201-63361-2").Value!);
         Customer customer = TestFixtures.CreateDummyCustomer();
@@ -31,18 +31,18 @@ public sealed class IQueryableExtensionsTests
         List<Book> books = [book1, book2, book3];
         yield return new object[]
         {
-            "BookTitleDesc,DueDate",
+            "BookTitle.TitleDesc,DueDate",
             books,
             books
-                .OrderByDescending(book => book.BookTitle)
+                .OrderByDescending(book => book.BookTitle.Title)
                 .ThenBy(book => book.DueDate)
                 .ToList()
         };
         yield return new object[]
         {
-            "BookTitle",
+            "BookTitle.Title",
             books,
-            books.OrderBy(book => book.BookTitle).ToList()
+            books.OrderBy(book => book.BookTitle.Title).ToList()
         };
         yield return new object[]
         {
@@ -67,12 +67,12 @@ public sealed class IQueryableExtensionsTests
         };
         yield return new object[]
         {
-            "Edition.EditionNumberDesc,RentedAt,BookTitleDesc,Isbn.IsbnValueDesc",
+            "Edition.EditionNumberDesc,RentedAt,BookTitle.TitleDesc,Isbn.IsbnValueDesc",
             books,
             books
                 .OrderByDescending(book => book.Edition.EditionNumber)
                 .ThenBy(book => book.RentedAt)
-                .ThenByDescending(book => book.BookTitle)
+                .ThenByDescending(book => book.BookTitle.Title)
                 .ThenByDescending(book => book.Isbn.IsbnValue)
                 .ToList()
         };
@@ -106,8 +106,8 @@ public sealed class IQueryableExtensionsTests
         List<Book> actualSortedBooks =
         [
             ..unsortedBooks
-            .AsQueryable()
-            .OrderByPropertyName(propertyNamesSeparatedByComma)
+                .AsQueryable()
+                .OrderByPropertyName(propertyNamesSeparatedByComma)
         ];
 
         // Assert:

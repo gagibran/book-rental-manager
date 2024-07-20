@@ -23,6 +23,26 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WithInvalidSortParameters_ReturnsErrorMessage()
+    {
+        // Arrange:
+        const string ExpectedErrorType = "errorType";
+        const string ExpectedErrorMessage = "errorMessage";
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapAuthorSortParameters(It.IsAny<string>()))
+            .Returns(Result.Fail<string>(ExpectedErrorType, ExpectedErrorMessage));
+
+        // Act:
+        Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
+            _getAuthorsByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal(ExpectedErrorType, handlerResult.ErrorType);
+        Assert.Equal(ExpectedErrorMessage, handlerResult.ErrorMessage);
+    }
+
+    [Fact]
     public async Task HandleAsync_WithoutAuthors_ReturnsEmptyList()
     {
         // Arrange:

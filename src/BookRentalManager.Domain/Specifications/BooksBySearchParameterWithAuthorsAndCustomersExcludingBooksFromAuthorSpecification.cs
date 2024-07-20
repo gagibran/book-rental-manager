@@ -9,7 +9,7 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersExcludingBooksF
     {
         string formattedSearchParameter = searchParameter.Trim().ToLower();
         Where = book => !books.Contains(book)
-            && (book.BookTitle.ToLower().Contains(formattedSearchParameter)
+            && (book.BookTitle.Title.ToLower().Contains(formattedSearchParameter)
                 || book.Edition.EditionNumber.ToString().Contains(formattedSearchParameter)
                 || book.Isbn.IsbnValue.ToLower().Contains(formattedSearchParameter)
                 || book.RentedAt.ToString()!.Contains(formattedSearchParameter)

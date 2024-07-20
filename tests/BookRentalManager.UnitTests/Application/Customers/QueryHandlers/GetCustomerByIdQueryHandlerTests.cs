@@ -58,6 +58,7 @@ public sealed class GetCustomerByIdQueryHandlerTests
             default);
 
         // Assert:
+        Assert.Equal("idNotFound", handlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
     }
 }

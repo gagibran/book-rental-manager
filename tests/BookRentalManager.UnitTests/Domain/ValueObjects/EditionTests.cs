@@ -2,21 +2,24 @@ namespace BookRentalManager.UnitTests.Domain.ValueObjects;
 
 public sealed class EditionTests
 {
-    [Fact]
-    public void Create_WithInvalidEditionNumber_ReturnsErrorMessage()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-2)]
+    public void Create_WithInvalidEditionNumber_ReturnsErrorMessage(int editionNumber)
     {
         // Arrange:
         var expectedErrorMessage = "The edition number can't be smaller than 1.";
 
         // Act:
-        var editionResult = Edition.Create(0);
+        Result<Edition> editionResult = Edition.Create(editionNumber);
 
         // Assert:
+        Assert.Equal("editionNumber", editionResult.ErrorType);
         Assert.Equal(expectedErrorMessage, editionResult.ErrorMessage);
     }
 
     [Fact]
-    public void Create_WithInvalidEditionNumber_ReturnsSuccess()
+    public void Create_WithValidEditionNumber_ReturnsSuccess()
     {
         // Act:
         Result<Edition> editionResult = Edition.Create(2);

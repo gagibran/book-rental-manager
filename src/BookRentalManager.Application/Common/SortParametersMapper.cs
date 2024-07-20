@@ -82,7 +82,11 @@ public sealed class SortParametersMapper : ISortParametersMapper
                     "invalidProperty",
                     $"The property '{formattedPropertyName}' does not exist for '{nameof(GetBookDto)}'.");
             }
-            if (formattedPropertyName.Contains("Edition"))
+            if (formattedPropertyName.Contains("BookTitle"))
+            {
+                formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "BookTitle.TitleDesc" : "BookTitle.Title";
+            }
+            else if (formattedPropertyName.Contains("Edition"))
             {
                 formattedPropertyName = formattedPropertyName.EndsWith("Desc") ? "Edition.EditionNumberDesc" : "Edition.EditionNumber";
             }

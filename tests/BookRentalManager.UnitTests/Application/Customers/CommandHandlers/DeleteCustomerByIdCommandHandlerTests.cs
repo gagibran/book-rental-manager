@@ -37,6 +37,7 @@ public sealed class DeleteCustomerByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", deleteCustomerByIdResult.ErrorType);
         Assert.Equal(expectedErrorMessage, deleteCustomerByIdResult.ErrorMessage);
     }
 
@@ -44,7 +45,6 @@ public sealed class DeleteCustomerByIdCommandHandlerTests
     public async Task HandleAsync_WithCustomerWithBooks_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = "This customer has rented books. Return them before deleting.";
         Book book = TestFixtures.CreateDummyBook();
         _customer.RentBook(book);
 
@@ -54,7 +54,8 @@ public sealed class DeleteCustomerByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, deleteCustomerByIdResult.ErrorMessage);
+        Assert.Equal("customerBooks", deleteCustomerByIdResult.ErrorType);
+        Assert.Equal("This customer has rented books. Return them before deleting.", deleteCustomerByIdResult.ErrorMessage);
     }
 
     [Fact]

@@ -15,6 +15,7 @@ public sealed class IsbnTests
         var isbnResult = Isbn.Create(isbnValue);
 
         // Assert:
+        Assert.Equal("isbnFormat", isbnResult.ErrorType);
         Assert.Equal(expectedErrorMessage, isbnResult.ErrorMessage);
     }
 

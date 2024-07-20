@@ -5,7 +5,6 @@ public sealed class CreateBookCommandHandlerTests
     private readonly Book _book;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
-    private readonly BookCreatedDto _bookCreatedDto;
     private readonly IReadOnlyList<Author> _authors;
     private readonly CreateBookCommand _createBookCommand;
     private readonly CreateBookCommandHandler _createBookCommandHandler;
@@ -15,7 +14,6 @@ public sealed class CreateBookCommandHandlerTests
         _book = TestFixtures.CreateDummyBook();
         _authorRepositoryStub = new();
         _bookRepositoryStub = new();
-        _bookCreatedDto = new(_book.Id, _book.BookTitle, _book.Edition.EditionNumber, _book.Isbn.IsbnValue);
         _authors = new List<Author>
         {
             TestFixtures.CreateDummyAuthor(),
@@ -23,7 +21,7 @@ public sealed class CreateBookCommandHandlerTests
         }.AsReadOnly();
         _createBookCommand = new(
             _authors.Select(author => author.Id),
-            _book.BookTitle,
+            _book.BookTitle.Title,
             _book.Edition.EditionNumber,
             _book.Isbn.IsbnValue);
         _createBookCommandHandler = new(_bookRepositoryStub.Object, _authorRepositoryStub.Object);
@@ -37,9 +35,6 @@ public sealed class CreateBookCommandHandlerTests
     [Fact]
     public async Task HandleAsync_WithEmptyAuthorIdsList_ReturnsErrorMessage()
     {
-        // Arrange:
-        var expectedErrorMessage = "'authorIds' is a required field";
-
         // Act:
         Result handleAsyncResult = await _createBookCommandHandler.HandleAsync(
             new CreateBookCommand(
@@ -50,14 +45,14 @@ public sealed class CreateBookCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
+        Assert.Equal("missingAuthorIds", handleAsyncResult.ErrorType);
+        Assert.Equal("'authorIds' is a required field", handleAsyncResult.ErrorMessage);
     }
 
     [Fact]
     public async Task HandleAsync_WithNonexistingAuthor_ReturnsErrorMessage()
     {
         // Arrange:
-        var expectedErrorMessage = "Could not find some of the authors for the provided IDs.";
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetAllBySpecificationAsync(
                 It.IsAny<AuthorsByIdsSpecification>(),
@@ -70,11 +65,31 @@ public sealed class CreateBookCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
+        Assert.Equal("authorIds", handleAsyncResult.ErrorType);
+        Assert.Equal("Could not find some of the authors for the provided IDs.", handleAsyncResult.ErrorMessage);
     }
 
     [Fact]
-    public async Task HandleAsync_WithNonexistingBookTitle_ReturnsSuccess()
+    public async Task HandleAsync_WithErrorOnCreatingBook_ReturnsErrorMessage()
+    {
+        // Act:
+        Result handleAsyncResult = await _createBookCommandHandler.HandleAsync(
+            new CreateBookCommand(
+                [It.IsAny<Guid>(), It.IsAny<Guid>()],
+                string.Empty,
+                -2,
+                string.Empty),
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal("bookTitle|editionNumber|isbnFormat", handleAsyncResult.ErrorType);
+        Assert.Equal(
+            "The title can't be empty.|The edition number can't be smaller than 1.|Invalid ISBN format.",
+            handleAsyncResult.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithCorrectParameters_ReturnsSuccess()
     {
         // Act:
         Result handleAsyncResult = await _createBookCommandHandler.HandleAsync(

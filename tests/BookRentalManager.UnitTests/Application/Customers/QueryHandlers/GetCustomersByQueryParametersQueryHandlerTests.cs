@@ -49,6 +49,26 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WithInvalidSortParameters_ReturnsErrorMessage()
+    {
+        // Arrange:
+        const string ExpectedErrorType = "errorType";
+        const string ExpectedErrorMessage = "errorMessage";
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapCustomerSortParameters(It.IsAny<string>()))
+            .Returns(Result.Fail<string>(ExpectedErrorType, ExpectedErrorMessage));
+
+        // Act:
+        Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+            _getCustomersByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal(ExpectedErrorType, handlerResult.ErrorType);
+        Assert.Equal(ExpectedErrorMessage, handlerResult.ErrorMessage);
+    }
+
+    [Fact]
     public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers()
     {
         // Arrange:

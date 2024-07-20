@@ -5,12 +5,13 @@ public sealed class CustomerStatusTests
     private const string AvailabilityErrorMessage = "The customer has reached the maximum amount of books per customer category";
 
     [Theory]
-    [InlineData(0, 2, AvailabilityErrorMessage + " (Explorer: 2).")]
-    [InlineData(11, 5, AvailabilityErrorMessage + " (Adventurer: 5).")]
-    [InlineData(51, 7, AvailabilityErrorMessage + " (Master: 7).")]
+    [InlineData(0, 2, "explorerMaximumAmountReached", AvailabilityErrorMessage + " (Explorer: 2).")]
+    [InlineData(11, 5, "adventurerMaximumAmountReached", AvailabilityErrorMessage + " (Adventurer: 5).")]
+    [InlineData(51, 7, "masterMaximumAmountReached", AvailabilityErrorMessage + " (Master: 7).")]
     public void CheckCustomerTypeBookAvailability_WithCustomerStatusAndItsMaxAmount_ReturnsErrorMessage(
         int customerPoints,
         int customerBookCount,
+        string expectedErrorType,
         string expectedErrorMessage)
     {
         // Arrange:
@@ -20,6 +21,7 @@ public sealed class CustomerStatusTests
         Result customerTypeAvailability = customerStatus.CheckRentPossibilityByCustomerType(customerBookCount);
 
         // Assert:
+        Assert.Equal(expectedErrorType, customerTypeAvailability.ErrorType);
         Assert.Equal(expectedErrorMessage, customerTypeAvailability.ErrorMessage);
     }
 

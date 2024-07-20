@@ -1,4 +1,4 @@
-namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
+namespace BookRentalManager.UnitTests.Application.Authors.CommandHandlers;
 
 public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
 {
@@ -15,7 +15,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
     {
         _book = TestFixtures.CreateDummyBook();
         _anotherBook = new Book(
-                "Clean Code: A Handbook of Agile Software Craftsmanship",
+                BookTitle.Create("Clean Code: A Handbook of Agile Software Craftsmanship").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
         var operations = new List<Operation<ChangeCustomerBooksByBookIdsDto>>
@@ -62,6 +62,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
@@ -88,6 +89,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("jsonPatch", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
@@ -108,6 +110,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("bookIds", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
@@ -123,6 +126,7 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("noBook|noBook", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
@@ -141,7 +145,6 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
         // Assert:
         Assert.True(handleAsyncResult.IsSuccess);
     }
-
 
     [Fact]
     public async Task HandleAsync_WithCorrectParametersAndRentingBook_ReturnsSuccess()

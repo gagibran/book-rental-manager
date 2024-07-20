@@ -41,7 +41,7 @@ public static class TestDataSeeder
                 new(FullName.Create("Edgar Allan", "Poe").Value!),
             };
             var designPatternsBook = new Book(
-                "Design Patterns: Elements of Reusable Object-Oriented Software",
+                BookTitle.Create("Design Patterns: Elements of Reusable Object-Oriented Software").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("0-201-63361-2").Value!);
             newAuthors[0].AddBook(designPatternsBook);
@@ -49,16 +49,16 @@ public static class TestDataSeeder
             newAuthors[2].AddBook(designPatternsBook);
             newAuthors[3].AddBook(designPatternsBook);
             var cleanCodeBook = new Book(
-                "Clean Code: A Handbook of Agile Software Craftsmanship",
+                BookTitle.Create("Clean Code: A Handbook of Agile Software Craftsmanship").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
             newAuthors[4].AddBook(cleanCodeBook);
             var callOfCthulhuBook = new Book(
-                "The Call Of Cthulhu",
+                BookTitle.Create("The Call Of Cthulhu").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-1515424437").Value!);
             var shadowOverInnsmouthBook = new Book(
-                "The Shadow Over Innsmouth",
+                BookTitle.Create("The Shadow Over Innsmouth").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-1878252180").Value!);
             newAuthors[5].AddBook(callOfCthulhuBook);

@@ -10,14 +10,9 @@ internal sealed class DeleteAuthorByIdCommandHandler(IRepository<Author> authorR
         {
             return Result.Fail(RequestErrors.IdNotFoundError, $"No author with the ID of '{deleteAuthorByIdCommand.Id}' was found.");
         }
-        Result authorHasRentedBooksResult = Result.Success();
         if (author.Books.Any())
         {
             return Result.Fail("authorHasBooks", "This author has books. Please, delete the books before deleting the author.");
-        }
-        if (!authorHasRentedBooksResult.IsSuccess)
-        {
-            return authorHasRentedBooksResult;
         }
         await authorRepository.DeleteAsync(author, cancellationToken);
         return Result.Success();

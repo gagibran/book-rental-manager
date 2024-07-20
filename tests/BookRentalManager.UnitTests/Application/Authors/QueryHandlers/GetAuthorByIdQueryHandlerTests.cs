@@ -54,6 +54,7 @@ public sealed class GetAuthorByIdQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
     }
 }

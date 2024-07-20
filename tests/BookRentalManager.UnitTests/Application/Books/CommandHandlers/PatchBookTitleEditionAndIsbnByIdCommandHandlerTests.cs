@@ -12,7 +12,7 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
         _bookRepositoryStub = new();
         _book = TestFixtures.CreateDummyBook();
         var patchBookTitleEditionAndIsbnByIdDto = new PatchBookTitleEditionAndIsbnByIdDto(
-            _book.BookTitle,
+            _book.BookTitle.Title,
             _book.Edition.EditionNumber,
             _book.Isbn.IsbnValue);
         var operations = new List<Operation<PatchBookTitleEditionAndIsbnByIdDto>>
@@ -48,19 +48,21 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
     [Theory]
-    [InlineData("/invalidPath", "/invalidPath", 2, "0-201-61622-X", "The target location specified by path segment 'invalidPath' was not found.")]
-    [InlineData("/edition", "/isbn", 0, "0-201-61622-X", "The edition number can't be smaller than 1.")]
-    [InlineData("/edition", "/isbn", 1, "201-61622-X", "Invalid ISBN format.")]
+    [InlineData("/invalidPath", "/invalidPath", 2, "0-201-61622-X", "The target location specified by path segment 'invalidPath' was not found.", "jsonPatch")]
+    [InlineData("/edition", "/isbn", 0, "0-201-61622-X", "The edition number can't be smaller than 1.", "editionNumber")]
+    [InlineData("/edition", "/isbn", 1, "201-61622-X", "Invalid ISBN format.", "isbnFormat")]
     public async Task HandleAsync_WithInvalidPatchOperationOrValue_ReturnsErrorMessage(
         string path1,
         string path2,
         int newEdition,
         string newIsbn,
-        string expectedErrorMessage)
+        string expectedErrorMessage,
+        string expectedErrorType)
     {
         // Arrange:
         var operations = new List<Operation<PatchBookTitleEditionAndIsbnByIdDto>>
@@ -78,6 +80,25 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal(expectedErrorType, handleAsyncResult.ErrorType);
+        Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithBookAlreadyRentedByCustomer_ReturnsErrorMessage()
+    {
+        // Arrange:
+        Customer customer = TestFixtures.CreateDummyCustomer();
+        var expectedErrorMessage = $"This book is currently rented by {customer.FullName}. Return the book before updating it.";
+        _book.SetRentedBy(customer);
+
+        // Act:
+        Result handleAsyncResult = await _patchBookTitleEditionAndIsbnByIdCommandHandler.HandleAsync(
+            _patchBookTitleEditionAndIsbnByIdCommand,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal("bookCustomer", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 

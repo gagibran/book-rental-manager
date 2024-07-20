@@ -137,7 +137,7 @@ public sealed class AuthorControllerTests
         Book book = TestFixtures.CreateDummyBook();
         var getBookFromAuthorDtos = new List<GetBookFromAuthorDto>
         {
-            new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.ToString())
+            new(book.BookTitle.Title, book.Edition.EditionNumber, book.Isbn.ToString())
         };
         var getAuthorDto = new GetAuthorDto(_author.Id, _author.FullName.ToString(), getBookFromAuthorDtos);
         _dispatcherStub
@@ -171,7 +171,7 @@ public sealed class AuthorControllerTests
         Book book = TestFixtures.CreateDummyBook();
         var getBookFromAuthorDtos = new List<GetBookFromAuthorDto>
         {
-            new(book.BookTitle, book.Edition.EditionNumber, book.Isbn.ToString())
+            new(book.BookTitle.Title, book.Edition.EditionNumber, book.Isbn.ToString())
         };
         var getAuthorDto = new GetAuthorDto(_author.Id, _author.FullName.ToString(), getBookFromAuthorDtos);
         _dispatcherStub

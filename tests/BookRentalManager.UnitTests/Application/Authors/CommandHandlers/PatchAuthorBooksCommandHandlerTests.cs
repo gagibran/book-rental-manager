@@ -1,4 +1,4 @@
-namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
+namespace BookRentalManager.UnitTests.Application.Authors.CommandHandlers;
 
 public sealed class PatchAuthorBooksCommandHandlerTests
 {
@@ -13,7 +13,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
     {
         _book = TestFixtures.CreateDummyBook();
         var anotherBook = new Book(
-            "Clean Code: A Handbook of Agile Software Craftsmanship",
+            BookTitle.Create("Clean Code: A Handbook of Agile Software Craftsmanship").Value!,
             Edition.Create(1).Value!,
             Isbn.Create("978-0132350884").Value!);
         var bookIdsToAdd = new List<Guid> { _book.Id, anotherBook.Id };
@@ -58,6 +58,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", patchAuthorBooksCommandHandlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
     }
 
@@ -71,7 +72,6 @@ public sealed class PatchAuthorBooksCommandHandlerTests
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         var patchAuthorBooksCommand = new PatchAuthorBooksCommand(It.IsAny<Guid>(), patchAuthorBooksDtoPatchDocument);
-        var expectedErrorMessage = "Could not find some of the books for the provided IDs.";
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<AuthorByIdWithBooksSpecification>(),
@@ -89,7 +89,8 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
+        Assert.Equal("bookIds", patchAuthorBooksCommandHandlerResult.ErrorType);
+        Assert.Equal("Could not find some of the books for the provided IDs.", patchAuthorBooksCommandHandlerResult.ErrorMessage);
     }
 
     [Theory]
@@ -121,6 +122,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("jsonPatch", patchAuthorBooksCommandHandlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
     }
 

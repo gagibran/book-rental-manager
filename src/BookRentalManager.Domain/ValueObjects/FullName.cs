@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace BookRentalManager.Domain.ValueObjects;
 
 public sealed class FullName : ValueObject
@@ -13,7 +11,6 @@ public sealed class FullName : ValueObject
         LastName = default!;
     }
 
-    [JsonConstructor]
     private FullName(string firstName, string lastName)
     {
         FirstName = firstName;

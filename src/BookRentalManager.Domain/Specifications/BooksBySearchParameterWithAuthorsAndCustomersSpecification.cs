@@ -5,7 +5,7 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersSpecification :
     public BooksBySearchParameterWithAuthorsAndCustomersSpecification(string searchParameter, string sortParameters)
     {
         string formattedSearchParameter = searchParameter.Trim().ToLower();
-        Where = book => book.BookTitle.ToLower().Contains(formattedSearchParameter)
+        Where = book => book.BookTitle.Title.ToLower().Contains(formattedSearchParameter)
                 || book.Edition.EditionNumber.ToString().Contains(formattedSearchParameter)
                 || book.Isbn.IsbnValue.ToLower().Contains(formattedSearchParameter)
                 || book.RentedAt.ToString()!.Contains(formattedSearchParameter)

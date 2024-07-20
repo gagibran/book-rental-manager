@@ -45,9 +45,9 @@ public sealed class SortParametersMapperTests
     }
 
     [Theory]
-    [InlineData("Isbn,RentedAt,BookTitleDesc", "Isbn.IsbnValue,RentedAt,BookTitleDesc")]
-    [InlineData("Isbn,DueDate,BookTitleDesc", "Isbn.IsbnValue,DueDate,BookTitleDesc")]
-    [InlineData("IsbnDesc,BookTitle,RentedAt,EditionDesc", "Isbn.IsbnValueDesc,BookTitle,RentedAt,Edition.EditionNumberDesc")]
+    [InlineData("Isbn,RentedAt,BookTitleDesc", "Isbn.IsbnValue,RentedAt,BookTitle.TitleDesc")]
+    [InlineData("Isbn,DueDate,BookTitleDesc", "Isbn.IsbnValue,DueDate,BookTitle.TitleDesc")]
+    [InlineData("IsbnDesc,BookTitle,RentedAt,EditionDesc", "Isbn.IsbnValueDesc,BookTitle.Title,RentedAt,Edition.EditionNumberDesc")]
     public void MapBookSortParameters_WithValidBookInputData_ReturnsExpectedOutputData(
         string propertyNamesSeparatedByComma,
         string expectedResult)

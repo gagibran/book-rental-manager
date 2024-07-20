@@ -8,7 +8,8 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
             .ToTable("Book")
             .HasKey(book => book.Id);
         bookBuilder
-            .Property(book => book.BookTitle)
+            .OwnsOne(book => book.BookTitle)
+            .Property(bookTitle => bookTitle.Title)
             .HasColumnName("BookTitle")
             .IsRequired();
         bookBuilder

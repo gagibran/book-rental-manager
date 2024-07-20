@@ -49,19 +49,21 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
     [Theory]
-    [InlineData("/invalidPath", "/invalidPath", "John", 222, "The target location specified by path segment 'invalidPath' was not found.")]
-    [InlineData("/firstName", "/areaCode", "John", 100, "Invalid area code.")]
-    [InlineData("/firstName", "/areaCode", " ", 300, "First name cannot be empty.")]
-    [InlineData("/firstName", "/areaCode", " ", 100, "First name cannot be empty.|Invalid area code.")]
+    [InlineData("/invalidPath", "/invalidPath", "John", 222, "jsonPatch", "The target location specified by path segment 'invalidPath' was not found.")]
+    [InlineData("/firstName", "/areaCode", "John", 100, "invalidAreaCode", "Invalid area code.")]
+    [InlineData("/firstName", "/areaCode", " ", 300, "firstName", "First name cannot be empty.")]
+    [InlineData("/firstName", "/areaCode", " ", 100, "firstName|invalidAreaCode", "First name cannot be empty.|Invalid area code.")]
     public async Task HandleAsync_WithInvalidPatchOperationOrValue_ReturnsErrorMessage(
         string path1,
         string path2,
         string firstName,
         int newAreaCode,
+        string expectedErrorType,
         string expectedErrorMessage)
     {
         // Arrange:
@@ -80,6 +82,7 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal(expectedErrorType, handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 

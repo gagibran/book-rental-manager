@@ -44,7 +44,33 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithInvalidSortParameters_ReturnsErrorMessage()
+    {
+        // Arrange:
+        const string ExpectedErrorType = "errorType";
+        const string ExpectedErrorMessage = "errorMessage";
+        _authorRepositoryStub
+            .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
+                It.IsAny<Specification<Author>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(_author);
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapBookSortParameters(It.IsAny<string>()))
+            .Returns(Result.Fail<string>(ExpectedErrorType, ExpectedErrorMessage));
+
+        // Act:
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersExcludingFromAuthorQueryHandler.HandleAsync(
+            _getBooksByQueryParametersExcludingFromAuthorQuery,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal(ExpectedErrorType, handlerResult.ErrorType);
+        Assert.Equal(ExpectedErrorMessage, handlerResult.ErrorMessage);
     }
 
     [Fact]
@@ -60,7 +86,7 @@ public sealed class GetBooksByQueryParametersExcludingFromAuthorQueryHandlerTest
             It.IsAny<int>());
         var expectedGetBookDto = new GetBookDto(
             book.Id,
-            book.BookTitle,
+            book.BookTitle.Title,
             [],
             book.Edition.EditionNumber,
             book.Isbn.ToString(),

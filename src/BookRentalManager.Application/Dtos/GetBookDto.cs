@@ -14,7 +14,7 @@ public sealed record GetBookDto(
 {
     public GetBookDto(Book book) : this(
         book.Id,
-        book.BookTitle,
+        book.BookTitle.Title,
         book.Authors.Select(author => new GetAuthorFromBookDto(author)).ToList().AsReadOnly(),
         book.Edition.EditionNumber,
         book.Isbn.ToString(),

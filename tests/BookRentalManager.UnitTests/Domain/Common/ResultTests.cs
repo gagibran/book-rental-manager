@@ -77,7 +77,7 @@ public sealed class ResultTests
     }
 
     [Fact]
-    public void Combine_WithoutFailedResults_ReturnsNullErrorMessage()
+    public void Combine_WithoutFailedResults_ReturnsEmptyErrorMessage()
     {
         // Arrange:
         Result successResult1 = Result.Success();
@@ -88,6 +88,7 @@ public sealed class ResultTests
         Result combinedResults = Result.Combine(successResult1, successResult2, successResult3);
 
         // Assert:
+        Assert.Empty(combinedResults.ErrorType);
         Assert.Empty(combinedResults.ErrorMessage);
     }
 }

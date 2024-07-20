@@ -8,7 +8,7 @@ public sealed record GetBookRentedByCustomerDto(
     DateTime DueDate)
 {
     public GetBookRentedByCustomerDto(Book book) : this(
-        book.BookTitle,
+        book.BookTitle.Title,
         book.Edition.EditionNumber,
         book.Isbn.ToString(),
         book.RentedAt!.Value,

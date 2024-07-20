@@ -12,6 +12,7 @@ public sealed class EmailTests
         Result<Email> emailResult = Email.Create(".2es-d@2dsd.asd");
 
         // Assert:
+        Assert.Equal("email", emailResult.ErrorType);
         Assert.Equal(expectedErrorMessage, emailResult.ErrorMessage);
     }
 

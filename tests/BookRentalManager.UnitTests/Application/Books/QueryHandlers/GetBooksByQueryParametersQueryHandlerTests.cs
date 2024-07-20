@@ -22,6 +22,26 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WithInvalidSortParameters_ReturnsErrorMessage()
+    {
+        // Arrange:
+        const string ExpectedErrorType = "errorType";
+        const string ExpectedErrorMessage = "errorMessage";
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapBookSortParameters(It.IsAny<string>()))
+            .Returns(Result.Fail<string>(ExpectedErrorType, ExpectedErrorMessage));
+
+        // Act:
+        Result<PaginatedList<GetBookDto>> handlerResult = await _getBooksByQueryParametersQueryHandler.HandleAsync(
+            _getBooksByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal(ExpectedErrorType, handlerResult.ErrorType);
+        Assert.Equal(ExpectedErrorMessage, handlerResult.ErrorMessage);
+    }
+
+    [Fact]
     public async Task HandleAsync_WithExistingBooks_ReturnsExpectedGetBookDtos()
     {
         // Arrange:
@@ -34,7 +54,7 @@ public sealed class GetBooksByQueryParametersQueryHandlerTests
             It.IsAny<int>());
         var getBookDto = new GetBookDto(
             book.Id,
-            book.BookTitle,
+            book.BookTitle.Title,
             [],
             book.Edition.EditionNumber,
             book.Isbn.ToString(),

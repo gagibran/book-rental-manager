@@ -13,7 +13,7 @@ public sealed class GetBookByIdQueryHandlerTests
         _book = TestFixtures.CreateDummyBook();
         _getBookDto = new(
             _book.Id,
-            _book.BookTitle,
+            _book.BookTitle.Title,
             [],
             _book.Edition.EditionNumber,
             _book.Isbn.ToString(),
@@ -42,6 +42,7 @@ public sealed class GetBookByIdQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
     }
 
