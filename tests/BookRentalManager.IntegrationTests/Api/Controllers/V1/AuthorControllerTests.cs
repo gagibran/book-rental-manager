@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
+﻿namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
 public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebApplicationFactory)
     : IntegrationTest(integrationTestsWebApplicationFactory)
@@ -396,9 +394,9 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
 
     [Theory]
     [InlineData("John", "", "Last name cannot be empty.")]
-    [InlineData("", "Doe", "First name cannot be empty.")]
+    [InlineData(null, "Doe", "First name cannot be empty.")]
     [InlineData("", "", "name cannot be empty.")]
-    public async Task CreateAuthorAsync_WithMissingParameter_Returns422WithErrorMessage(string firstName, string lastName, string expectedErrorMessage)
+    public async Task CreateAuthorAsync_WithInvalidParameters_Returns422WithErrorMessage(string? firstName, string lastName, string expectedErrorMessage)
     {
         // Arrange:
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, AuthorBaseUri)

@@ -419,4 +419,40 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         await HttpClient.DeleteAsync($"{BookBaseUri}/{actualCreatedBookId}");
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{expectedAuthor.Id}");
     }
+
+    [Theory]
+    [InlineData(null, 1, "0-201-63361-1", "The title can't be empty.")]
+    [InlineData("A Cool Book", 0, "0-201-63361-1", "The edition number can't be smaller than 1.")]
+    [InlineData("A Cool Book", 1, null, "Invalid ISBN format.")]
+    [InlineData(null, 1, null, "bookTitle\":[\"The title can't be empty.\"],\"isbnFormat\":[\"Invalid ISBN format.\"]")]
+    public async Task CreateBookAsync_WithInvalidParameters_Returns422WithErrorMessage(
+        string? bookTitle,
+        int? edition,
+        string? isbn,
+        string expectedErrorMessage)
+    {
+        // Arrange:
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, BookBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"authorIds\": [\"{authorId}\"],\"bookTitle\": \"{bookTitle}\",\"edition\": {edition},\"isbn\": \"{isbn}\"}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        Assert.Contains(expectedErrorMessage, responseContent);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+    }
 }
