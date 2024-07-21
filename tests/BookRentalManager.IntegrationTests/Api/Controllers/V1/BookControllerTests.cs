@@ -455,4 +455,108 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         // Clean up:
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
     }
+
+    [Fact]
+    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithNonexistingBook_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingBookId = Guid.NewGuid();
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{BookBaseUri}/{nonexistingBookId}")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"replace\", \"path\": \"/booktitle\", \"value\": \"A Cool New Title\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"3\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"978-0132350884\"}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains($"No book with the ID of '{nonexistingBookId}' was found.", errorMessage);
+    }
+
+    [Theory]
+    [InlineData("  ", 1, "0-301-64361-2", "The title can't be empty.")]
+    [InlineData("A Cool New Title", -1, "0-301-64361-2", "The edition number can't be smaller than 1.")]
+    [InlineData("A Cool New Title", 1, "0-301-6436", "Invalid ISBN format.")]
+    [InlineData("  ", 1, "24", "{\"bookTitle\":[\"The title can't be empty.\"],\"isbnFormat\":[\"Invalid ISBN format.\"]}")]
+    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithValidationErrors_Returns422WithErrorMessage(
+        string bookTitle,
+        int edition,
+        string isbn,
+        string expectedErrorMessage)
+    {
+        // Arrange:
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        BookCreatedDto book = await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \" A Cool Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri);
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{BookBaseUri}/{book.Id}")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"replace\", \"path\": \"/booktitle\", \"value\": \"{bookTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{edition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{isbn}\"}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains(expectedErrorMessage, errorMessage);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+    }
+
+    [Fact]
+    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithValidParameters_Returns204AndUpdatesBook()
+    {
+        // Arrange:
+        const string ExpectedNewTitle = "A Cool New Title";
+        const int ExpectedNewEdition = 2;
+        const string ExpectedNewIsbn = "0-341-61361-2";
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        BookCreatedDto book = await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \" A Cool Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri);
+        var uriWithBookThatWillBeUpdatedId = $"{BookBaseUri}/{book.Id}";
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uriWithBookThatWillBeUpdatedId)
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"replace\", \"path\": \"/booktitle\", \"value\": \"{ExpectedNewTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{ExpectedNewEdition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{ExpectedNewIsbn}\"}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetBookDto updatedBook = await GetAsync<GetBookDto>(
+            MediaTypeNames.Application.Json,
+            uriWithBookThatWillBeUpdatedId);
+        Assert.Equal(ExpectedNewTitle, updatedBook.BookTitle);
+        Assert.Equal(ExpectedNewEdition, updatedBook.Edition);
+        Assert.Equal(ExpectedNewIsbn, updatedBook.Isbn);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+    }
 }
