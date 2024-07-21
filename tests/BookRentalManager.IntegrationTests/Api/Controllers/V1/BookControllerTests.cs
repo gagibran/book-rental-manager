@@ -559,4 +559,49 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
     }
+
+    [Fact]
+    public async Task DeleteBookByIdAsync_WithExistingBook_DeletesBookAndReturns204()
+    {
+        // Arrange:
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        Guid createdBookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \" A Cool Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        var uriWithCreatedBookId = $"{BookBaseUri}/{createdBookId}";
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            uriWithCreatedBookId));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetBookDto book = await GetAsync<GetBookDto>(MediaTypeNames.Application.Json, uriWithCreatedBookId);
+        Assert.Equal(Guid.Empty, book.Id);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+    }
+
+    [Fact]
+    public async Task DeleteBookByIdAsync_WithNonexistingBook_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingBookId = Guid.NewGuid();
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"{BookBaseUri}/{nonexistingBookId}"));
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Assert.Contains($"No book with the ID of '{nonexistingBookId}' was found.", responseContent);
+    }
 }

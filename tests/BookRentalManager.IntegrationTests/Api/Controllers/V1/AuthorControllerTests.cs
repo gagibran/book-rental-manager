@@ -520,7 +520,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     {
         // Arrange:
         Guid createdAuthorId = (await CreateAsync<AuthorCreatedDto>(
-            $"{{\"firstName\": \"John\", \"lastName\": \"Doe\"}}",
+            "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
             MediaTypeNames.Application.Json,
             AuthorBaseUri)).Id;
         var uriWithCreatedAuthorId = $"{AuthorBaseUri}/{createdAuthorId}";
@@ -532,7 +532,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
 
         // Assert:
         httpResponseMessage.EnsureSuccessStatusCode();
-        var author = await GetAsync<GetAuthorDto>(MediaTypeNames.Application.Json, uriWithCreatedAuthorId);
+        GetAuthorDto author = await GetAsync<GetAuthorDto>(MediaTypeNames.Application.Json, uriWithCreatedAuthorId);
         Assert.Equal(Guid.Empty, author.Id);
     }
 
