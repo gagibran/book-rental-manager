@@ -135,9 +135,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
-        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
-        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
-        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
     [Fact]
@@ -161,9 +162,10 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         // Assert:
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
-        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails!.Type);
-        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails!.Title);
-        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails!.Status);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
     [Theory]
