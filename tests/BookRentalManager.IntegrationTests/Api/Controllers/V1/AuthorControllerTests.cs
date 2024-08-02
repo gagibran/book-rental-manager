@@ -1,4 +1,6 @@
-﻿namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
+﻿using Xunit.Sdk;
+
+namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
 public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebApplicationFactory)
     : IntegrationTest(integrationTestsWebApplicationFactory)
@@ -62,6 +64,56 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
                 s_expectedAuthors.OrderBy(author => author.FullName).Skip(1).Take(1).ToList(),
                 new List<string> { "{\"totalAmountOfItems\":7,\"pageIndex\":2,\"pageSize\":1,\"totalAmountOfPages\":7}" }
             },
+        };
+    }
+
+    public static TheoryData<string?, string, ValidationProblemDetails> CreateAuthorAsyncWithInvalidParametersTestData()
+    {
+        return new()
+        {
+            {
+                "John",
+                "",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "lastName", ["Last name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                null,
+                "Doe",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "firstName", ["First name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "",
+                "",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "firstName", ["First name cannot be empty."]},
+                        { "lastName", ["Last name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            }
         };
     }
 
@@ -133,6 +185,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}?pageSize=notANumber");
 
         // Assert:
+        Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
@@ -160,6 +213,7 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{AuthorBaseUri}?sortBy=notAValidParameter");
 
         // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
@@ -395,10 +449,11 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     }
 
     [Theory]
-    [InlineData("John", "", "Last name cannot be empty.")]
-    [InlineData(null, "Doe", "First name cannot be empty.")]
-    [InlineData("", "", "name cannot be empty.")]
-    public async Task CreateAuthorAsync_WithInvalidParameters_Returns422WithErrorMessage(string? firstName, string lastName, string expectedErrorMessage)
+    [MemberData(nameof(CreateAuthorAsyncWithInvalidParametersTestData))]
+    public async Task CreateAuthorAsync_WithInvalidParameters_Returns422WithErrorMessage(
+        string? firstName,
+        string lastName,
+        ValidationProblemDetails expectedValidationProblemDetails)
     {
         // Arrange:
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, AuthorBaseUri)
@@ -413,9 +468,13 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
 
         // Assert:
-        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
-        Assert.Contains(expectedErrorMessage, responseContent);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
     [Fact]
@@ -475,14 +534,28 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         };
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No author with the ID of '{nonexistingAuthorId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
 
         // Assert:
         Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
-        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains($"No author with the ID of '{nonexistingAuthorId}' was found.", errorMessage);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
 
         // Clean up:
         await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
@@ -504,21 +577,35 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         };
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "bookIds", ["Could not find some of the books for the provided IDs."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
 
         // Assert:
         Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
-        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains("Could not find some of the books for the provided IDs.", errorMessage);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
 
         // Clean up:
         await HttpClient.DeleteAsync($"{BookBaseUri}/{authorId}");
     }
 
     [Fact]
-    public async Task DeleteAuthorByIdAsync_WithExistingAuthor_DeletesAuthorAndReturns204()
+    public async Task DeleteAuthorByIdAsync_WithExistingAuthor_Returns204AndDeletesAuthor()
     {
         // Arrange:
         Guid createdAuthorId = (await CreateAsync<AuthorCreatedDto>(
@@ -543,6 +630,16 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     {
         // Arrange:
         Guid nonexistingAuthorId = Guid.NewGuid();
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No author with the ID of '{nonexistingAuthorId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
@@ -551,8 +648,12 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
 
         // Assert:
         Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
-        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains($"No author with the ID of '{nonexistingAuthorId}' was found.", responseContent);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
     [Fact]
@@ -562,6 +663,16 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync(AuthorBaseUri);
         string authors = await httpResponseMessage.Content.ReadAsStringAsync();
         Guid existingAuthorWithBooksId = JsonSerializer.Deserialize<List<GetAuthorDto>>(authors, jsonSerializerOptions)!.First().Id;
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "authorHasBooks", ["This author has books. Please, delete the books before deleting the author."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
 
         // Act:
         httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
@@ -570,8 +681,12 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
 
         // Assert:
         Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
-        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains("This author has books. Please, delete the books before deleting the author.", responseContent);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
     [Fact]
@@ -618,15 +733,29 @@ public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory 
     public async Task GetAuthorAddBooksOptionsAsync_WithNonexistingAuthor_Returns404WithErrorMessage()
     {
         // Arrange:
-        Guid nonExistingAuthorId = Guid.NewGuid();
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, $"{AuthorBaseUri}/{nonExistingAuthorId}/AddBooks");
+        Guid nonexistingAuthorId = Guid.NewGuid();
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, $"{AuthorBaseUri}/{nonexistingAuthorId}/AddBooks");
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No author with the ID of '{nonexistingAuthorId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
 
         // Assert:
         Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
-        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains($"No author with the ID of '{nonExistingAuthorId}' was found.", errorMessage);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 }

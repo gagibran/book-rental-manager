@@ -76,6 +76,74 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         };
     }
 
+    public static TheoryData<string, int, string, ValidationProblemDetails> WithValidationErrorsTestData()
+    {
+        return new()
+        {
+            {
+                "  ",
+                1,
+                "0-301-64361-2",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "bookTitle", ["The title can't be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "A Cool New Title",
+                -1,
+                "0-301-64361-2",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "editionNumber", ["The edition number can't be smaller than 1."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "A Cool New Title",
+                1,
+                "0-301-6436",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "isbnFormat", ["Invalid ISBN format."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "  ",
+                1,
+                "24",
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "bookTitle", ["The title can't be empty."]},
+                        { "isbnFormat", ["Invalid ISBN format."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            }
+        };
+    }
+
     [Fact]
     public async Task GetBooksByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
     {
@@ -152,6 +220,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}?pageSize=notANumber");
 
         // Assert:
+        Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
@@ -179,6 +248,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}?sortBy=notAValidParameter");
 
         // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
@@ -423,15 +493,12 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
     }
 
     [Theory]
-    [InlineData(null, 1, "0-201-63361-1", "The title can't be empty.")]
-    [InlineData("A Cool Book", 0, "0-201-63361-1", "The edition number can't be smaller than 1.")]
-    [InlineData("A Cool Book", 1, null, "Invalid ISBN format.")]
-    [InlineData(null, 1, null, "bookTitle\":[\"The title can't be empty.\"],\"isbnFormat\":[\"Invalid ISBN format.\"]")]
+    [MemberData(nameof(WithValidationErrorsTestData))]
     public async Task CreateBookAsync_WithInvalidParameters_Returns422WithErrorMessage(
-        string? bookTitle,
-        int? edition,
-        string? isbn,
-        string expectedErrorMessage)
+        string bookTitle,
+        int edition,
+        string isbn,
+        ValidationProblemDetails expectedValidationProblemDetails)
     {
         // Arrange:
         Guid authorId = (await CreateAsync<AuthorCreatedDto>(
@@ -450,9 +517,13 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
 
         // Assert:
-        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
-        Assert.Contains(expectedErrorMessage, responseContent);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
 
         // Clean up:
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
@@ -470,26 +541,37 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         };
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No book with the ID of '{nonexistingBookId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
 
         // Act:
         HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
 
         // Assert:
         Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
-        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains($"No book with the ID of '{nonexistingBookId}' was found.", errorMessage);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
     [Theory]
-    [InlineData("  ", 1, "0-301-64361-2", "The title can't be empty.")]
-    [InlineData("A Cool New Title", -1, "0-301-64361-2", "The edition number can't be smaller than 1.")]
-    [InlineData("A Cool New Title", 1, "0-301-6436", "Invalid ISBN format.")]
-    [InlineData("  ", 1, "24", "{\"bookTitle\":[\"The title can't be empty.\"],\"isbnFormat\":[\"Invalid ISBN format.\"]}")]
+    [MemberData(nameof(WithValidationErrorsTestData))]
     public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithValidationErrors_Returns422WithErrorMessage(
         string bookTitle,
         int edition,
         string isbn,
-        string expectedErrorMessage)
+        ValidationProblemDetails expectedValidationProblemDetails)
     {
         // Arrange:
         Guid authorId = (await CreateAsync<AuthorCreatedDto>(
@@ -513,8 +595,12 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
 
         // Assert:
         Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
-        string errorMessage = await httpResponseMessage.Content.ReadAsStringAsync();
-        Assert.Contains(expectedErrorMessage, errorMessage);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
 
         // Clean up:
         await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
@@ -563,7 +649,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
     }
 
     [Fact]
-    public async Task DeleteBookByIdAsync_WithExistingBook_DeletesBookAndReturns204()
+    public async Task DeleteBookByIdAsync_WithExistingBook_Returns204AndDeletesBook()
     {
         // Arrange:
         Guid authorId = (await CreateAsync<AuthorCreatedDto>(
@@ -612,13 +698,13 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             $"{BookBaseUri}/{nonexistingBookId}"));
 
         // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
         Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
         Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
-        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
     }
 
     [Fact]
@@ -643,6 +729,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             $"{BookBaseUri}/ExcludingAuthor/{nonexistingAuthorId}"));
 
         // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
@@ -673,6 +760,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             $"{BookBaseUri}/ExcludingAuthor/{authorId}?SortBy=NotAValidParam"));
 
         // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
         ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
         Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
         Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
