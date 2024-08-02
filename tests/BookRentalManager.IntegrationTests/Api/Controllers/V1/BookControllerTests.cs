@@ -706,4 +706,27 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
+
+    [Fact]
+    public async Task GetBookOptions_WithoutParameters_Returns200WithHeaders()
+    {
+        // Arrange:
+        var expectedAllowHeader = new List<string>
+        {
+            "GET",
+            "HEAD",
+            "POST",
+            "PATCH",
+            "DELETE",
+            "OPTIONS"
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, BookBaseUri);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        Assert.Equal(expectedAllowHeader, httpResponseMessage.Content.Headers.GetValues("allow"));
+    }
 }
