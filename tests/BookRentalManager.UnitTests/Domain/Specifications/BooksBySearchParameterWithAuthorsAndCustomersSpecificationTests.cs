@@ -14,12 +14,14 @@ public sealed class BooksBySearchParameterWithAuthorsAndCustomersSpecificationTe
 
     [Theory]
     [InlineData("pragmatic Progr")]
+    [InlineData("John doe")]
     [InlineData("1")]
     [InlineData("0-201-616")]
     [InlineData("2")]
     public void IsSatisfiedBy_WithBooksWithQuery_ReturnsTrue(string searchParameter)
     {
         // Arrange:
+        TestFixtures.CreateDummyAuthor().AddBook(_book);
         var booksBySearchParameterWithAuthorsAndCustomersSpecification = new BooksBySearchParameterWithAuthorsAndCustomersSpecification(
             searchParameter,
             string.Empty);
