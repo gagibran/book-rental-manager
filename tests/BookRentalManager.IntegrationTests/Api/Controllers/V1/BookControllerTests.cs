@@ -768,4 +768,75 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersExcludingFromAuthorAsync_WithIncorrectParameterType_Returns400WithErrors()
+    {
+        // Arrange:
+        Guid existingAuthorId = (await GetAsync<List<GetAuthorDto>>(MediaTypeNames.Application.Json, AuthorBaseUri))
+            .First()
+            .Id;
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "PageSize", ["The value 'notANumber' is not valid for PageSize."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+            Title = "One or more validation errors occurred.",
+            Status = 400
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{BookBaseUri}/ExcludingAuthor/{existingAuthorId}?pageSize=notANumber"));
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+    }
+
+    [Fact]
+    public async Task GetBooksByQueryParametersExcludingFromAuthorAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
+    {
+        // Arrange:
+        Guid existingAuthorId = (await GetAsync<List<GetAuthorDto>>(MediaTypeNames.Application.Json, AuthorBaseUri))
+            .First()
+            .Id;
+        HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{BookBaseUri}/ExcludingAuthor/{existingAuthorId}"));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        BooksWithHateoasLinks booksWithHateoasLinks = JsonSerializer.Deserialize<BooksWithHateoasLinks>(responseContent, jsonSerializerOptions)!;
+        Assert.Contains(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            httpResponseMessage.Content.Headers.ContentType!.ToString());
+        Assert.DoesNotContain(
+            "Design Patterns: Elements of Reusable Object-Oriented Software",
+            booksWithHateoasLinks.Values.Select(bookWithHateoasLinks => bookWithHateoasLinks.BookTitle));
+        Assert.DoesNotContain(
+            "0-201-63361-2",
+            booksWithHateoasLinks.Values.Select(bookWithHateoasLinks => bookWithHateoasLinks.Isbn));
+        Assert.NotEqual(Guid.Empty, booksWithHateoasLinks.Values[0].Id);
+        Assert.NotEmpty(booksWithHateoasLinks.Values[0].Authors);
+        Assert.Equal(1, booksWithHateoasLinks.Values[0].Edition);
+        Assert.NotNull(booksWithHateoasLinks.Values[0].RentedAt);
+        Assert.NotNull(booksWithHateoasLinks.Values[0].DueDate);
+        Assert.Equal("Rosanne Johnson", booksWithHateoasLinks.Values[0].RentedBy!.FullName);
+        Assert.Equal("rosane.johnson@email.com", booksWithHateoasLinks.Values[0].RentedBy!.Email);
+        Assert.NotEmpty(booksWithHateoasLinks.Values[0].Links);
+        Assert.Empty(booksWithHateoasLinks.Links);
+    }
 }
