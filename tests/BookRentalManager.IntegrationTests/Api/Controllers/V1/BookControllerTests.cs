@@ -279,6 +279,36 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Assert.Equal(expectedXPaginationHeaders, actualXPaginationHeaders);
     }
 
+    [Fact]
+    public async Task GetBookById_WithNonexistingBook_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingBookId = Guid.NewGuid();
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No book with the ID of '{nonexistingBookId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
+        HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.GetAsync($"{BookBaseUri}/{nonexistingBookId}");
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
