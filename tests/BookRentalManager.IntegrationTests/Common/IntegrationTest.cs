@@ -5,6 +5,7 @@ public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory inte
 {
     protected const string AuthorBaseUri = "api/v1/author";
     protected const string BookBaseUri = "api/v1/book";
+    protected const string CustomerBaseUri = "api/v1/customer";
 
     protected static readonly JsonSerializerOptions jsonSerializerOptions = new()
     {

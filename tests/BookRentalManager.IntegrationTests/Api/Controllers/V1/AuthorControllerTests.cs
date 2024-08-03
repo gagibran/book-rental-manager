@@ -1,6 +1,4 @@
-﻿using Xunit.Sdk;
-
-namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
+﻿namespace BookRentalManager.IntegrationTests.Api.Controllers.V1;
 
 public sealed class AuthorControllerTests(IntegrationTestsWebApplicationFactory integrationTestsWebApplicationFactory)
     : IntegrationTest(integrationTestsWebApplicationFactory)

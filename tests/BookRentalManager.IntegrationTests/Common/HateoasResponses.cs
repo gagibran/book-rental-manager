@@ -13,3 +13,13 @@ public sealed record BookWithHateoasLinks(
     GetCustomerThatRentedBookDto? RentedBy,
     List<HateoasLinkDto> Links);
 public sealed record BooksWithHateoasLinks(List<BookWithHateoasLinks> Values, List<HateoasLinkDto> Links);
+public sealed record CustomerWithHateoasLinks(
+    string FullName,
+    Guid Id,
+    string Email,
+    string PhoneNumber,
+    IReadOnlyList<GetBookRentedByCustomerDto> Books,
+    string CustomerStatus,
+    int CustomerPoints,
+    List<HateoasLinkDto> Links);
+public sealed record CustomersWithHateoasLinks(List<CustomerWithHateoasLinks> Values, List<HateoasLinkDto> Links);
