@@ -320,7 +320,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Guid expectedId = await GetIdOrderedByConditionAsync<GetBookDto>(
             currentBookIndex,
             BookBaseUri,
-            getAuthorDto => getAuthorDto.BookTitle);
+            getBookDto => getBookDto.BookTitle);
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
 
         // Act:
@@ -355,7 +355,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Guid expectedId = await GetIdOrderedByConditionAsync<GetBookDto>(
             currentBookIndex,
             BookBaseUri,
-            getAuthorDto => getAuthorDto.BookTitle);
+            getBookDto => getBookDto.BookTitle);
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
 
         // Act:
@@ -383,7 +383,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Guid id = await GetIdOrderedByConditionAsync<GetBookDto>(
             currentBookIndex,
             BookBaseUri,
-            getAuthorDto => getAuthorDto.BookTitle);
+            getBookDto => getBookDto.BookTitle);
         HttpClient.DefaultRequestHeaders.Add("Accept", CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
         var expectedContentTypeHeaders = new List<string>
         {
@@ -412,7 +412,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Guid id = await GetIdOrderedByConditionAsync<GetBookDto>(
             currentBookIndex,
             BookBaseUri,
-            getAuthorDto => getAuthorDto.BookTitle);
+            getBookDto => getBookDto.BookTitle);
         HttpClient.DefaultRequestHeaders.Add("Accept", MediaTypeNames.Application.Json);
         var expectedContentTypeHeaders = new List<string>
         {
