@@ -71,6 +71,135 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         };
     }
 
+    public static TheoryData<string, string, string, int, int, ValidationProblemDetails> WithValidationErrorsTestData()
+    {
+        return new()
+        {
+            {
+                "  ",
+                "Doe",
+                "juan.doe@email.com",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "firstName", ["First name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "",
+                "juan.doe@email.com",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "lastName", ["Last name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "Doe",
+                "emailIsIncorrect@email",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "email", ["Email address is not in a valid format."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "Doe",
+                "",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "email", ["Email address is not in a valid format."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "John",
+                "Doe",
+                "john.doe@email.com",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "customerEmailAlreadyExists", ["A customer with the email 'john.doe@email.com' already exists."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "Doe",
+                "juan.doe@email.com",
+                199,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "invalidAreaCode", ["Invalid area code."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "John",
+                "",
+                "john.doe@email.com",
+                -1,
+                42542817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "lastName", ["Last name cannot be empty."]},
+                        { "invalidAreaCode", ["Invalid area code."]},
+                        { "invalidPhoneNumber", ["Invalid phone number."]},
+                        { "customerEmailAlreadyExists", ["A customer with the email 'john.doe@email.com' already exists."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            }
+        };
+    }
+
     [Fact]
     public async Task GetCustomersByQueryParametersAsync_WithMediaTypeVendorSpecific_Returns200OkWithHateoasLinks()
     {
@@ -353,5 +482,128 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         httpResponseMessage.EnsureSuccessStatusCode();
         IEnumerable<string> actualContentTypeHeaders = httpResponseMessage.Content.Headers.GetValues("content-type");
         Assert.Equal(expectedContentTypeHeaders, actualContentTypeHeaders);
+    }
+
+    [Fact]
+    public async Task CreateCustomerAsync_WithMediaTypeVendorSpecific_Returns201WithResponseBody()
+    {
+        // Arrange:
+        const string ExpectedFirstName = "Juan";
+        const string ExpectedLastName = "Doe";
+        const string ExpectedEmail = "juan.doe@email.com";
+        const string ExpectedAreaCode = "834";
+        const string ExpectedPrefixAndLineNumber = "4552897";
+        var expectedHateoasLinks = new List<HateoasLinkDto>
+        {
+            new(It.IsAny<string>(), "self", "GET"),
+            new(It.IsAny<string>(), "patch_customer", "PATCH"),
+            new(It.IsAny<string>(), "rent_books", "PATCH"),
+            new(It.IsAny<string>(), "return_books", "PATCH"),
+            new(It.IsAny<string>(), "delete_customer", "DELETE")
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, CustomerBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"firstName\": \"{ExpectedFirstName}\", \"lastName\": \"{ExpectedLastName}\", \"email\": \"{ExpectedEmail}\", \"phoneNumber\": {{\"areaCode\": {ExpectedAreaCode}, \"prefixAndLineNumber\": {ExpectedPrefixAndLineNumber}}}}}",
+                Encoding.UTF8,
+                CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Guid actualCreatedCustomerId = JsonSerializer.Deserialize<CustomerCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
+        var actualCustomerWithLinks = await GetAsync<CustomerWithHateoasLinks>(
+            CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
+            $"{CustomerBaseUri}/{actualCreatedCustomerId}");
+        Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualCustomerWithLinks.FullName);
+        Assert.Equal(ExpectedEmail, actualCustomerWithLinks.Email);
+        Assert.Equal($"+1{ExpectedAreaCode}{ExpectedPrefixAndLineNumber}", actualCustomerWithLinks.PhoneNumber);
+        Assert.Empty(actualCustomerWithLinks.Books);
+        Assert.Equal(CustomerType.Explorer.ToString(), actualCustomerWithLinks.CustomerStatus);
+        Assert.Equal(0, actualCustomerWithLinks.CustomerPoints);
+        Assert.Equal(actualCreatedCustomerId, actualCustomerWithLinks.Id);
+        Assert.Equal(expectedHateoasLinks[0].Rel, actualCustomerWithLinks.Links[0].Rel);
+        Assert.Equal(expectedHateoasLinks[1].Rel, actualCustomerWithLinks.Links[1].Rel);
+        Assert.Equal(expectedHateoasLinks[2].Rel, actualCustomerWithLinks.Links[2].Rel);
+        Assert.Equal(expectedHateoasLinks[0].Method, actualCustomerWithLinks.Links[0].Method);
+        Assert.Equal(expectedHateoasLinks[1].Method, actualCustomerWithLinks.Links[1].Method);
+        Assert.Equal(expectedHateoasLinks[2].Method, actualCustomerWithLinks.Links[2].Method);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{actualCreatedCustomerId}");
+    }
+
+    [Fact]
+    public async Task CreateCustomerAsync_WithMediaTypeNotVendorSpecific_Returns201WithResponseBody()
+    {
+        // Arrange:
+        const string ExpectedFirstName = "Juan";
+        const string ExpectedLastName = "Doe";
+        const string ExpectedEmail = "juan.doe@email.com";
+        const string ExpectedAreaCode = "834";
+        const string ExpectedPrefixAndLineNumber = "4552897";
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, CustomerBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"firstName\": \"{ExpectedFirstName}\", \"lastName\": \"{ExpectedLastName}\", \"email\": \"{ExpectedEmail}\", \"phoneNumber\": {{\"areaCode\": {ExpectedAreaCode}, \"prefixAndLineNumber\": {ExpectedPrefixAndLineNumber}}}}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
+        Guid actualCreatedCustomerId = JsonSerializer.Deserialize<CustomerCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
+        GetCustomerDto actualCustomer = await GetAsync<GetCustomerDto>(
+            MediaTypeNames.Application.Json,
+            $"{CustomerBaseUri}/{actualCreatedCustomerId}");
+        Assert.Equal(ExpectedFirstName + " " + ExpectedLastName, actualCustomer.FullName);
+        Assert.Equal(ExpectedEmail, actualCustomer.Email);
+        Assert.Equal($"+1{ExpectedAreaCode}{ExpectedPrefixAndLineNumber}", actualCustomer.PhoneNumber);
+        Assert.Empty(actualCustomer.Books);
+        Assert.Equal(CustomerType.Explorer.ToString(), actualCustomer.CustomerStatus);
+        Assert.Equal(0, actualCustomer.CustomerPoints);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{actualCreatedCustomerId}");
+    }
+
+    [Theory]
+    [MemberData(nameof(WithValidationErrorsTestData))]
+    public async Task CreateCustomerAsync_WithInvalidParameters_Returns422WithErrorMessage(
+        string firstName,
+        string lastName,
+        string email,
+        int areaCode,
+        int prefixAndLineNumber,
+        ValidationProblemDetails expectedValidationProblemDetails)
+    {
+        // Arrange:
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, CustomerBaseUri)
+        {
+            Content = new StringContent(
+                $"{{\"firstName\": \"{firstName}\", \"lastName\": \"{lastName}\", \"email\": \"{email}\", \"phoneNumber\": {{\"areaCode\": {areaCode}, \"prefixAndLineNumber\": {prefixAndLineNumber}}}}}",
+                Encoding.UTF8,
+                MediaTypeNames.Application.Json)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 }

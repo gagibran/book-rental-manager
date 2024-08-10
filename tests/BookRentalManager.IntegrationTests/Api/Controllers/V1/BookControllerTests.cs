@@ -445,7 +445,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         {
             new(It.IsAny<string>(), "self", "GET"),
             new(It.IsAny<string>(), "patch_book", "PATCH"),
-            new(It.IsAny<string>(), "delete_book", "DELETE"),
+            new(It.IsAny<string>(), "delete_book", "DELETE")
         };
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, BookBaseUri)
         {
