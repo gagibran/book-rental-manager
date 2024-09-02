@@ -567,7 +567,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{BookBaseUri}/{nonexistingBookId}")
         {
             Content = new StringContent(
-                $"[{{\"op\": \"replace\", \"path\": \"/booktitle\", \"value\": \"A Cool New Title\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"3\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"978-0132350884\"}}]",
+                $"[{{\"op\": \"replace\", \"path\": \"/bookTitle\", \"value\": \"A Cool New Title\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"3\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"978-0132350884\"}}]",
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         };
@@ -615,7 +615,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{BookBaseUri}/{book.Id}")
         {
             Content = new StringContent(
-                $"[{{\"op\": \"replace\", \"path\": \"/booktitle\", \"value\": \"{bookTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{edition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{isbn}\"}}]",
+                $"[{{\"op\": \"replace\", \"path\": \"/bookTitle\", \"value\": \"{bookTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{edition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{isbn}\"}}]",
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         };
@@ -656,7 +656,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uriWithBookThatWillBeUpdatedId)
         {
             Content = new StringContent(
-                $"[{{\"op\": \"replace\", \"path\": \"/booktitle\", \"value\": \"{ExpectedNewTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{ExpectedNewEdition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{ExpectedNewIsbn}\"}}]",
+                $"[{{\"op\": \"replace\", \"path\": \"/bookTitle\", \"value\": \"{ExpectedNewTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{ExpectedNewEdition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{ExpectedNewIsbn}\"}}]",
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         };

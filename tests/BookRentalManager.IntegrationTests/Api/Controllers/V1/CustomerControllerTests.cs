@@ -71,7 +71,7 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         };
     }
 
-    public static TheoryData<string, string, string, int, int, ValidationProblemDetails> WithValidationErrorsTestData()
+    public static TheoryData<string, string, string, int, int, ValidationProblemDetails> CreateCustomerAsyncValidationErrorsTestData()
     {
         return new()
         {
@@ -191,6 +191,95 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
                         { "invalidAreaCode", ["Invalid area code."]},
                         { "invalidPhoneNumber", ["Invalid phone number."]},
                         { "customerEmailAlreadyExists", ["A customer with the email 'john.doe@email.com' already exists."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            }
+        };
+    }
+
+    public static TheoryData<string, string, int, int, ValidationProblemDetails> PatchBookTitleEditionAndIsbnByIdAsyncValidationErrorsTestData()
+    {
+        return new()
+        {
+            {
+                "  ",
+                "Doe",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "firstName", ["First name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "",
+                866,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "lastName", ["Last name cannot be empty."]}
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "Doe",
+                199,
+                4254817,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "invalidAreaCode", ["Invalid area code."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "Juan",
+                "Doe",
+                234,
+                1000000,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "invalidPhoneNumber", ["Invalid phone number."]},
+                    },
+                    Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+                    Title = "One or more validation errors occurred.",
+                    Status = 422
+                }
+            },
+            {
+                "John",
+                "",
+                -1,
+                1000000,
+                new()
+                {
+                    Errors = new Dictionary<string, string[]>
+                    {
+                        { "lastName", ["Last name cannot be empty."]},
+                        { "invalidAreaCode", ["Invalid area code."]},
+                        { "invalidPhoneNumber", ["Invalid phone number."]}
                     },
                     Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
                     Title = "One or more validation errors occurred.",
@@ -576,7 +665,7 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
     }
 
     [Theory]
-    [MemberData(nameof(WithValidationErrorsTestData))]
+    [MemberData(nameof(CreateCustomerAsyncValidationErrorsTestData))]
     public async Task CreateCustomerAsync_WithInvalidParameters_Returns422WithErrorMessage(
         string firstName,
         string lastName,
@@ -605,5 +694,43 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
         Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+    }
+
+    [Theory]
+    [MemberData(nameof(PatchBookTitleEditionAndIsbnByIdAsyncValidationErrorsTestData))]
+    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithValidationErrors_Returns422WithErrorMessage(
+        string firstName,
+        string lastName,
+        int areaCode,
+        int prefixAndLineNumber,
+        ValidationProblemDetails expectedValidationProblemDetails)
+    {
+        // Arrange:
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Johannes\", \"lastName\": \"Bach\", \"email\": \"johannes.bach@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"replace\", \"path\": \"/firstName\", \"value\": \"{firstName}\"}}, {{\"op\": \"replace\", \"path\": \"/lastName\", \"value\": \"{lastName}\"}}, {{\"op\": \"replace\", \"path\": \"/areaCode\", \"value\": \"{areaCode}\"}}, {{\"op\": \"replace\", \"path\": \"/prefixAndLineNumber\", \"value\": \"{prefixAndLineNumber}\"}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
     }
 }

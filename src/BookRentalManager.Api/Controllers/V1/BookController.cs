@@ -311,7 +311,7 @@ public sealed class BookController : ApiController
     ///     [
     ///       {
     ///         "op": "replace",
-    ///         "path": "/booktitle",
+    ///         "path": "/bookTitle",
     ///         "value": "Clean Code: A Handbook of Agile Software Craftsmanship"
     ///       },
     ///       {

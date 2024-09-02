@@ -37,7 +37,7 @@ public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory inte
     {
         var stringContent = new StringContent(content, Encoding.UTF8, contentType);
         var httpResponseMessage = await HttpClient.PostAsync(uri, stringContent);
-        string author = await httpResponseMessage.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<TReturn>(author, jsonSerializerOptions)!;
+        string entity = await httpResponseMessage.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<TReturn>(entity, jsonSerializerOptions)!;
     }
 }

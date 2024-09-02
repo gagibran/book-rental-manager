@@ -336,6 +336,11 @@ public sealed class CustomerController : ApiController
     ///             "op": "replace",
     ///             "path": "/areacode",
     ///             "value": "322"
+    ///         },
+    ///         {
+    ///             "op": "replace",
+    ///             "path": "/prefixAndLineNumber",
+    ///             "value": "1220034"
     ///         }
     ///     ]
     /// </remarks>
