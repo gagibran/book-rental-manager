@@ -608,11 +608,11 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
             MediaTypeNames.Application.Json,
             AuthorBaseUri)).Id;
-        BookCreatedDto book = await CreateAsync<BookCreatedDto>(
+        Guid bookId = (await CreateAsync<BookCreatedDto>(
             $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \" A Cool Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
             MediaTypeNames.Application.Json,
-            BookBaseUri);
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{BookBaseUri}/{book.Id}")
+            BookBaseUri)).Id;
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{BookBaseUri}/{bookId}")
         {
             Content = new StringContent(
                 $"[{{\"op\": \"replace\", \"path\": \"/bookTitle\", \"value\": \"{bookTitle}\"}}, {{\"op\": \"replace\", \"path\": \"/edition\", \"value\": \"{edition}\"}}, {{\"op\": \"replace\", \"path\": \"/isbn\", \"value\": \"{isbn}\"}}]",
@@ -633,7 +633,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
 
         // Clean up:
-        await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
     }
 
@@ -648,11 +648,11 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
             "{\"firstName\": \"John\", \"lastName\": \"Doe\"}",
             MediaTypeNames.Application.Json,
             AuthorBaseUri)).Id;
-        BookCreatedDto book = await CreateAsync<BookCreatedDto>(
+        Guid bookId = (await CreateAsync<BookCreatedDto>(
             $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \" A Cool Title\", \"edition\": 1, \"isbn\": \"0-301-64361-2\"}}",
             MediaTypeNames.Application.Json,
-            BookBaseUri);
-        var uriWithBookThatWillBeUpdatedId = $"{BookBaseUri}/{book.Id}";
+            BookBaseUri)).Id;
+        var uriWithBookThatWillBeUpdatedId = $"{BookBaseUri}/{bookId}";
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, uriWithBookThatWillBeUpdatedId)
         {
             Content = new StringContent(
@@ -674,7 +674,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         Assert.Equal(ExpectedNewIsbn, updatedBook.Isbn);
 
         // Clean up:
-        await HttpClient.DeleteAsync($"{BookBaseUri}/{book.Id}");
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
     }
 

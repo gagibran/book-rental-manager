@@ -200,7 +200,7 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         };
     }
 
-    public static TheoryData<string, string, int, int, ValidationProblemDetails> PatchBookTitleEditionAndIsbnByIdAsyncValidationErrorsTestData()
+    public static TheoryData<string, string, int, int, ValidationProblemDetails> PatchCustomerNameAndPhoneNumberByIdAsyncValidationErrorsTestData()
     {
         return new()
         {
@@ -697,8 +697,8 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
     }
 
     [Theory]
-    [MemberData(nameof(PatchBookTitleEditionAndIsbnByIdAsyncValidationErrorsTestData))]
-    public async Task PatchBookTitleEditionAndIsbnByIdAsync_WithValidationErrors_Returns422WithErrorMessage(
+    [MemberData(nameof(PatchCustomerNameAndPhoneNumberByIdAsyncValidationErrorsTestData))]
+    public async Task PatchCustomerNameAndPhoneNumberByIdAsync_WithValidationErrors_Returns422WithErrorMessage(
         string firstName,
         string lastName,
         int areaCode,
@@ -729,6 +729,42 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
         Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
+    }
+
+    [Fact]
+    public async Task PatchCustomerNameAndPhoneNumberByIdAsync_WithValidParameters_Returns204AndUpdatesBook()
+    {
+        // Arrange:
+        const string ExpectedNewFirstName = "Hancock";
+        const string ExpectedNewLastName = "Boa";
+        const int ExpectedNewAreaCode = 627;
+        const int ExpectedNewPrefixAndLineNumber = 2572592;
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Johannes\", \"lastName\": \"Bach\", \"email\": \"johannes.bach@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        var uriWithCustomerThatWillBeUpdatedId = $"{CustomerBaseUri}/{customerId}";
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"replace\", \"path\": \"/firstName\", \"value\": \"{ExpectedNewFirstName}\"}}, {{\"op\": \"replace\", \"path\": \"/lastName\", \"value\": \"{ExpectedNewLastName}\"}}, {{\"op\": \"replace\", \"path\": \"/areaCode\", \"value\": \"{ExpectedNewAreaCode}\"}}, {{\"op\": \"replace\", \"path\": \"/prefixAndLineNumber\", \"value\": \"{ExpectedNewPrefixAndLineNumber}\"}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetCustomerDto updatedCustomer = await GetAsync<GetCustomerDto>(
+            MediaTypeNames.Application.Json,
+            uriWithCustomerThatWillBeUpdatedId);
+        Assert.Equal(ExpectedNewFirstName + " " + ExpectedNewLastName, updatedCustomer.FullName);
+        Assert.Equal($"+1{ExpectedNewAreaCode}{ExpectedNewPrefixAndLineNumber}", updatedCustomer.PhoneNumber);
 
         // Clean up:
         await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
