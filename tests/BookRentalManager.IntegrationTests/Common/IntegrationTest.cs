@@ -9,7 +9,7 @@ public abstract class IntegrationTest(IntegrationTestsWebApplicationFactory inte
 
     protected static readonly JsonSerializerOptions jsonSerializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
     protected HttpClient HttpClient { get; } = integrationTestsWebApplicationFactory.CreateClient();

@@ -409,13 +409,18 @@ public sealed class CustomerController : ApiController
     [HttpPatch("{id}/ReturnBooks", Name = "ReturnBooks")]
     [Consumes(CustomMediaTypeNames.Application.JsonPatchJson)]
     [SwaggerResponse(
+        StatusCodes.Status400BadRequest,
+        "If the JSON patch document is malformed or any validation errors happen.",
+        typeof(ValidationProblemDetails),
+        CustomMediaTypeNames.Application.ProblemJson)]
+    [SwaggerResponse(
         StatusCodes.Status404NotFound,
         "If the customer does not exist.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
     [SwaggerResponse(
-        StatusCodes.Status400BadRequest,
-        "If the JSON patch document is malformed or any validation errors happen.",
+        StatusCodes.Status422UnprocessableEntity,
+        "If any validation errors happen.",
         typeof(ValidationProblemDetails),
         CustomMediaTypeNames.Application.ProblemJson)]
     public async Task<ActionResult> ChangeCustomerBooksByBookIdsAsync(

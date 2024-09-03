@@ -462,7 +462,7 @@ public sealed class BookControllerTests(IntegrationTestsWebApplicationFactory in
         httpResponseMessage.EnsureSuccessStatusCode();
         string responseContent = await httpResponseMessage.Content.ReadAsStringAsync();
         Guid actualCreatedBookId = JsonSerializer.Deserialize<BookCreatedDto>(responseContent, jsonSerializerOptions)!.Id;
-        var actualBookWithLinks = await GetAsync<BookWithHateoasLinks>(
+        BookWithHateoasLinks actualBookWithLinks = await GetAsync<BookWithHateoasLinks>(
             CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson,
             $"{BookBaseUri}/{actualCreatedBookId}");
         Assert.Equal(ExpectedBookTitle, actualBookWithLinks.BookTitle);
