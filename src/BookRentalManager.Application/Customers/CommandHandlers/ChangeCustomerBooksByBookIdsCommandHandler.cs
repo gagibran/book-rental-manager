@@ -21,10 +21,9 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Cus
         {
             return patchAppliedResult;
         }
-        IReadOnlyList<Book> books = await bookRepository.GetAllBySpecificationAsync(
-            new BooksByIdsSpecification(changeCustomerBooksByBookIdsDto.BookIds),
-            cancellationToken);
-        if (books.Count != changeCustomerBooksByBookIdsDto.BookIds.Count())
+        IEnumerable<Guid> distinctBookIds = changeCustomerBooksByBookIdsDto.BookIds.Distinct();
+        IReadOnlyList<Book> books = await bookRepository.GetAllBySpecificationAsync(new BooksByIdsSpecification(distinctBookIds), cancellationToken);
+        if (books.Count != distinctBookIds.Count())
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }

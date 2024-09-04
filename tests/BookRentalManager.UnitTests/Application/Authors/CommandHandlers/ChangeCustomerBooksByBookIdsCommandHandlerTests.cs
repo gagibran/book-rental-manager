@@ -44,15 +44,15 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
     public async Task HandleAsync_WithNonexistingCustomer_ReturnsErrorMessage()
     {
         // Arrange:
-        var id = Guid.NewGuid();
-        var expectedErrorMessage = $"No customer with the ID of '{id}' was found.";
+        Guid nonexistingCustomerId = Guid.NewGuid();
+        var expectedErrorMessage = $"No customer with the ID of '{nonexistingCustomerId}' was found.";
         _customerRepositoryStub
             .Setup(customerRepository => customerRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<CustomerByIdWithBooksSpecification>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync((Customer?)null);
         var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
-            id,
+            nonexistingCustomerId,
             It.IsAny<JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>>(),
             It.IsAny<bool>());
 
@@ -78,10 +78,10 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
             new(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var changeCustomerBooksByBookIdsDtoDocument = new JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>(operations, new DefaultContractResolver());
-        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
-            _customer.Id,
-            changeCustomerBooksByBookIdsDtoDocument,
-            It.IsAny<bool>());
+        var changeCustomerBooksByBookIdsCommand = _changeCustomerBooksByBookIdsCommand with
+        {
+            ChangeCustomerBooksByBookIdsDtoPatchDocument = changeCustomerBooksByBookIdsDtoDocument,
+        };
 
         // Act:
         Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(
@@ -150,10 +150,22 @@ public sealed class ChangeCustomerBooksByBookIdsCommandHandlerTests
     public async Task HandleAsync_WithCorrectParametersAndRentingBook_ReturnsSuccess()
     {
         // Arrange:
-        var changeCustomerBooksByBookIdsCommand = new ChangeCustomerBooksByBookIdsCommand(
-            _customer.Id,
-            _changeCustomerBooksByBookIdsDtoDocument,
-            false);
+        var operations = new List<Operation<ChangeCustomerBooksByBookIdsDto>>
+        {
+            new("add", "/bookIds", It.IsAny<string>(), new List<Guid>
+            {
+                _anotherBook.Id,
+                _book.Id,
+                _book.Id,
+                _anotherBook.Id
+            })
+        };
+        var changeCustomerBooksByBookIdsDtoDocument = new JsonPatchDocument<ChangeCustomerBooksByBookIdsDto>(operations, new DefaultContractResolver());
+        var changeCustomerBooksByBookIdsCommand = _changeCustomerBooksByBookIdsCommand with
+        {
+            ChangeCustomerBooksByBookIdsDtoPatchDocument = changeCustomerBooksByBookIdsDtoDocument,
+            IsReturn = false
+        };
 
         // Act:
         Result handleAsyncResult = await _changeCustomerBooksByBookIdsCommandHandler.HandleAsync(

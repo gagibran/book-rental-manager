@@ -2,7 +2,7 @@
 
 public sealed class BookTitle : ValueObject
 {
-    public string Title { get; set; }
+    public string Title { get; }
 
     private BookTitle()
     {
@@ -26,5 +26,10 @@ public sealed class BookTitle : ValueObject
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return Title;
+    }
+
+    public override string ToString()
+    {
+        return Title;
     }
 }

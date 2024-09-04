@@ -770,8 +770,10 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
     }
 
-    [Fact]
-    public async Task ChangeCustomerBooksByBookIdsAsync_WithNonexistingCustomer_Returns404WithErrorMessage()
+    [Theory]
+    [InlineData("RentBooks")]
+    [InlineData("ReturnBooks")]
+    public async Task ChangeCustomerBooksByBookIdsAsync_WithNonexistingCustomer_Returns404WithErrorMessage(string endpoint)
     {
         // Arrange:
         Guid nonexistingCustomerId = Guid.NewGuid();
@@ -785,7 +787,7 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
             Title = "One or more validation errors occurred.",
             Status = 404
         };
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{nonexistingCustomerId}/RentBooks")
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{nonexistingCustomerId}/{endpoint}")
         {
             Content = new StringContent(
                 $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{It.IsAny<Guid>()}\"]}}]",
@@ -806,8 +808,10 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
     }
 
-    [Fact]
-    public async Task ChangeCustomerBooksByBookIdsAsync_WithNonexistingBook_Returns422WithErrorMessage()
+    [Theory]
+    [InlineData("RentBooks")]
+    [InlineData("ReturnBooks")]
+    public async Task ChangeCustomerBooksByBookIdsAsync_WithNonexistingBook_Returns422WithErrorMessage(string endpoint)
     {
         // Arrange:
         Guid nonexistingBookId = Guid.NewGuid();
@@ -826,7 +830,7 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
             Title = "One or more validation errors occurred.",
             Status = 422
         };
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/RentBooks")
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/{endpoint}")
         {
             Content = new StringContent(
                 $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{nonexistingBookId}\", \"{anotherNonexistingBookId}\"]}}]",
@@ -851,7 +855,7 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
     }
 
     [Fact]
-    public async Task ChangeCustomerBooksByBookIdsAsync_WithExistingBooks_Returns204AndRentsBookForCustomer()
+    public async Task ChangeCustomerBooksByBookIdsAsyncRentBooks_WithExistingBooks_Returns204AndRentsBookForCustomer()
     {
         // Arrange:
         Guid customerId = (await CreateAsync<CustomerCreatedDto>(
@@ -887,8 +891,13 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         GetBookDto book = await GetAsync<GetBookDto>(MediaTypeNames.Application.Json, $"{BookBaseUri}/{bookId}");
         GetBookDto anotherBook = await GetAsync<GetBookDto>(MediaTypeNames.Application.Json, $"{BookBaseUri}/{anotherBookId}");
         Assert.Equal(book.RentedBy!.FullName, customer.FullName);
+        Assert.NotNull(book.RentedAt);
+        Assert.NotNull(book.DueDate);
+        Assert.NotNull(anotherBook.RentedAt);
+        Assert.NotNull(anotherBook.DueDate);
         Assert.Equal(anotherBook.RentedBy!.FullName, customer.FullName);
         Assert.Equal(2, customer.Books.Count);
+        Assert.True(customer.CustomerPoints > 0);
 
         // Clean up:
         await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/ReturnBooks")
@@ -898,6 +907,199 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
                 Encoding.UTF8,
                 MediaTypeNames.Application.JsonPatch)
         });
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{anotherBookId}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
+    }
+
+    [Fact]
+    public async Task ChangeCustomerBooksByBookIdsAsyncRentBooks_WithAlreadyRentedBooks_Returns422WithErrorMessage()
+    {
+        // Arrange:
+        const string BookTitle = "A Cool Title";
+        const string Error = "bookNotAvailable";
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Robin\", \"lastName\": \"Hood\", \"email\": \"robin.hood@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"Willem\", \"lastName\": \"Dafoe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        Guid bookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"{BookTitle}\", \"edition\": 1, \"isbn\": \"3-523-24465-1\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { Error, [$"The book '{BookTitle}' is unavailable at the moment."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/RentBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+        await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/RentBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        });
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Contains(
+            expectedValidationProblemDetails.Errors[Error][0],
+            actualValidationProblemDetails!.Errors[Error][0]);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+
+        // Clean up:
+        await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/ReturnBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        });
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
+    }
+
+    [Fact]
+    public async Task ChangeCustomerBooksByBookIdsAsyncReturnBooks_WithRentedBooks_Returns204AndReturnsBookForCustomer()
+    {
+        // Arrange:
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Ada\", \"lastName\": \"Lovelace\", \"email\": \"ada.lovelace@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"Marta\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        Guid bookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"A Cool Title\", \"edition\": 1, \"isbn\": \"4-123-24465-1\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        Guid anotherBookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"Another Cool Title\", \"edition\": 1, \"isbn\": \"0-301-64961-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/ReturnBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\", \"{anotherBookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+        await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/RentBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\", \"{anotherBookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        });
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetCustomerDto customer = await GetAsync<GetCustomerDto>(MediaTypeNames.Application.Json, $"{CustomerBaseUri}/{customerId}");
+        GetBookDto book = await GetAsync<GetBookDto>(MediaTypeNames.Application.Json, $"{BookBaseUri}/{bookId}");
+        GetBookDto anotherBook = await GetAsync<GetBookDto>(MediaTypeNames.Application.Json, $"{BookBaseUri}/{anotherBookId}");
+        Assert.Null(book.RentedBy);
+        Assert.Null(book.RentedAt);
+        Assert.Null(book.DueDate);
+        Assert.Null(anotherBook.RentedBy);
+        Assert.Null(anotherBook.RentedAt);
+        Assert.Null(anotherBook.DueDate);
+        Assert.Empty(customer.Books);
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{anotherBookId}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
+    }
+
+    [Fact]
+    public async Task ChangeCustomerBooksByBookIdsAsyncReturnBooks_WithBookNotRentedByCustomer_Returns422WithErrorMessage()
+    {
+        // Arrange:
+        const string BookTitle = "A Cool Title";
+        const string AnotherBookTitle = "Another Cool Title";
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Rosa\", \"lastName\": \"Maria\", \"email\": \"rosa.maria@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"Marta\", \"lastName\": \"Doe\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        Guid bookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"{BookTitle}\", \"edition\": 1, \"isbn\": \"4-173-34465-1\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        Guid anotherBookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"{AnotherBookTitle}\", \"edition\": 1, \"isbn\": \"9-391-69969-2\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                {
+                    "noBook",
+                    [
+                        $"The book '{BookTitle}' has not been rented by this customer.",
+                        $"The book '{AnotherBookTitle}' has not been rented by this customer."
+                    ]
+                }
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/ReturnBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\", \"{anotherBookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+
+        // Clean up:
         await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
         await HttpClient.DeleteAsync($"{BookBaseUri}/{anotherBookId}");
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
