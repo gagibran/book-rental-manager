@@ -1105,4 +1105,200 @@ public sealed class CustomerControllerTests(IntegrationTestsWebApplicationFactor
         await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
         await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
     }
+
+    [Fact]
+    public async Task DeleteCustomerByIdAsync_WithExistingCustomer_Returns204AndDeletesCustomer()
+    {
+        // Arrange:
+        Guid createdCustomerId = (await CreateAsync<CustomerCreatedDto>(
+            $"{{\"firstName\": \"Eric\", \"lastName\": \"Cartman\", \"email\": \"eric.cartman@email.com\", \"phoneNumber\": {{\"areaCode\": 342, \"prefixAndLineNumber\": 5542326}}}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        var uriWithCreatedCustomerId = $"{CustomerBaseUri}/{createdCustomerId}";
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            uriWithCreatedCustomerId));
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        GetCustomerDto customer = await GetAsync<GetCustomerDto>(MediaTypeNames.Application.Json, uriWithCreatedCustomerId);
+        Assert.Equal(Guid.Empty, customer.Id);
+    }
+
+    [Fact]
+    public async Task DeleteCustomerByIdAsync_WithNonexistingCustomer_Returns404WithErrorMessage()
+    {
+        // Arrange:
+        Guid nonexistingCustomerId = Guid.NewGuid();
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No customer with the ID of '{nonexistingCustomerId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"{CustomerBaseUri}/{nonexistingCustomerId}"));
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+    }
+
+    [Fact]
+    public async Task DeleteCustomerByIdAsync_WithRentedBook_Returns422WithErrorMessage()
+    {
+        // Arrange
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Stan\", \"lastName\": \"Darsh\", \"email\": \"stan.darsh@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        Guid authorId = (await CreateAsync<AuthorCreatedDto>(
+            "{\"firstName\": \"Walter\", \"lastName\": \"White\"}",
+            MediaTypeNames.Application.Json,
+            AuthorBaseUri)).Id;
+        Guid bookId = (await CreateAsync<BookCreatedDto>(
+            $"{{\"authorIds\": [\"{authorId}\"], \"bookTitle\": \"A Cool Title\", \"edition\": 1, \"isbn\": \"1-111-34465-1\"}}",
+            MediaTypeNames.Application.Json,
+            BookBaseUri)).Id;
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "customerBooks", ["This customer has rented books. Return them before deleting."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc4918#section-11.2",
+            Title = "One or more validation errors occurred.",
+            Status = 422
+        };
+        await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/RentBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        });
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(new HttpRequestMessage(
+            HttpMethod.Delete,
+            $"{CustomerBaseUri}/{customerId}"));
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+
+        // Clean up:
+        await HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Patch, $"{CustomerBaseUri}/{customerId}/ReturnBooks")
+        {
+            Content = new StringContent(
+                $"[{{\"op\": \"add\", \"path\": \"/bookIds\", \"value\": [\"{bookId}\"]}}]",
+                Encoding.UTF8,
+                MediaTypeNames.Application.JsonPatch)
+        });
+        await HttpClient.DeleteAsync($"{BookBaseUri}/{bookId}");
+        await HttpClient.DeleteAsync($"{AuthorBaseUri}/{authorId}");
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
+    }
+
+    [Fact]
+    public async Task GetCustomerOptions_WithoutParameters_Returns200WithHeaders()
+    {
+        // Arrange:
+        var expectedAllowHeader = new List<string>
+        {
+            "GET",
+            "HEAD",
+            "POST",
+            "PATCH",
+            "DELETE",
+            "OPTIONS"
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, CustomerBaseUri);
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        Assert.Equal(expectedAllowHeader, httpResponseMessage.Content.Headers.GetValues("allow"));
+    }
+
+    [Theory]
+    [InlineData("RentBooks")]
+    [InlineData("ReturnBooks")]
+    public async Task GetCustomerRentAndReturnBooksOptionsAsync_WithExistingCustomer_Returns200WithHeaders(string endpoint)
+    {
+        // Arrange:
+        Guid customerId = (await CreateAsync<CustomerCreatedDto>(
+            "{\"firstName\": \"Homer\", \"lastName\": \"Simpson\", \"email\": \"homer.simpson@email.com\", \"phoneNumber\": {\"areaCode\": \"834\", \"prefixAndLineNumber\": \"4552897\"}}",
+            MediaTypeNames.Application.Json,
+            CustomerBaseUri)).Id;
+        var expectedAllowHeader = new List<string>
+        {
+            "PATCH",
+            "OPTIONS"
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, $"{CustomerBaseUri}/{customerId}/{endpoint}");
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        httpResponseMessage.EnsureSuccessStatusCode();
+        Assert.Equal(expectedAllowHeader, httpResponseMessage.Content.Headers.GetValues("allow"));
+
+        // Clean up:
+        await HttpClient.DeleteAsync($"{CustomerBaseUri}/{customerId}");
+    }
+
+    [Theory]
+    [InlineData("RentBooks")]
+    [InlineData("ReturnBooks")]
+    public async Task GetCustomerRentAndReturnBooksOptionsAsync_WithNonexistingCustomer_Returns404WithErrorMessage(string endpoint)
+    {
+        // Arrange:
+        Guid nonexistingCustomerId = Guid.NewGuid();
+        var expectedValidationProblemDetails = new ValidationProblemDetails
+        {
+            Errors = new Dictionary<string, string[]>
+            {
+                { "idNotFound", [$"No customer with the ID of '{nonexistingCustomerId}' was found."]}
+            },
+            Type = "https://tools.ietf.org/html/rfc9110#section-15.5.5",
+            Title = "One or more validation errors occurred.",
+            Status = 404
+        };
+        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Options, $"{CustomerBaseUri}/{nonexistingCustomerId}/{endpoint}");
+
+        // Act:
+        HttpResponseMessage httpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+
+        // Assert:
+        Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        ValidationProblemDetails? actualValidationProblemDetails = await httpResponseMessage.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.Equal(expectedValidationProblemDetails.Errors, actualValidationProblemDetails!.Errors);
+        Assert.Equal(expectedValidationProblemDetails.Type, actualValidationProblemDetails.Type);
+        Assert.Equal(expectedValidationProblemDetails.Title, actualValidationProblemDetails.Title);
+        Assert.Equal(expectedValidationProblemDetails.Status, actualValidationProblemDetails.Status);
+        Assert.NotNull(actualValidationProblemDetails.Extensions["traceId"]);
+    }
 }
