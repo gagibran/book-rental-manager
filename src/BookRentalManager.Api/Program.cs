@@ -19,7 +19,7 @@ public class Program
         WebApplicationBuilder webApplicationBuilder = WebApplication.CreateBuilder(args);
         AddServices(webApplicationBuilder);
         WebApplication webApplication = webApplicationBuilder.Build();
-        await ConfigureHttpRequestPipelineAsync(webApplication);
+        await ConfigureHttpRequestPipelineAsync(webApplication, args);
         webApplication.Run();
     }
 
@@ -71,18 +71,13 @@ public class Program
         webApplicationBuilder.Services.AddSingleton<OutputFormatterSelector, AcceptHeaderOutputFormatterSelector>();
     }
 
-    private static async Task ConfigureHttpRequestPipelineAsync(WebApplication webApplication)
+    private static async Task ConfigureHttpRequestPipelineAsync(WebApplication webApplication, string[] args)
     {
         webApplication.UseExceptionHandler(_ => { }); // .NET 8 bug that needs to be handled with an anonymous function.
         webApplication.UseHttpsRedirection();
         webApplication.MapControllers();
         if (webApplication.Environment.IsDevelopment() || webApplication.Environment.EnvironmentName == "Docker")
         {
-            using IServiceScope serviceScope = webApplication.Services.CreateScope();
-            IServiceProvider serviceProvider = serviceScope.ServiceProvider;
-            BookRentalManagerDbContext bookRentalManagerDbContext = serviceProvider.GetRequiredService<BookRentalManagerDbContext>();
-            await bookRentalManagerDbContext.Database.MigrateAsync();
-            await TestDataSeeder.SeedTestDataAsync(bookRentalManagerDbContext);
             webApplication.UseSwagger();
             webApplication.UseSwaggerUI(swaggerUiOptions =>
             {
@@ -90,6 +85,14 @@ public class Program
                 swaggerUiOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 swaggerUiOptions.RoutePrefix = string.Empty;
             });
+            using IServiceScope serviceScope = webApplication.Services.CreateScope();
+            IServiceProvider serviceProvider = serviceScope.ServiceProvider;
+            BookRentalManagerDbContext bookRentalManagerDbContext = serviceProvider.GetRequiredService<BookRentalManagerDbContext>();
+            await bookRentalManagerDbContext.Database.MigrateAsync();
+            if (args.Contains("--with-initial-data=true"))
+            {
+                await TestDataSeeder.SeedTestDataAsync(bookRentalManagerDbContext);
+            }
         }
     }
 }

@@ -22,4 +22,6 @@ WORKDIR /app/
 COPY ./httpsdevcert.pfx ./httpsdevcert.pfx
 COPY --from=build /app/release/ ./release/
 WORKDIR /app/release/
-ENTRYPOINT ["dotnet", "BookRentalManager.Api.dll"]
+COPY ./scripts/entrypoint.sh ./
+RUN ["chmod", "+x", "entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]

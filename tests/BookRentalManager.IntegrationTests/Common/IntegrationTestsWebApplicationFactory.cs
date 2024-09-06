@@ -26,6 +26,7 @@ public sealed class IntegrationTestsWebApplicationFactory : WebApplicationFactor
 
     protected override void ConfigureWebHost(IWebHostBuilder webHostBuilder)
     {
+        webHostBuilder.UseSetting("with-initial-data", "true");
         webHostBuilder.ConfigureServices(webHostBuilderContext =>
         {
             ServiceDescriptor? serviceDescriptor = webHostBuilderContext.SingleOrDefault(
