@@ -73,10 +73,14 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
         var patchBookTitleEditionAndIsbnByIdDtoPatchDocument = new JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>(
             operations,
             new DefaultContractResolver());
+        var patchBookTitleEditionAndIsbnByIdCommand = _patchBookTitleEditionAndIsbnByIdCommand with
+        {
+            PatchBookTitleEditionAndIsbnByIdDtoPatchDocument = patchBookTitleEditionAndIsbnByIdDtoPatchDocument
+        };
 
         // Act:
         Result handleAsyncResult = await _patchBookTitleEditionAndIsbnByIdCommandHandler.HandleAsync(
-            new PatchBookTitleEditionAndIsbnByIdCommand(_book.Id, patchBookTitleEditionAndIsbnByIdDtoPatchDocument),
+            patchBookTitleEditionAndIsbnByIdCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:

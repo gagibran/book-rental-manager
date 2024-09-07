@@ -75,10 +75,14 @@ public sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandlerTests
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,
             new DefaultContractResolver());
+        var patchCustomerNameAndPhoneNumberByIdCommand = _patchCustomerNameAndPhoneNumberByIdCommand with
+        {
+            PatchCustomerNameAndPhoneNumberDtoPatchDocument = patchCustomerNameAndPhoneNumberDtoJsonPatchDocument
+        };
 
         // Act:
         Result handleAsyncResult = await _patchCustomerNameAndPhoneNumberByIdCommandHandler.HandleAsync(
-            new PatchCustomerNameAndPhoneNumberByIdCommand(_customer.Id, patchCustomerNameAndPhoneNumberDtoJsonPatchDocument),
+            patchCustomerNameAndPhoneNumberByIdCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:

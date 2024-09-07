@@ -23,6 +23,10 @@ This project was created with .NET, PostgreSQL, Swagger and Docker, using techni
 ## Disclaimer
 This system is not obviously big nor that complex, so, in a real world scenario, I would probably choose a different architecture to implement this. My choice would be based upon the requirements, deadlines and team size. The only reason I used the architecture that's in place was for learning purposes. I would also not go as far as implementing the methods in `BookRentalManager.Domain/IQueryableExtensions.cs` just for the sake of not having any infrastructure dependencies in the domain layer. I just did that to showcase what would need to be done in order to have them completely decoupled.
 
+I could have also used [MediatR](https://github.com/jbogard/MediatR), [AutoMapper](https://github.com/AutoMapper/AutoMapper.git), and [Scrutor](https://github.com/khellang/Scrutor) to make implementing CQRS, object mapping, and assembly scanning for injecting dependencies (see `src/BookRentalManager.Application/Extensions/IServiceCollectionExtensions.cs`), respectively, easier, but I wanted to practice these concepts without using the helps of external libraries to better understand the concept behind them.
+
+Finally, I could have used [Serilog](https://github.com/serilog/serilog) and [OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet) for better logging and observability, but I wanted to ship this project before introducing this concepts to it at this point.
+
 ## Running the application
 
 ### Running it with Docker
