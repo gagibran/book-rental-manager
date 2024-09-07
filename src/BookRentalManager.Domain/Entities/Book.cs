@@ -1,10 +1,10 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Book : AggregateRoot
+public sealed class Book : Entity
 {
     private readonly List<Author> _authors;
 
-    public string BookTitle { get; private set; }
+    public BookTitle BookTitle { get; private set; }
     public IReadOnlyList<Author> Authors => _authors.AsReadOnly();
     public Edition Edition { get; private set; }
     public Isbn Isbn { get; private set; }
@@ -14,19 +14,20 @@ public sealed class Book : AggregateRoot
 
     private Book()
     {
-        _authors = new();
-        BookTitle = string.Empty!;
+        _authors = [];
+        BookTitle = default!;
         Edition = default!;
         Isbn = default!;
         Customer = default;
         RentedAt = default;
         DueDate = default;
+        Customer = default;
     }
 
-    public Book(string bookTitle, Edition edition, Isbn isbn)
+    public Book(BookTitle bookTitle, Edition edition, Isbn isbn)
     {
-        _authors = new();
-        BookTitle = bookTitle.Trim();
+        _authors = [];
+        BookTitle = bookTitle;
         Edition = edition;
         Isbn = isbn;
         RentedAt = null;
@@ -35,14 +36,15 @@ public sealed class Book : AggregateRoot
 
     public Result UpdateBookTitleEditionAndIsbn(string bookTitle, int edition, string isbn)
     {
+        Result<BookTitle> bookTitleResult = BookTitle.Create(bookTitle);
         Result<Edition> editionResult = Edition.Create(edition);
         Result<Isbn> isbnResult = Isbn.Create(isbn);
-        Result combinedResult = Result.Combine(editionResult, isbnResult);
+        Result combinedResult = Result.Combine(bookTitleResult, editionResult, isbnResult);
         if (!combinedResult.IsSuccess)
         {
             return combinedResult;
         }
-        BookTitle = bookTitle;
+        BookTitle = bookTitleResult.Value!;
         Edition = editionResult.Value!;
         Isbn = isbnResult.Value!;
         return Result.Success();

@@ -51,7 +51,7 @@ public sealed class ExecutionTimeLoggingDecoratorTests
             .Setup(requestHandlerWithResult => requestHandlerWithResult.HandleAsync(
                 It.IsAny<IRequest<int>>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success<int>(0));
+            .ReturnsAsync(Result.Success(0));
 
         // Act:
         await _executionTimeLoggingWithResultDecorator.HandleAsync(It.IsAny<IRequest<int>>(), It.IsAny<CancellationToken>());

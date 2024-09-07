@@ -4,10 +4,7 @@ namespace BookRentalManager.Application.Extensions;
 
 public static class JsonPatchDocumentExtensions
 {
-    public static Result ApplyTo<T>(
-        this JsonPatchDocument<T> jsonPatchDocument,
-        T itemToApplyTo,
-        params string[] operationsToExclude) where T : class
+    public static Result ApplyTo<T>(this JsonPatchDocument<T> jsonPatchDocument, T itemToApplyTo, params string[] operationsToExclude) where T : class
     {
         foreach (Operation<T> operation in jsonPatchDocument.Operations)
         {

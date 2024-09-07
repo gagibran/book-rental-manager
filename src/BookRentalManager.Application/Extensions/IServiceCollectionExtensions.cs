@@ -9,7 +9,7 @@ public static class IServiceCollectionExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IDispatcher, Dispatcher>();
-        serviceCollection.AddServicesFromAssembly(typeof(IMapper<,>), ServiceLifetime.Transient);
+        serviceCollection.AddTransient<ISortParametersMapper, SortParametersMapper>();
         serviceCollection.AddServicesFromAssembly(
             typeof(IRequestHandler<>),
             ServiceLifetime.Scoped,
@@ -32,7 +32,7 @@ public static class IServiceCollectionExtensions
         IEnumerable<Type> typeImplementations = genericInterfaceToRegister.Assembly
             .GetTypes()
             .Where(type => type.IsConcrete() && type.HasGenericInterfaces(genericInterfaceToRegister));
-        if (decorators.Any())
+        if (decorators.Length != 0)
         {
             foreach (Type typeImplementation in typeImplementations)
             {
@@ -127,7 +127,7 @@ public static class IServiceCollectionExtensions
                 typeImplementation,
                 currentConstructorInvocation,
                 serviceProvider);
-            currentConstructorInvocation = constructor.Invoke(constructorArguments.ToArray());
+            currentConstructorInvocation = constructor.Invoke([..constructorArguments]);
         }
         return currentConstructorInvocation ?? typeImplementation;
     }
@@ -143,7 +143,8 @@ public static class IServiceCollectionExtensions
         foreach (ParameterInfo constructorParameter in constructorParameters)
         {
             Type constructorParameterType = constructorParameter.ParameterType;
-            if (constructorParameterType.GetGenericTypeDefinition() == typeInterface.GetGenericTypeDefinition())
+            if (constructorParameterType.IsGenericType
+                && constructorParameterType.GetGenericTypeDefinition() == typeInterface.GetGenericTypeDefinition())
             {
                 constructorArguments.Add(currentConstructorInvocation);
                 continue;

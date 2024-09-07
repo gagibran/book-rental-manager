@@ -4,8 +4,7 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
 {
     private readonly GetAuthorsByQueryParametersQuery _getAuthorsByQueryParametersQuery;
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
-    private readonly Mock<IMapper<Author, GetAuthorDto>> _authorToGetAuthorDtoMapperStub;
-    private readonly Mock<IMapper<AuthorSortParameters, Result<string>>> _authorSortParametersMapperStub;
+    private readonly Mock<ISortParametersMapper> _sortParametersMapperStub;
     private readonly GetAuthorsByQueryParametersQueryHandler _getAuthorsByQueryParametersQueryHandler;
 
     public GetAuthorsByQueryParametersQueryHandlerTests()
@@ -15,16 +14,32 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
             It.IsAny<int>(),
             string.Empty,
             It.IsAny<string>());
-        _authorToGetAuthorDtoMapperStub = new();
-        _authorSortParametersMapperStub = new();
+        _sortParametersMapperStub = new();
         _authorRepositoryStub = new();
-        _getAuthorsByQueryParametersQueryHandler = new(
-            _authorRepositoryStub.Object,
-            _authorToGetAuthorDtoMapperStub.Object,
-            _authorSortParametersMapperStub.Object);
-        _authorSortParametersMapperStub
-            .Setup(authorSortParametersMapper => authorSortParametersMapper.Map(It.IsAny<AuthorSortParameters>()))
-            .Returns(Result.Success<string>(string.Empty));
+        _getAuthorsByQueryParametersQueryHandler = new(_authorRepositoryStub.Object, _sortParametersMapperStub.Object);
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapAuthorSortParameters(It.IsAny<string>()))
+            .Returns(Result.Success(string.Empty));
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithInvalidSortParameters_ReturnsErrorMessage()
+    {
+        // Arrange:
+        const string ExpectedErrorType = "errorType";
+        const string ExpectedErrorMessage = "errorMessage";
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapAuthorSortParameters(It.IsAny<string>()))
+            .Returns(Result.Fail<string>(ExpectedErrorType, ExpectedErrorMessage));
+
+        // Act:
+        Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
+            _getAuthorsByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal(ExpectedErrorType, handlerResult.ErrorType);
+        Assert.Equal(ExpectedErrorMessage, handlerResult.ErrorMessage);
     }
 
     [Fact]
@@ -38,17 +53,11 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PaginatedList<Author>(
-                new List<Author>(),
+                [],
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<int>()));
-        _authorToGetAuthorDtoMapperStub
-            .Setup(authorToGetAuthorDtoMapper => authorToGetAuthorDtoMapper.Map(It.IsAny<Author>()))
-            .Returns(new GetAuthorDto(
-                It.IsAny<Guid>(),
-                FullName.Create("John", "Doe").Value!,
-                It.IsAny<IReadOnlyList<GetBookFromAuthorDto>>()));
 
         // Act:
         Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
@@ -64,9 +73,9 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
     {
         // Arrange:
         Author author = TestFixtures.CreateDummyAuthor();
-        var expectedGetAuthorDto = new GetAuthorDto(Guid.NewGuid(), author.FullName, new List<GetBookFromAuthorDto>());
+        var expectedGetAuthorDto = new GetAuthorDto(author.Id, author.FullName.ToString(), []);
         var paginatedAuthors = new PaginatedList<Author>(
-            new List<Author> { author },
+            [author],
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<int>(),
@@ -78,16 +87,13 @@ public sealed class GetAuthorsByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Author>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(paginatedAuthors);
-        _authorToGetAuthorDtoMapperStub
-            .Setup(authorToGetAuthorDtoMapper => authorToGetAuthorDtoMapper.Map(It.IsAny<Author>()))
-            .Returns(expectedGetAuthorDto);
 
         // Act:
         Result<PaginatedList<GetAuthorDto>> handlerResult = await _getAuthorsByQueryParametersQueryHandler.HandleAsync(
             _getAuthorsByQueryParametersQuery,
             It.IsAny<CancellationToken>());
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         GetAuthorDto actualGetAuthorDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(expectedGetAuthorDto.Id, actualGetAuthorDto.Id);
         Assert.Equal(expectedGetAuthorDto.FullName, actualGetAuthorDto.FullName);

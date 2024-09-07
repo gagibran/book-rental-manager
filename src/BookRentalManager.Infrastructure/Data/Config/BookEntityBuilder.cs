@@ -1,4 +1,4 @@
-namespace BookRentalManager.Infrastructure.Data.Config;
+namespace BookRentalManager.Infrastructure.Data.Configurations;
 
 public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
 {
@@ -8,12 +8,13 @@ public sealed class BookEntityBuilder : IEntityTypeConfiguration<Book>
             .ToTable("Book")
             .HasKey(book => book.Id);
         bookBuilder
-            .Property(book => book.BookTitle)
+            .OwnsOne(book => book.BookTitle)
+            .Property(bookTitle => bookTitle.Title)
             .HasColumnName("BookTitle")
             .IsRequired();
         bookBuilder
             .HasMany(book => book.Authors)
-            .WithMany(authors => authors.Books)
+            .WithMany(author => author.Books)
             .UsingEntity(bookBuilder =>
             {
                 bookBuilder

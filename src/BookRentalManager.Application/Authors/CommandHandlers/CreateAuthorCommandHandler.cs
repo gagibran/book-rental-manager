@@ -1,30 +1,19 @@
 namespace BookRentalManager.Application.Authors.CommandHandlers;
 
-internal sealed class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, AuthorCreatedDto>
+internal sealed class CreateAuthorCommandHandler(IRepository<Author> authorRepository) : IRequestHandler<CreateAuthorCommand, AuthorCreatedDto>
 {
-    private readonly IRepository<Author> _authorRepository;
-    private readonly IMapper<Author, AuthorCreatedDto> _authorToAuthorCreatedDtoMapper;
-
-    public CreateAuthorCommandHandler(
-        IRepository<Author> authorRepository,
-        IMapper<Author, AuthorCreatedDto> authorToAuthorCreatedDtoMapper)
-    {
-        _authorRepository = authorRepository;
-        _authorToAuthorCreatedDtoMapper = authorToAuthorCreatedDtoMapper;
-    }
-
     public async Task<Result<AuthorCreatedDto>> HandleAsync(
         CreateAuthorCommand createAuthorCommand,
         CancellationToken cancellationToken)
     {
         var authorByFullNameSpecification = new AuthorByFullNameSpecification(createAuthorCommand.FirstName, createAuthorCommand.LastName);
-        Author? existingAuthor = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification);
+        Author? existingAuthor = await authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByFullNameSpecification, cancellationToken);
         Result existingAuthorResult = Result.Success();
         if (existingAuthor is not null)
         {
             existingAuthorResult = Result.Fail(
                 "authorAlreadyExists",
-                $"An author named '{existingAuthor.FullName.ToString()}' already exists.");
+                $"An author named '{existingAuthor.FullName}' already exists.");
         }
         Result<FullName> authorFullNameResult = FullName.Create(createAuthorCommand.FirstName, createAuthorCommand.LastName);
         Result combinedResults = Result.Combine(existingAuthorResult, authorFullNameResult);
@@ -33,7 +22,7 @@ internal sealed class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorC
             return Result.Fail<AuthorCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newAuthor = new Author(authorFullNameResult.Value!);
-        await _authorRepository.CreateAsync(newAuthor, cancellationToken);
-        return Result.Success(_authorToAuthorCreatedDtoMapper.Map(newAuthor));
+        await authorRepository.CreateAsync(newAuthor, cancellationToken);
+        return Result.Success(new AuthorCreatedDto(newAuthor));
     }
 }

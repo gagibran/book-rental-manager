@@ -17,18 +17,22 @@ public sealed class JsonPatchDocumentExtensionsTests
     }
 
     [Theory]
-    [InlineData("nonexistingOperation", "/areaCode", "Invalid JsonPatch operation 'nonexistingOperation'.")]
-    [InlineData("replace", "/nonexistingPath", "The target location specified by path segment 'nonexistingPath' was not found.")]
-    [InlineData(" ", "/areaCode", "'operation' cannot be empty.")]
-    [InlineData("replace", "", "'path' cannot be empty.")]
-    [InlineData("add", "/areaCode", "'add' operation not allowed in this context.")]
-    [InlineData("remove", "/areaCode", "'remove' operation not allowed in this context.")]
-    public void ApplyToResult_WithIncorrectOperationOrPath_ReturnsErrorMessage(string operation, string path, string expectedErrorMessage)
+    [InlineData("nonexistingOperation", "/areaCode", "jsonPatch", "Invalid JsonPatch operation 'nonexistingOperation'.")]
+    [InlineData("replace", "/nonexistingPath", "jsonPatch", "The target location specified by path segment 'nonexistingPath' was not found.")]
+    [InlineData(" ", "/areaCode", "jsonPatch", "'operation' cannot be empty.")]
+    [InlineData("replace", "", "jsonPatch", "'path' cannot be empty.")]
+    [InlineData("add", "/areaCode", "jsonPatch", "'add' operation not allowed in this context.")]
+    [InlineData("remove", "/areaCode", "jsonPatch", "'remove' operation not allowed in this context.")]
+    public void ApplyToResult_WithIncorrectOperationOrPath_ReturnsErrorMessage(
+        string operation,
+        string path,
+        string expectedErrorType,
+        string expectedErrorMessage)
     {
         // Arrange:
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>(operation, path, It.IsAny<string>(), 222)
+            new(operation, path, It.IsAny<string>(), 222)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,
@@ -38,9 +42,10 @@ public sealed class JsonPatchDocumentExtensionsTests
         Result applyToResult = JsonPatchDocumentExtensions.ApplyTo(
             patchCustomerNameAndPhoneNumberDtoJsonPatchDocument,
             _patchCustomerNameAndPhoneNumberDto,
-            new string[] { "add", "remove" });
+            ["add", "remove"]);
 
         // Assert:
+        Assert.Equal(expectedErrorType, applyToResult.ErrorType);
         Assert.Equal(expectedErrorMessage, applyToResult.ErrorMessage);
     }
 
@@ -51,7 +56,7 @@ public sealed class JsonPatchDocumentExtensionsTests
         var expectedErrorMessage = "'value' cannot be empty.";
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", "/areaCode", It.IsAny<string>(), null)
+            new("replace", "/areaCode", It.IsAny<string>(), null)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,
@@ -63,6 +68,7 @@ public sealed class JsonPatchDocumentExtensionsTests
             _patchCustomerNameAndPhoneNumberDto);
 
         // Assert:
+        Assert.Equal("jsonPatch", applyToResult.ErrorType);
         Assert.Equal(expectedErrorMessage, applyToResult.ErrorMessage);
     }
 
@@ -72,7 +78,7 @@ public sealed class JsonPatchDocumentExtensionsTests
         // Arrange:
         var operations = new List<Operation<PatchCustomerNameAndPhoneNumberDto>>
         {
-            new Operation<PatchCustomerNameAndPhoneNumberDto>("replace", "/areaCode", It.IsAny<string>(), 222)
+            new("replace", "/areaCode", It.IsAny<string>(), 222)
         };
         var patchCustomerNameAndPhoneNumberDtoJsonPatchDocument = new JsonPatchDocument<PatchCustomerNameAndPhoneNumberDto>(
             operations,

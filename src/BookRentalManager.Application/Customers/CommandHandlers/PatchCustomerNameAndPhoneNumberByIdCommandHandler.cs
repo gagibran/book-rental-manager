@@ -1,27 +1,17 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler : IRequestHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
+internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler(IRepository<Customer> customerRepository)
+    : IRequestHandler<PatchCustomerNameAndPhoneNumberByIdCommand>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> _customerToPatchCustomerNameAndPhoneNumberDtoMapper;
-
-    public PatchCustomerNameAndPhoneNumberByIdCommandHandler(
-        IRepository<Customer> customerRepository,
-        IMapper<Customer, PatchCustomerNameAndPhoneNumberDto> customerToPatchCustomerNameAndPhoneNumberDtoMapper)
-    {
-        _customerRepository = customerRepository;
-        _customerToPatchCustomerNameAndPhoneNumberDtoMapper = customerToPatchCustomerNameAndPhoneNumberDtoMapper;
-    }
-
     public async Task<Result> HandleAsync(PatchCustomerNameAndPhoneNumberByIdCommand patchCustomerNameAndPhoneNumberByIdCommand, CancellationToken cancellationToken)
     {
         var customerByIdWithBooksSpecification = new CustomerByIdWithBooksSpecification(patchCustomerNameAndPhoneNumberByIdCommand.Id);
-        Customer? customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
+        Customer? customer = await customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
         if (customer is null)
         {
-            return Result.Fail("customerId", $"No customer with the ID of '{patchCustomerNameAndPhoneNumberByIdCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{patchCustomerNameAndPhoneNumberByIdCommand.Id}' was found.");
         }
-        PatchCustomerNameAndPhoneNumberDto patchCustomerNameAndPhoneNumberDto = _customerToPatchCustomerNameAndPhoneNumberDtoMapper.Map(customer);
+        var patchCustomerNameAndPhoneNumberDto = new PatchCustomerNameAndPhoneNumberDto(customer);
         Result patchAppliedResult = JsonPatchDocumentExtensions.ApplyTo(
             patchCustomerNameAndPhoneNumberByIdCommand.PatchCustomerNameAndPhoneNumberDtoPatchDocument,
             patchCustomerNameAndPhoneNumberDto,
@@ -37,7 +27,7 @@ internal sealed class PatchCustomerNameAndPhoneNumberByIdCommandHandler : IReque
         {
             return combinedResult;
         }
-        await _customerRepository.UpdateAsync(customer, cancellationToken);
+        await customerRepository.UpdateAsync(customer, cancellationToken);
         return Result.Success();
     }
 }

@@ -1,27 +1,39 @@
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json;
+using BookRentalManager.Application.Constants;
 
 namespace BookRentalManager.Api.Common;
 
+#pragma warning disable CS1591
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class ApiController : ControllerBase
+[SwaggerResponse(
+    StatusCodes.Status500InternalServerError,
+    "If any unexpected errors occur.",
+    typeof(ValidationProblemDetails),
+    CustomMediaTypeNames.Application.ProblemJson)]
+public abstract class ApiController : ControllerBase
 {
+    private static readonly JsonSerializerOptions s_camelCaseJsonSerialization = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
     protected ActionResult HandleError(Result result)
     {
-        switch (result.ErrorType)
+        return result.ErrorType switch
         {
-            case string error when error.ToLower().Contains("id"):
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.NotFound);
-            case "jsonPatch":
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest);
-            default:
-                return CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity);
-        }
+            string error when error == RequestErrors.IdNotFoundError => CustomHttpErrorResponse(
+                result.ErrorType,
+                result.ErrorMessage,
+                HttpStatusCode.NotFound),
+            "jsonPatch" => CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.BadRequest),
+            _ => CustomHttpErrorResponse(result.ErrorType, result.ErrorMessage, HttpStatusCode.UnprocessableEntity),
+        };
     }
 
-    protected void CreatePaginationMetadata<TItem>(string routeName, PaginatedList<TItem> paginatedList)
+    protected void CreatePaginationMetadata<TItem>(PaginatedList<TItem> paginatedList)
     {
         int totalAmountOfPages = paginatedList.TotalAmountOfPages == int.MinValue ? 0 : paginatedList.TotalAmountOfPages;
         string serializedMetadata = JsonSerializer.Serialize(
@@ -32,11 +44,8 @@ public class ApiController : ControllerBase
                 paginatedList.PageSize,
                 TotalAmountOfPages = totalAmountOfPages,
             },
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
-        Response.Headers.Add("X-Pagination", serializedMetadata);
+            s_camelCaseJsonSerialization);
+        Response.Headers.Append("X-Pagination", serializedMetadata);
     }
 
     protected ActionResult CustomHttpErrorResponse(string errorTypes, string errorMessages, HttpStatusCode httpStatusCode)
@@ -47,14 +56,14 @@ public class ApiController : ControllerBase
 
     protected ExpandoObject AddHateoasLinks(List<AllowedRestMethodsDto> allowedRestMethodDtos, IdentifiableDto identifiableDto)
     {
-        if (!allowedRestMethodDtos.Any())
+        if (allowedRestMethodDtos.Count == 0)
         {
             throw new ArgumentException($"{allowedRestMethodDtos} cannot be empty.");
         }
         var hateoasLinkDtos = new List<HateoasLinkDto>();
         foreach (AllowedRestMethodsDto allowedRestMethodDto in allowedRestMethodDtos)
         {
-            string? href = Url.Link(allowedRestMethodDto.Method, new { Id = identifiableDto.Id });
+            string? href = Url.Link(allowedRestMethodDto.Method, new { identifiableDto.Id });
             var hateoasLinkDto = new HateoasLinkDto(href!, allowedRestMethodDto.Rel, allowedRestMethodDto.MethodName);
             hateoasLinkDtos.Add(hateoasLinkDto);
         }
@@ -81,7 +90,7 @@ public class ApiController : ControllerBase
             ExpandoObject dtoWithHateoasLinks = AddHateoasLinks(allowedRestMethodDtos, paginatedBaseDto);
             dtosWithHateoasLinks.Add(dtoWithHateoasLinks);
         }
-        var values =  new PaginatedList<ExpandoObject>(
+        var values = new PaginatedList<ExpandoObject>(
             dtosWithHateoasLinks,
             paginatedBaseDtos.TotalAmountOfItems,
             paginatedBaseDtos.TotalAmountOfPages,
@@ -94,7 +103,7 @@ public class ApiController : ControllerBase
     protected bool IsMediaTypeVendorSpecific(string? mediaType)
     {
         return MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue? mediaTypeHeaderValue)
-            && mediaTypeHeaderValue.MediaType.Equals(MediaTypeConstants.BookRentalManagerHateoasMediaType);
+            && mediaTypeHeaderValue.MediaType.Equals(CustomMediaTypeNames.Application.VendorBookRentalManagerHateoasJson);
     }
 
     private List<HateoasLinkDto> CreatePreviousAndNextPagesLinks(
@@ -138,3 +147,4 @@ public class ApiController : ControllerBase
         }
     }
 }
+#pragma warning restore CS1591

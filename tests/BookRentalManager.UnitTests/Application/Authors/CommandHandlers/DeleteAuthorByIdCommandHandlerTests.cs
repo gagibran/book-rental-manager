@@ -1,4 +1,4 @@
-namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
+namespace BookRentalManager.UnitTests.Application.Authors.CommandHandlers;
 
 public sealed class DeleteAuthorByIdCommandHandlerTests
 {
@@ -39,6 +39,7 @@ public sealed class DeleteAuthorByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
@@ -48,7 +49,6 @@ public sealed class DeleteAuthorByIdCommandHandlerTests
         // Arrange:
         Book book = TestFixtures.CreateDummyBook();
         _author.AddBook(book);
-        var expectedErrorMessage = $"This author has books. Please, delete the books before deleting the author.";
 
         // Act:
         Result handleAsyncResult = await _deleteAuthorByIdCommandHandler.HandleAsync(
@@ -56,7 +56,8 @@ public sealed class DeleteAuthorByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
+        Assert.Equal("authorHasBooks", handleAsyncResult.ErrorType);
+        Assert.Equal("This author has books. Please, delete the books before deleting the author.", handleAsyncResult.ErrorMessage);
     }
 
     [Fact]

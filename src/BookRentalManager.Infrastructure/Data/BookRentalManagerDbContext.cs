@@ -1,19 +1,12 @@
-using BookRentalManager.Infrastructure.Data.Config;
+using BookRentalManager.Infrastructure.Data.Configurations;
 
 namespace BookRentalManager.Infrastructure.Data;
 
-public sealed class BookRentalManagerDbContext : DbContext
+public sealed class BookRentalManagerDbContext(DbContextOptions dbContextOptions) : DbContext(dbContextOptions)
 {
-    public DbSet<Customer> Customers { get; set; }
-    public DbSet<Book> Books { get; set; }
-    public DbSet<Author> Authors { get; set; }
-
-    public BookRentalManagerDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
-    {
-        Customers = default!;
-        Books = default!;
-        Authors = default!;
-    }
+    public DbSet<Customer> Customers { get; set; } = default!;
+    public DbSet<Book> Books { get; set; } = default!;
+    public DbSet<Author> Authors { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

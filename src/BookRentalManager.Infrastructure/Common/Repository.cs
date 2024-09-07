@@ -2,22 +2,16 @@ using BookRentalManager.Infrastructure.Data;
 
 namespace BookRentalManager.Infrastructure.Common;
 
-public sealed class Repository<TEntity> : IRepository<TEntity> where TEntity : Entity
+public sealed class Repository<TEntity>(BookRentalManagerDbContext bookRentalManagerDbContext)
+    : IRepository<TEntity> where TEntity : Entity
 {
-    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
-    private readonly DbSet<TEntity> _dbSet;
-
-    public Repository(BookRentalManagerDbContext bookRentalManagerDbContext)
-    {
-        _bookRentalManagerDbContext = bookRentalManagerDbContext;
-        _dbSet = bookRentalManagerDbContext.Set<TEntity>();
-    }
+    private readonly DbSet<TEntity> _dbSet = bookRentalManagerDbContext.Set<TEntity>();
 
     public async Task<IReadOnlyList<TEntity>> GetAllBySpecificationAsync(
         Specification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
-        var items = await ApplySpecification(_dbSet, specification).ToListAsync(cancellationToken);
+        var items = await Repository<TEntity>.ApplySpecification(_dbSet, specification).ToListAsync(cancellationToken);
         return items.AsReadOnly();
     }
 
@@ -27,7 +21,7 @@ public sealed class Repository<TEntity> : IRepository<TEntity> where TEntity : E
         Specification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<TEntity> query = ApplySpecification(_dbSet, specification);
+        IQueryable<TEntity> query = Repository<TEntity>.ApplySpecification(_dbSet, specification);
         return await PaginatedList<TEntity>.CreateAsync(query, pageIndex, pageSize, cancellationToken);
     }
 
@@ -35,12 +29,14 @@ public sealed class Repository<TEntity> : IRepository<TEntity> where TEntity : E
         Specification<TEntity> specification,
         CancellationToken cancellationToken = default)
     {
-        return await ApplySpecification(_dbSet, specification).FirstOrDefaultAsync();
+        return await Repository<TEntity>
+            .ApplySpecification(_dbSet, specification)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await _dbSet.AddAsync(entity);
+        await _dbSet.AddAsync(entity, cancellationToken);
         await SaveAsync(cancellationToken);
     }
 
@@ -56,13 +52,13 @@ public sealed class Repository<TEntity> : IRepository<TEntity> where TEntity : E
         await SaveAsync(cancellationToken);
     }
 
-    private async Task SaveAsync(CancellationToken cancellationToken = default)
+    private async Task SaveAsync(CancellationToken cancellationToken)
     {
-        await _bookRentalManagerDbContext.SaveChangesAsync();
+        await bookRentalManagerDbContext.SaveChangesAsync(cancellationToken);
     }
 
-    private IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification)
+    private static IQueryable<TEntity> ApplySpecification(IQueryable<TEntity> query, Specification<TEntity> specification)
     {
-        return SpecificationEvaluator.GetQuery<TEntity>(query, specification);
+        return SpecificationEvaluator.GetQuery(query, specification);
     }
 }

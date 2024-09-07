@@ -1,28 +1,28 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetCustomerDto : IdentifiableDto
+[method: JsonConstructor]
+public sealed record GetCustomerDto(
+    Guid Id,
+    string FullName,
+    string Email,
+    string PhoneNumber,
+    IReadOnlyList<GetBookRentedByCustomerDto> Books,
+    string CustomerStatus,
+    int CustomerPoints)
+    : IdentifiableDto(Id)
 {
-    public string FullName { get; }
-    public string Email { get; }
-    public string PhoneNumber { get; }
-    public IReadOnlyList<GetBookRentedByCustomerDto> Books { get; }
-    public string CustomerStatus { get; }
-    public int CustomerPoints { get; }
-
-    public GetCustomerDto(
-        Guid id,
-        FullName fullName,
-        Email email,
-        PhoneNumber phoneNumber,
-        IReadOnlyList<GetBookRentedByCustomerDto> books,
-        CustomerStatus customerStatus,
-        int customerPoints) : base(id)
+    public GetCustomerDto(Customer customer) : this(
+        customer.Id,
+        customer.FullName.ToString(),
+        customer.Email.ToString(),
+        customer.PhoneNumber.ToString(),
+        customer
+            .Books
+            .Select(book => new GetBookRentedByCustomerDto(book))
+            .ToList()
+            .AsReadOnly(),
+        customer.CustomerStatus.ToString(),
+        customer.CustomerPoints)
     {
-        FullName = fullName.ToString();
-        Email = email.EmailAddress;
-        PhoneNumber = phoneNumber.GetCompletePhoneNumber();
-        Books = books;
-        CustomerStatus = customerStatus.CustomerType.ToString();
-        CustomerPoints = customerPoints;
     }
 }

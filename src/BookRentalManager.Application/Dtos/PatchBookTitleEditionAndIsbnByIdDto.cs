@@ -1,15 +1,9 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class PatchBookTitleEditionAndIsbnByIdDto
+public sealed record PatchBookTitleEditionAndIsbnByIdDto(string BookTitle, int Edition, string Isbn)
 {
-    public string BookTitle { get; set; }
-    public int Edition { get; set; }
-    public string Isbn { get; set; }
-
-    public PatchBookTitleEditionAndIsbnByIdDto(string bookTitle, int edition, string isbn)
+    public PatchBookTitleEditionAndIsbnByIdDto(Book book)
+        : this(book.BookTitle.Title, book.Edition.EditionNumber, book.Isbn.ToString())
     {
-        BookTitle = bookTitle;
-        Edition = edition;
-        Isbn = isbn;
     }
 }

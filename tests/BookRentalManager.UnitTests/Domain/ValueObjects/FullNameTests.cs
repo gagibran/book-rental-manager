@@ -3,17 +3,19 @@ namespace BookRentalManager.UnitTests.Domain.ValueObjects;
 public sealed class FullNameTests
 {
     [Theory]
-    [InlineData(" ", "Doe", "First name cannot be empty.")]
-    [InlineData("John", "", "Last name cannot be empty.")]
+    [InlineData(" ", "Doe", "firstName", "First name cannot be empty.")]
+    [InlineData("John", "", "lastName", "Last name cannot be empty.")]
     public void Create_WithInvalidFullName_ReturnsErrorMessage(
         string firstName,
         string lastName,
+        string expectedErrorType,
         string expectedErrorMessage)
     {
         // Act:
         Result<FullName> fullNameResult = FullName.Create(firstName, lastName);
 
         // Assert:
+        Assert.Equal(expectedErrorType, fullNameResult.ErrorType);
         Assert.Equal(expectedErrorMessage, fullNameResult.ErrorMessage);
     }
 

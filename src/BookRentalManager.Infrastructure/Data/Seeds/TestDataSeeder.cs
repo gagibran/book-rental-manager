@@ -2,33 +2,26 @@ using BookRentalManager.Domain.ValueObjects;
 
 namespace BookRentalManager.Infrastructure.Data.Seeds;
 
-public sealed class TestDataSeeder
+public static class TestDataSeeder
 {
-    private readonly BookRentalManagerDbContext _bookRentalManagerDbContext;
-
-    public TestDataSeeder(BookRentalManagerDbContext bookRentalManagerDbContext)
+    public static async Task SeedTestDataAsync(BookRentalManagerDbContext bookRentalManagerDbContext)
     {
-        _bookRentalManagerDbContext = bookRentalManagerDbContext;
-    }
-
-    public async Task SeedTestDataAsync()
-    {
-        DbSet<Customer> customers = _bookRentalManagerDbContext.Set<Customer>();
-        DbSet<Book> books = _bookRentalManagerDbContext.Set<Book>();
-        DbSet<Author> authors = _bookRentalManagerDbContext.Set<Author>();
+        DbSet<Customer> customers = bookRentalManagerDbContext.Set<Customer>();
+        DbSet<Book> books = bookRentalManagerDbContext.Set<Book>();
+        DbSet<Author> authors = bookRentalManagerDbContext.Set<Author>();
         if (!customers.Any())
         {
             var newCustomers = new List<Customer>
             {
-                new Customer(
+                new(
                     FullName.Create("John", "Doe").Value!,
                     Email.Create("john.doe@email.com").Value!,
                     PhoneNumber.Create(200, 2000000).Value!),
-                new Customer(
+                new(
                     FullName.Create("Sarah", "Smith").Value!,
                     Email.Create("sarah.smith@email.com").Value!,
                     PhoneNumber.Create(235, 2204063).Value!),
-                new Customer(
+                new(
                     FullName.Create("Peter", "Griffin").Value!,
                     Email.Create("peter.griffin@email.com").Value!,
                     PhoneNumber.Create(546, 4056780).Value!)
@@ -39,16 +32,16 @@ public sealed class TestDataSeeder
         {
             var newAuthors = new List<Author>
             {
-                new Author(FullName.Create("Erich", "Gamma").Value!),
-                new Author(FullName.Create("John", "Vlissides").Value!),
-                new Author(FullName.Create("Ralph", "Johnson").Value!),
-                new Author(FullName.Create("Richard", "Helm").Value!),
-                new Author(FullName.Create("Bob", "Martin").Value!),
-                new Author(FullName.Create("Howard", "Lovecraft").Value!),
-                new Author(FullName.Create("Edgar Allan", "Poe").Value!),
+                new(FullName.Create("Erich", "Gamma").Value!),
+                new(FullName.Create("John", "Vlissides").Value!),
+                new(FullName.Create("Ralph", "Johnson").Value!),
+                new(FullName.Create("Richard", "Helm").Value!),
+                new(FullName.Create("Bob", "Martin").Value!),
+                new(FullName.Create("Howard", "Lovecraft").Value!),
+                new(FullName.Create("Edgar Allan", "Poe").Value!),
             };
             var designPatternsBook = new Book(
-                "Design Patterns: Elements of Reusable Object-Oriented Software",
+                BookTitle.Create("Design Patterns: Elements of Reusable Object-Oriented Software").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("0-201-63361-2").Value!);
             newAuthors[0].AddBook(designPatternsBook);
@@ -56,16 +49,16 @@ public sealed class TestDataSeeder
             newAuthors[2].AddBook(designPatternsBook);
             newAuthors[3].AddBook(designPatternsBook);
             var cleanCodeBook = new Book(
-                "Clean Code: A Handbook of Agile Software Craftsmanship",
+                BookTitle.Create("Clean Code: A Handbook of Agile Software Craftsmanship").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-0132350884").Value!);
             newAuthors[4].AddBook(cleanCodeBook);
             var callOfCthulhuBook = new Book(
-                "The Call Of Cthulhu",
+                BookTitle.Create("The Call Of Cthulhu").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-1515424437").Value!);
             var shadowOverInnsmouthBook = new Book(
-                "The Shadow Over Innsmouth",
+                BookTitle.Create("The Shadow Over Innsmouth").Value!,
                 Edition.Create(1).Value!,
                 Isbn.Create("978-1878252180").Value!);
             newAuthors[5].AddBook(callOfCthulhuBook);
@@ -86,6 +79,6 @@ public sealed class TestDataSeeder
             await books.AddRangeAsync(newBooks);
             await customers.AddAsync(customer);
         }
-        await _bookRentalManagerDbContext.SaveChangesAsync();
+        await bookRentalManagerDbContext.SaveChangesAsync();
     }
 }

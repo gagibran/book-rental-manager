@@ -3,7 +3,6 @@ namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
 public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
 {
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, PatchBookTitleEditionAndIsbnByIdDto>> _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub;
     private readonly Book _book;
     private readonly PatchBookTitleEditionAndIsbnByIdCommand _patchBookTitleEditionAndIsbnByIdCommand;
     private readonly PatchBookTitleEditionAndIsbnByIdCommandHandler _patchBookTitleEditionAndIsbnByIdCommandHandler;
@@ -11,27 +10,20 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
     public PatchBookTitleEditionAndIsbnByIdCommandHandlerTests()
     {
         _bookRepositoryStub = new();
-        _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub = new();
         _book = TestFixtures.CreateDummyBook();
         var patchBookTitleEditionAndIsbnByIdDto = new PatchBookTitleEditionAndIsbnByIdDto(
-            _book.BookTitle,
+            _book.BookTitle.Title,
             _book.Edition.EditionNumber,
             _book.Isbn.IsbnValue);
         var operations = new List<Operation<PatchBookTitleEditionAndIsbnByIdDto>>
         {
-            new Operation<PatchBookTitleEditionAndIsbnByIdDto>("replace", "/edition", It.IsAny<string>(), 2)
+            new("replace", "/edition", It.IsAny<string>(), 2)
         };
         var patchBookTitleEditionAndIsbnByIdDtoPatchDocument = new JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>(
             operations,
             new DefaultContractResolver());
         _patchBookTitleEditionAndIsbnByIdCommand = new(_book.Id, patchBookTitleEditionAndIsbnByIdDtoPatchDocument);
-        _patchBookTitleEditionAndIsbnByIdCommandHandler = new(
-            _bookRepositoryStub.Object,
-            _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub.Object);
-        _bookToPatchBookTitleEditionAndIsbnByIdDtoMapperStub
-            .Setup(bookToPatchBookTitleEditionAndIsbnByIdDtoMapper => bookToPatchBookTitleEditionAndIsbnByIdDtoMapper.Map(
-                It.IsAny<Book>()))
-            .Returns(patchBookTitleEditionAndIsbnByIdDto);
+        _patchBookTitleEditionAndIsbnByIdCommandHandler = new(_bookRepositoryStub.Object);
         _bookRepositoryStub
             .Setup(bookRepository => bookRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<BookByIdWithAuthorsAndCustomersSpecification>(),
@@ -56,36 +48,61 @@ public sealed class PatchBookTitleEditionAndIsbnByIdCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 
     [Theory]
-    [InlineData("/invalidPath", "/invalidPath", 2, "0-201-61622-X", "The target location specified by path segment 'invalidPath' was not found.")]
-    [InlineData("/edition", "/isbn", 0, "0-201-61622-X", "The edition number can't be smaller than 1.")]
-    [InlineData("/edition", "/isbn", 1, "201-61622-X", "Invalid ISBN format.")]
+    [InlineData("/invalidPath", "/invalidPath", 2, "0-201-61622-X", "The target location specified by path segment 'invalidPath' was not found.", "jsonPatch")]
+    [InlineData("/edition", "/isbn", 0, "0-201-61622-X", "The edition number can't be smaller than 1.", "editionNumber")]
+    [InlineData("/edition", "/isbn", 1, "201-61622-X", "Invalid ISBN format.", "isbnFormat")]
     public async Task HandleAsync_WithInvalidPatchOperationOrValue_ReturnsErrorMessage(
         string path1,
         string path2,
         int newEdition,
         string newIsbn,
-        string expectedErrorMessage)
+        string expectedErrorMessage,
+        string expectedErrorType)
     {
         // Arrange:
         var operations = new List<Operation<PatchBookTitleEditionAndIsbnByIdDto>>
         {
-            new Operation<PatchBookTitleEditionAndIsbnByIdDto>("replace", path1, It.IsAny<string>(), newEdition),
-            new Operation<PatchBookTitleEditionAndIsbnByIdDto>("replace", path2, It.IsAny<string>(), newIsbn)
+            new("replace", path1, It.IsAny<string>(), newEdition),
+            new("replace", path2, It.IsAny<string>(), newIsbn)
         };
         var patchBookTitleEditionAndIsbnByIdDtoPatchDocument = new JsonPatchDocument<PatchBookTitleEditionAndIsbnByIdDto>(
             operations,
             new DefaultContractResolver());
+        var patchBookTitleEditionAndIsbnByIdCommand = _patchBookTitleEditionAndIsbnByIdCommand with
+        {
+            PatchBookTitleEditionAndIsbnByIdDtoPatchDocument = patchBookTitleEditionAndIsbnByIdDtoPatchDocument
+        };
 
         // Act:
         Result handleAsyncResult = await _patchBookTitleEditionAndIsbnByIdCommandHandler.HandleAsync(
-            new PatchBookTitleEditionAndIsbnByIdCommand(_book.Id, patchBookTitleEditionAndIsbnByIdDtoPatchDocument),
+            patchBookTitleEditionAndIsbnByIdCommand,
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal(expectedErrorType, handleAsyncResult.ErrorType);
+        Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WithBookAlreadyRentedByCustomer_ReturnsErrorMessage()
+    {
+        // Arrange:
+        Customer customer = TestFixtures.CreateDummyCustomer();
+        var expectedErrorMessage = $"This book is currently rented by {customer.FullName}. Return the book before updating it.";
+        _book.SetRentedBy(customer);
+
+        // Act:
+        Result handleAsyncResult = await _patchBookTitleEditionAndIsbnByIdCommandHandler.HandleAsync(
+            _patchBookTitleEditionAndIsbnByIdCommand,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal("bookCustomer", handleAsyncResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handleAsyncResult.ErrorMessage);
     }
 

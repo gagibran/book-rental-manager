@@ -1,8 +1,8 @@
 namespace BookRentalManager.Domain.ValueObjects;
 
-public sealed class Email : ValueObject
+public sealed partial class Email : ValueObject
 {
-    public string EmailAddress { get; }
+    public string EmailAddress { get; set; }
 
     private Email()
     {
@@ -16,16 +16,24 @@ public sealed class Email : ValueObject
 
     public static Result<Email> Create(string emailAddress)
     {
-        bool isEmailValid = Regex.IsMatch(emailAddress, @"^(\w|\d).*@(\d|\w)+(\d|\w|-)+\.\w{2,3}$");
+        bool isEmailValid = IsEmailValidRegex().IsMatch(emailAddress);
         if (!isEmailValid)
         {
             return Result.Fail<Email>("email", "Email address is not in a valid format.");
         }
-        return Result.Success<Email>(new Email(emailAddress.Trim()));
+        return Result.Success(new Email(emailAddress.Trim()));
     }
 
     public override IEnumerable<object> GetEqualityComponents()
     {
         yield return EmailAddress;
     }
+
+    public override string ToString()
+    {
+        return EmailAddress;
+    }
+
+    [GeneratedRegex("^(\\w|\\d).*@(\\d|\\w)+(\\d|\\w|-)+\\.\\w{2,3}$")]
+    private static partial Regex IsEmailValidRegex();
 }

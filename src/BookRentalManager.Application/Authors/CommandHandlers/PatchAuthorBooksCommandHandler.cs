@@ -1,25 +1,17 @@
 namespace BookRentalManager.Application.Authors.CommandHandlers;
 
-internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuthorBooksCommand>
+internal sealed class PatchAuthorBooksCommandHandler(IRepository<Author> authorRepository, IRepository<Book> bookRepository)
+    : IRequestHandler<PatchAuthorBooksCommand>
 {
-    private readonly IRepository<Author> _authorRepository;
-    private readonly IRepository<Book> _bookRepository;
-
-    public PatchAuthorBooksCommandHandler(IRepository<Author> authorRepository, IRepository<Book> bookRepository)
-    {
-        _authorRepository = authorRepository;
-        _bookRepository = bookRepository;
-    }
-
     public async Task<Result> HandleAsync(PatchAuthorBooksCommand patchAuthorBooksCommand, CancellationToken cancellationToken)
     {
         var authorByIdWithBooksSpecification = new AuthorByIdWithBooksSpecification(patchAuthorBooksCommand.Id);
-        Author? author = await _authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification);
+        Author? author = await authorRepository.GetFirstOrDefaultBySpecificationAsync(authorByIdWithBooksSpecification, cancellationToken);
         if (author is null)
         {
-            return Result.Fail("authorId", $"No author with the ID of '{patchAuthorBooksCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No author with the ID of '{patchAuthorBooksCommand.Id}' was found.");
         }
-        var patchAuthorBooksDto = new PatchAuthorBooksDto(new List<Guid>());
+        var patchAuthorBooksDto = new PatchAuthorBooksDto([]);
         Result patchAppliedResult = patchAuthorBooksCommand.PatchAuthorBooksDtoPatchDocument.ApplyTo(
             patchAuthorBooksDto,
             "replace",
@@ -29,20 +21,16 @@ internal sealed class PatchAuthorBooksCommandHandler : IRequestHandler<PatchAuth
             return patchAppliedResult;
         }
         var booksByIdsSpecification = new BooksByIdsSpecification(patchAuthorBooksDto.BookIds);
-        IReadOnlyList<Book> booksToAdd = await _bookRepository.GetAllBySpecificationAsync(booksByIdsSpecification, cancellationToken);
-        if (booksToAdd.Count() != patchAuthorBooksDto.BookIds.Count())
+        IReadOnlyList<Book> booksToAdd = await bookRepository.GetAllBySpecificationAsync(booksByIdsSpecification, cancellationToken);
+        if (booksToAdd.Count != patchAuthorBooksDto.BookIds.Count())
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }
         foreach (Book bookToAdd in booksToAdd)
         {
-            Result addBookResult = author!.AddBook(bookToAdd);
-            if (!addBookResult.IsSuccess)
-            {
-                return addBookResult;
-            }
+            author.AddBook(bookToAdd);
         }
-        await _authorRepository.UpdateAsync(author!, cancellationToken);
+        await authorRepository.UpdateAsync(author!, cancellationToken);
         return Result.Success();
     }
 }

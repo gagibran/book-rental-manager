@@ -1,6 +1,6 @@
 namespace BookRentalManager.Domain.Entities;
 
-public sealed class Customer : AggregateRoot
+public sealed class Customer : Entity
 {
     private readonly List<Book> _books;
 
@@ -13,7 +13,7 @@ public sealed class Customer : AggregateRoot
 
     private Customer()
     {
-        _books = new();
+        _books = [];
         FullName = default!;
         Email = default!;
         PhoneNumber = default!;
@@ -26,7 +26,7 @@ public sealed class Customer : AggregateRoot
         Email email,
         PhoneNumber phoneNumber)
     {
-        _books = new();
+        _books = [];
         FullName = fullName;
         Email = email;
         PhoneNumber = phoneNumber;
@@ -41,7 +41,7 @@ public sealed class Customer : AggregateRoot
         {
             return checkRentPossibilityByCustomerBooksResult;
         }
-        Result checkRentPossibilityByCustomerTypeResult = CustomerStatus.CheckRentPossibilityByCustomerType(Books.Count());
+        Result checkRentPossibilityByCustomerTypeResult = CustomerStatus.CheckRentPossibilityByCustomerType(Books.Count);
         if (!checkRentPossibilityByCustomerTypeResult.IsSuccess)
         {
             return checkRentPossibilityByCustomerTypeResult;
@@ -59,7 +59,7 @@ public sealed class Customer : AggregateRoot
     {
         if (!Books.Contains(book))
         {
-            return Result.Fail("noBook", $"The book '{book.BookTitle}' does not exist for this customer.");
+            return Result.Fail("noBook", $"The book '{book.BookTitle}' has not been rented by this customer.");
         }
         if (DateTime.UtcNow > book.DueDate && CustomerPoints > 0)
         {

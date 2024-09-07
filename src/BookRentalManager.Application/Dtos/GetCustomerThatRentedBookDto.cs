@@ -1,17 +1,4 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetCustomerThatRentedBookDto
-{
-    public string? FullName { get; }
-    public string? Email { get; }
-
-    public GetCustomerThatRentedBookDto()
-    {
-    }
-
-    public GetCustomerThatRentedBookDto(FullName fullName, Email email)
-    {
-        FullName = fullName.ToString();
-        Email = email.EmailAddress;
-    }
-}
+[method: JsonConstructor]
+public sealed record GetCustomerThatRentedBookDto(string FullName, string Email);

@@ -6,6 +6,5 @@ public sealed class AuthorByIdWithBooksSpecification : Specification<Author>
     {
         Where = author => author.Id == id;
         IncludeExpressions.Add(author => author.Books);
-        CacheKey = nameof(AuthorByIdWithBooksSpecification) + "-" + id;
     }
 }

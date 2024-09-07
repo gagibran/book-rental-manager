@@ -1,13 +1,15 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetAuthorDto : IdentifiableDto
+[method: JsonConstructor]
+public sealed record GetAuthorDto(Guid Id, string FullName, IReadOnlyList<GetBookFromAuthorDto> Books) : IdentifiableDto(Id)
 {
-    public string FullName { get; }
-    public IReadOnlyList<GetBookFromAuthorDto> Books { get; }
-
-    public GetAuthorDto(Guid id, FullName fullName, IReadOnlyList<GetBookFromAuthorDto> books) : base(id)
+    public GetAuthorDto(Author author) : this(
+        author.Id,
+        author.FullName.ToString(),
+        author.Books
+            .Select(book => new GetBookFromAuthorDto(book))
+            .ToList()
+            .AsReadOnly())
     {
-        FullName = fullName.ToString();
-        Books = books;
     }
 }

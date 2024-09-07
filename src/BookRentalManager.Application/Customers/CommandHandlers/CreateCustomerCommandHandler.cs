@@ -1,30 +1,20 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, CustomerCreatedDto>
+internal sealed class CreateCustomerCommandHandler(IRepository<Customer> customerRepository)
+    : IRequestHandler<CreateCustomerCommand, CustomerCreatedDto>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IMapper<Customer, CustomerCreatedDto> _customerToCustomerCreatedDtoMapper;
-
-    public CreateCustomerCommandHandler(
-        IRepository<Customer> customerRepository,
-        IMapper<Customer, CustomerCreatedDto> customerToCustomerCreatedDtoMapper)
-    {
-        _customerRepository = customerRepository;
-        _customerToCustomerCreatedDtoMapper = customerToCustomerCreatedDtoMapper;
-    }
-
     public async Task<Result<CustomerCreatedDto>> HandleAsync(
         CreateCustomerCommand createCustomerCommand,
         CancellationToken cancellationToken)
     {
         var customerByEmailWithBooksSpecification = new CustomerByEmailWithBooksSpecification(createCustomerCommand.Email);
-        Customer? existingCustomerWithEmail = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailWithBooksSpecification);
+        Customer? existingCustomerWithEmail = await customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByEmailWithBooksSpecification, cancellationToken);
         Result existingCustomerWithEmailResult = Result.Success();
         if (existingCustomerWithEmail is not null)
         {
             existingCustomerWithEmailResult = Result.Fail(
                 "customerEmailAlreadyExists",
-                $"A customer with the email '{existingCustomerWithEmail.Email.EmailAddress}' already exists.");
+                $"A customer with the email '{existingCustomerWithEmail.Email}' already exists.");
         }
         Result<FullName> fullNameResult = FullName.Create(createCustomerCommand.FirstName, createCustomerCommand.LastName);
         Result<Email> emailResult = Email.Create(createCustomerCommand.Email);
@@ -37,7 +27,7 @@ internal sealed class CreateCustomerCommandHandler : IRequestHandler<CreateCusto
             return Result.Fail<CustomerCreatedDto>(combinedResults.ErrorType, combinedResults.ErrorMessage);
         }
         var newCustomer = new Customer(fullNameResult.Value!, emailResult.Value!, phoneNumberResult.Value!);
-        await _customerRepository.CreateAsync(newCustomer, cancellationToken);
-        return Result.Success(_customerToCustomerCreatedDtoMapper.Map(newCustomer));
+        await customerRepository.CreateAsync(newCustomer, cancellationToken);
+        return Result.Success(new CustomerCreatedDto(newCustomer));
     }
 }

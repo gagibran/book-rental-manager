@@ -1,13 +1,9 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class AuthorCreatedDto : IdentifiableDto
+[method: JsonConstructor]
+public sealed record AuthorCreatedDto(Guid Id, string FirstName, string LastName) : IdentifiableDto(Id)
 {
-    public string FirstName { get; }
-    public string LastName { get; }
-
-    public AuthorCreatedDto(Guid id, string firstName, string lastName) : base(id)
+    public AuthorCreatedDto(Author author) : this(author.Id, author.FullName.FirstName, author.FullName.LastName)
     {
-        FirstName = firstName;
-        LastName = lastName;
     }
 }

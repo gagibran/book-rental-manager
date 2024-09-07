@@ -1,4 +1,4 @@
-namespace AuthorRentalManager.UnitTests.Domain.Specifications;
+namespace BookRentalManager.UnitTests.Domain.Specifications;
 
 public sealed class AuthorByFullNameSpecificationTests
 {

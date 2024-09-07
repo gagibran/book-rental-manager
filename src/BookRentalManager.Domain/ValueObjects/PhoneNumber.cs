@@ -35,10 +35,10 @@ public sealed class PhoneNumber : ValueObject
         {
             return Result.Fail<PhoneNumber>(finalResult.ErrorType, finalResult.ErrorMessage);
         }
-        return Result.Success<PhoneNumber>(new PhoneNumber(areaCode, prefixAndLineNumber));
+        return Result.Success(new PhoneNumber(areaCode, prefixAndLineNumber));
     }
 
-    public string GetCompletePhoneNumber()
+    public override string ToString()
     {
         return $"+1{AreaCode}{PrefixAndLineNumber}";
     }

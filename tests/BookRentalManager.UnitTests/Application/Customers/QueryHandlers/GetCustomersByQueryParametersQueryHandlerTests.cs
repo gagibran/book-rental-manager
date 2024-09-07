@@ -4,8 +4,7 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
 {
     private readonly GetCustomersByQueryParametersQuery _getCustomersByQueryParametersQuery;
     private readonly Mock<IRepository<Customer>> _customerRepositoryStub;
-    private readonly Mock<IMapper<Customer, GetCustomerDto>> _customerToGetCustomerDtoMapperStub;
-    private readonly Mock<IMapper<CustomerSortParameters, Result<string>>> _customerSortParametersMapperStub;
+    private readonly Mock<ISortParametersMapper> _sortParametersMapperStub;
     private readonly GetCustomersByQueryParametersQueryHandler _getCustomersByQueryParametersQueryHandler;
 
     public GetCustomersByQueryParametersQueryHandlerTests()
@@ -15,16 +14,12 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
             It.IsAny<int>(),
             string.Empty,
             It.IsAny<string>());
-        _customerToGetCustomerDtoMapperStub = new();
-        _customerSortParametersMapperStub = new();
+        _sortParametersMapperStub = new();
         _customerRepositoryStub = new();
-        _getCustomersByQueryParametersQueryHandler = new(
-            _customerRepositoryStub.Object,
-            _customerToGetCustomerDtoMapperStub.Object,
-            _customerSortParametersMapperStub.Object);
-        _customerSortParametersMapperStub
-            .Setup(customerSortParametersMapper => customerSortParametersMapper.Map(It.IsAny<CustomerSortParameters>()))
-            .Returns(Result.Success<string>(string.Empty));
+        _getCustomersByQueryParametersQueryHandler = new(_customerRepositoryStub.Object, _sortParametersMapperStub.Object);
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapCustomerSortParameters(It.IsAny<string>()))
+            .Returns(Result.Success(string.Empty));
     }
 
     [Fact]
@@ -38,20 +33,10 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Customer>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new PaginatedList<Customer>(
-                new List<Customer>(),
+                [],
                 It.IsAny<int>(),
                 It.IsAny<int>(),
                 It.IsAny<int>(),
-                It.IsAny<int>()));
-        _customerToGetCustomerDtoMapperStub
-            .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(new GetCustomerDto(
-                It.IsAny<Guid>(),
-                FullName.Create("John", "Doe").Value!,
-                Email.Create("johndoe@email.com").Value!,
-                PhoneNumber.Create(200, 2_000_000).Value!,
-                It.IsAny<IReadOnlyList<GetBookRentedByCustomerDto>>(),
-                CustomerStatus.Create(11),
                 It.IsAny<int>()));
 
         // Act:
@@ -64,20 +49,40 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WithInvalidSortParameters_ReturnsErrorMessage()
+    {
+        // Arrange:
+        const string ExpectedErrorType = "errorType";
+        const string ExpectedErrorMessage = "errorMessage";
+        _sortParametersMapperStub
+            .Setup(sortParametersMapper => sortParametersMapper.MapCustomerSortParameters(It.IsAny<string>()))
+            .Returns(Result.Fail<string>(ExpectedErrorType, ExpectedErrorMessage));
+
+        // Act:
+        Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
+            _getCustomersByQueryParametersQuery,
+            It.IsAny<CancellationToken>());
+
+        // Assert:
+        Assert.Equal(ExpectedErrorType, handlerResult.ErrorType);
+        Assert.Equal(ExpectedErrorMessage, handlerResult.ErrorMessage);
+    }
+
+    [Fact]
     public async Task HandleAsync_WithEmptySearchParameter_ReturnsListWithAllCustomers()
     {
         // Arrange:
         Customer customer = TestFixtures.CreateDummyCustomer();
         var expectedGetCustomerDto = new GetCustomerDto(
-            Guid.NewGuid(),
-            customer.FullName,
-            customer.Email,
-            customer.PhoneNumber,
-            new List<GetBookRentedByCustomerDto>(),
-            customer.CustomerStatus,
+            customer.Id,
+            customer.FullName.ToString(),
+            customer.Email.ToString(),
+            customer.PhoneNumber.ToString(),
+            [],
+            customer.CustomerStatus.ToString(),
             customer.CustomerPoints);
         var paginatedCustomers = new PaginatedList<Customer>(
-            new List<Customer> { customer },
+            [customer],
             It.IsAny<int>(),
             It.IsAny<int>(),
             It.IsAny<int>(),
@@ -89,16 +94,13 @@ public sealed class GetCustomersByQueryParametersQueryHandlerTests
                 It.IsAny<Specification<Customer>>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(paginatedCustomers);
-        _customerToGetCustomerDtoMapperStub
-            .Setup(customerToGetCustomerDtoMapper => customerToGetCustomerDtoMapper.Map(It.IsAny<Customer>()))
-            .Returns(expectedGetCustomerDto);
 
         // Act:
         Result<PaginatedList<GetCustomerDto>> handlerResult = await _getCustomersByQueryParametersQueryHandler.HandleAsync(
             _getCustomersByQueryParametersQuery,
             It.IsAny<CancellationToken>());
 
-        // Assert (maybe refactor this using FluentAssertions):
+        // Assert:
         GetCustomerDto actualGetCustomerDto = handlerResult.Value!.FirstOrDefault()!;
         Assert.Equal(expectedGetCustomerDto.Id, actualGetCustomerDto.Id);
         Assert.Equal(expectedGetCustomerDto.FullName, actualGetCustomerDto.FullName);

@@ -50,11 +50,11 @@ public static partial class ILoggerExtensions
     [LoggerMessage(
         (int)EventIds.LogInternalServerError,
         LogLevel.Error,
-        "An exception of type '{ExceptionType}' was thrown. Error message: {ErrorMessage} Stack trace: {StackTrace}.",
+        "An exception of type '{ExceptionType}' was thrown. Error message: {ErrorMessage} Trace ID: {TraceId}.",
         SkipEnabledCheck = true)]
     public static partial void LogInternalServerError(
         this ILogger logger,
         Type exceptionType,
         string errorMessage,
-        string? stackTrace);
+        string? traceId);
 }

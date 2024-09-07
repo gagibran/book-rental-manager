@@ -1,17 +1,12 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class PatchCustomerNameAndPhoneNumberDto
+public sealed record PatchCustomerNameAndPhoneNumberDto(string FirstName, string LastName, int AreaCode, int PrefixAndLineNumber)
 {
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public int AreaCode { get; set; }
-    public int PrefixAndLineNumber { get; set; }
-
-    public PatchCustomerNameAndPhoneNumberDto(string firstName, string lastName, int areaCode, int prefixAndLineNumber)
+    public PatchCustomerNameAndPhoneNumberDto(Customer customer) : this(
+        customer.FullName.FirstName,
+        customer.FullName.LastName,
+        customer.PhoneNumber.AreaCode,
+        customer.PhoneNumber.PrefixAndLineNumber)
     {
-        FirstName = firstName;
-        LastName = lastName;
-        AreaCode = areaCode;
-        PrefixAndLineNumber = prefixAndLineNumber;
     }
 }

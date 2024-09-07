@@ -1,4 +1,4 @@
-namespace BookRentalManager.UnitTests.Application.Books.CommandHandlers;
+namespace BookRentalManager.UnitTests.Application.Authors.CommandHandlers;
 
 public sealed class PatchAuthorBooksCommandHandlerTests
 {
@@ -13,13 +13,13 @@ public sealed class PatchAuthorBooksCommandHandlerTests
     {
         _book = TestFixtures.CreateDummyBook();
         var anotherBook = new Book(
-            "Clean Code: A Handbook of Agile Software Craftsmanship",
+            BookTitle.Create("Clean Code: A Handbook of Agile Software Craftsmanship").Value!,
             Edition.Create(1).Value!,
             Isbn.Create("978-0132350884").Value!);
         var bookIdsToAdd = new List<Guid> { _book.Id, anotherBook.Id };
         var operations = new List<Operation<PatchAuthorBooksDto>>
         {
-            new Operation<PatchAuthorBooksDto>("add", "/bookIds", It.IsAny<string>(), bookIdsToAdd)
+            new("add", "/bookIds", It.IsAny<string>(), bookIdsToAdd)
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         _author = TestFixtures.CreateDummyAuthor();
@@ -36,7 +36,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             .Setup(bookRepository => bookRepository.GetAllBySpecificationAsync(
                 It.IsAny<BooksByIdsSpecification>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<Book> { _book, anotherBook });
+            .ReturnsAsync([_book, anotherBook]);
     }
 
     [Fact]
@@ -58,6 +58,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", patchAuthorBooksCommandHandlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
     }
 
@@ -67,11 +68,10 @@ public sealed class PatchAuthorBooksCommandHandlerTests
         // Arrange:
         var operations = new List<Operation<PatchAuthorBooksDto>>
         {
-            new Operation<PatchAuthorBooksDto>("add", "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
+            new("add", "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         var patchAuthorBooksCommand = new PatchAuthorBooksCommand(It.IsAny<Guid>(), patchAuthorBooksDtoPatchDocument);
-        var expectedErrorMessage = "Could not find some of the books for the provided IDs.";
         _authorRepositoryStub
             .Setup(authorRepository => authorRepository.GetFirstOrDefaultBySpecificationAsync(
                 It.IsAny<AuthorByIdWithBooksSpecification>(),
@@ -89,7 +89,8 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
-        Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
+        Assert.Equal("bookIds", patchAuthorBooksCommandHandlerResult.ErrorType);
+        Assert.Equal("Could not find some of the books for the provided IDs.", patchAuthorBooksCommandHandlerResult.ErrorMessage);
     }
 
     [Theory]
@@ -100,7 +101,7 @@ public sealed class PatchAuthorBooksCommandHandlerTests
         // Arrange:
         var operations = new List<Operation<PatchAuthorBooksDto>>
         {
-            new Operation<PatchAuthorBooksDto>(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
+            new(operation, "/bookIds", It.IsAny<string>(), new List<Guid> { Guid.NewGuid() })
         };
         var patchAuthorBooksDtoPatchDocument = new JsonPatchDocument<PatchAuthorBooksDto>(operations, new DefaultContractResolver());
         var patchAuthorBooksCommand = new PatchAuthorBooksCommand(It.IsAny<Guid>(), patchAuthorBooksDtoPatchDocument);
@@ -121,27 +122,12 @@ public sealed class PatchAuthorBooksCommandHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("jsonPatch", patchAuthorBooksCommandHandlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
     }
 
     [Fact]
-    public async Task HandleAsync_WithAuthorWithBookAlreadyRegistered_ReturnsErrorMessage()
-    {
-        // Arrange:
-        var expectedErrorMessage = $"A book with the ISBN '{_book.Isbn}' has already been added to this author.";
-        _author.AddBook(_book);
-
-        // Act:
-        Result patchAuthorBooksCommandHandlerResult = await _patchAuthorBooksCommandHandler.HandleAsync(
-            _patchAuthorBooksCommand,
-            It.IsAny<CancellationToken>());
-
-        // Assert:
-        Assert.Equal(expectedErrorMessage, patchAuthorBooksCommandHandlerResult.ErrorMessage);
-    }
-
-    [Fact]
-    public async Task HandleAsync_WithExistingAuthorAndBooksNotRegistered_ReturnsSuccess()
+    public async Task HandleAsync_WithSuccessfulParameters_ReturnsSuccess()
     {
         // Act:
         Result patchAuthorBooksCommandHandlerResult = await _patchAuthorBooksCommandHandler.HandleAsync(

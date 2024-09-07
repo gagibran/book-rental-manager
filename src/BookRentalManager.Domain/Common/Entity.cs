@@ -21,7 +21,6 @@ public abstract class Entity : IEquatable<Entity>
         return Id == otherEntity.Id;
     }
 
-
     public static bool operator ==(Entity left, Entity right)
     {
         if (left is null && right is null)

@@ -1,50 +1,39 @@
 namespace BookRentalManager.Application.Authors.QueryHandlers;
 
-internal sealed class GetAuthorsByQueryParametersQueryHandler
+internal sealed class GetAuthorsByQueryParametersQueryHandler(
+    IRepository<Author> authorRepository,
+    ISortParametersMapper sortParametersMapper)
     : IRequestHandler<GetAuthorsByQueryParametersQuery, PaginatedList<GetAuthorDto>>
 {
-    private readonly IRepository<Author> _authorRepository;
-    private readonly IMapper<Author, GetAuthorDto> _authorToGetAuthorDtoMapper;
-    private readonly IMapper<AuthorSortParameters, Result<string>> _authorSortParametersMapper;
-
-    public GetAuthorsByQueryParametersQueryHandler(
-        IRepository<Author> authorRepository,
-        IMapper<Author, GetAuthorDto> authorToGetAuthorDtoMapper,
-        IMapper<AuthorSortParameters, Result<string>> authorSortParametersMapper)
-    {
-        _authorRepository = authorRepository;
-        _authorToGetAuthorDtoMapper = authorToGetAuthorDtoMapper;
-        _authorSortParametersMapper = authorSortParametersMapper;
-    }
-
     public async Task<Result<PaginatedList<GetAuthorDto>>> HandleAsync(
         GetAuthorsByQueryParametersQuery getAuthorsByQueryParametersQuery,
         CancellationToken cancellationToken)
     {
-        Result<string> convertedSorParametersResult = _authorSortParametersMapper.Map(
-            new AuthorSortParameters(getAuthorsByQueryParametersQuery.SortParameters));
-        if (!convertedSorParametersResult.IsSuccess)
+        Result<string> convertedSortParametersResult = sortParametersMapper.MapAuthorSortParameters(
+            getAuthorsByQueryParametersQuery.SortParameters);
+        if (!convertedSortParametersResult.IsSuccess)
         {
             return Result.Fail<PaginatedList<GetAuthorDto>>(
-                convertedSorParametersResult.ErrorType,
-                convertedSorParametersResult.ErrorMessage);
+                convertedSortParametersResult.ErrorType,
+                convertedSortParametersResult.ErrorMessage);
         }
         var authorsBySearchParameterWithBooksSpecification = new AuthorsBySearchParameterWithBooksSpecification(
             getAuthorsByQueryParametersQuery.SearchParameter,
-            convertedSorParametersResult.Value!);
-        PaginatedList<Author> authors = await _authorRepository.GetAllBySpecificationAsync(
+            convertedSortParametersResult.Value!);
+        PaginatedList<Author> authors = await authorRepository.GetAllBySpecificationAsync(
             getAuthorsByQueryParametersQuery.PageIndex,
             getAuthorsByQueryParametersQuery.PageSize,
             authorsBySearchParameterWithBooksSpecification,
             cancellationToken);
-        List<GetAuthorDto> getAuthorDtos = (from author in authors
-                                            select _authorToGetAuthorDtoMapper.Map(author)).ToList();
+        List<GetAuthorDto> getAuthorDtos = authors
+            .Select(author => new GetAuthorDto(author))
+            .ToList();
         var paginatedGetAuthorDtos = new PaginatedList<GetAuthorDto>(
             getAuthorDtos,
             authors.TotalAmountOfItems,
             authors.TotalAmountOfPages,
             authors.PageIndex,
             authors.PageSize);
-        return Result.Success<PaginatedList<GetAuthorDto>>(paginatedGetAuthorDtos);
+        return Result.Success(paginatedGetAuthorDtos);
     }
 }

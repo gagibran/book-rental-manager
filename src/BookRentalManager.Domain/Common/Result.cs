@@ -1,10 +1,16 @@
 namespace BookRentalManager.Domain.Common;
 
-public class Result
+public partial class Result
 {
     public bool IsSuccess { get; }
     public string ErrorType { get; }
     public string ErrorMessage { get; }
+
+    [GeneratedRegex("\\|+$")]
+    private static partial Regex FinalErrorTypeRegex();
+
+    [GeneratedRegex("\\.\\|+$")]
+    private static partial Regex FinalErrorMessage();
 
     protected Result(bool isSuccess, string errorType, string errorMessage)
     {
@@ -49,9 +55,9 @@ public class Result
                 finalErrorMessage += result.ErrorMessage + "|";
             }
         }
-        finalErrorType = Regex.Replace(finalErrorType, @"\|+$", "");
-        finalErrorMessage = Regex.Replace(finalErrorMessage, @"\.\|+$", ".");
-        var isSuccess = string.IsNullOrWhiteSpace(finalErrorMessage) ? true : false;
+        finalErrorType = FinalErrorTypeRegex().Replace(finalErrorType, "");
+        finalErrorMessage = FinalErrorMessage().Replace(finalErrorMessage, ".");
+        var isSuccess = string.IsNullOrWhiteSpace(finalErrorMessage);
         return new Result(isSuccess, finalErrorType, finalErrorMessage);
     }
 }

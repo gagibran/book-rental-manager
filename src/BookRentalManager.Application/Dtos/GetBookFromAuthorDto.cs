@@ -1,15 +1,12 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetBookFromAuthorDto
+[method: JsonConstructor]
+public sealed record GetBookFromAuthorDto(string BookTitle, int Edition, string Isbn)
 {
-    public string BookTitle { get; }
-    public int Edition { get; }
-    public string Isbn { get; }
-
-    public GetBookFromAuthorDto(string bookTitle, Edition edition, Isbn isbn)
+    public GetBookFromAuthorDto(Book book) : this(
+        book.BookTitle.Title,
+        book.Edition.EditionNumber,
+        book.Isbn.ToString())
     {
-        BookTitle = bookTitle;
-        Edition = edition.EditionNumber;
-        Isbn = isbn.IsbnValue;
     }
 }

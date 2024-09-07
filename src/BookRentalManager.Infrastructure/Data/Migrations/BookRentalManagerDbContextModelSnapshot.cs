@@ -17,7 +17,7 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -59,11 +59,6 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("BookTitle")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("BookTitle");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -156,6 +151,24 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                         .WithMany("Books")
                         .HasForeignKey("CustomerId");
 
+                    b.OwnsOne("BookRentalManager.Domain.ValueObjects.BookTitle", "BookTitle", b1 =>
+                        {
+                            b1.Property<Guid>("BookId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Title")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("BookTitle");
+
+                            b1.HasKey("BookId");
+
+                            b1.ToTable("Book");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookId");
+                        });
+
                     b.OwnsOne("BookRentalManager.Domain.ValueObjects.Edition", "Edition", b1 =>
                         {
                             b1.Property<Guid>("BookId")
@@ -191,6 +204,9 @@ namespace BookRentalManager.Infrastructure.Data.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("BookId");
                         });
+
+                    b.Navigation("BookTitle")
+                        .IsRequired();
 
                     b.Navigation("Customer");
 

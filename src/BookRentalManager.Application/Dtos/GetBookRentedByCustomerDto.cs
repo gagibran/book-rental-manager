@@ -1,19 +1,19 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetBookRentedByCustomerDto
+[method: JsonConstructor]
+public sealed record GetBookRentedByCustomerDto(
+    string BookTitle,
+    int Edition,
+    string Isbn,
+    DateTime RentedAt,
+    DateTime DueDate)
 {
-    public string BookTitle { get; }
-    public int Edition { get; }
-    public string Isbn { get; }
-    public DateTime RentedAt { get; }
-    public DateTime DueDate { get; }
-
-    public GetBookRentedByCustomerDto(string bookTitle, Edition edition, Isbn isbn, DateTime rentedAt, DateTime dueDate)
+    public GetBookRentedByCustomerDto(Book book) : this(
+        book.BookTitle.Title,
+        book.Edition.EditionNumber,
+        book.Isbn.ToString(),
+        book.RentedAt!.Value,
+        book.DueDate!.Value)
     {
-        BookTitle = bookTitle;
-        Edition = edition.EditionNumber;
-        Isbn = isbn.IsbnValue;
-        RentedAt = rentedAt;
-        DueDate = dueDate;
     }
 }

@@ -21,7 +21,7 @@ public sealed class Edition : ValueObject
             return Result.Fail<Edition>("editionNumber", "The edition number can't be smaller than 1.");
         }
         var edition = new Edition(editionNumber);
-        return Result.Success<Edition>(edition);
+        return Result.Success(edition);
     }
 
     public override IEnumerable<object> GetEqualityComponents()

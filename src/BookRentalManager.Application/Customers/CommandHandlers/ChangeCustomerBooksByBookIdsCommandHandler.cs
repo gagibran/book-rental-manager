@@ -1,36 +1,29 @@
 namespace BookRentalManager.Application.Customers.CommandHandlers;
 
-internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandler<ChangeCustomerBooksByBookIdsCommand>
+internal sealed class ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Customer> customerRepository, IRepository<Book> bookRepository)
+    : IRequestHandler<ChangeCustomerBooksByBookIdsCommand>
 {
-    private readonly IRepository<Customer> _customerRepository;
-    private readonly IRepository<Book> _bookRepository;
-
-    public ChangeCustomerBooksByBookIdsCommandHandler(IRepository<Customer> customerRepository, IRepository<Book> bookRepository)
-    {
-        _customerRepository = customerRepository;
-        _bookRepository = bookRepository;
-    }
-
     public async Task<Result> HandleAsync(
         ChangeCustomerBooksByBookIdsCommand changeCustomerBooksByBookIdsCommand,
         CancellationToken cancellationToken)
     {
         var customerByIdWithBooksSpecification = new CustomerByIdWithBooksSpecification(changeCustomerBooksByBookIdsCommand.Id);
-        Customer? customer = await _customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
+        Customer? customer = await customerRepository.GetFirstOrDefaultBySpecificationAsync(customerByIdWithBooksSpecification, cancellationToken);
         if (customer is null)
         {
-            return Result.Fail("customerId", $"No customer with the ID of '{changeCustomerBooksByBookIdsCommand.Id}' was found.");
+            return Result.Fail(RequestErrors.IdNotFoundError, $"No customer with the ID of '{changeCustomerBooksByBookIdsCommand.Id}' was found.");
         }
-        var changeCustomerBooksByBookIdsDto = new ChangeCustomerBooksByBookIdsDto(new List<Guid>());
+        var changeCustomerBooksByBookIdsDto = new ChangeCustomerBooksByBookIdsDto([]);
         Result patchAppliedResult = changeCustomerBooksByBookIdsCommand.ChangeCustomerBooksByBookIdsDtoPatchDocument.ApplyTo(
             changeCustomerBooksByBookIdsDto,
-            new string[] { "replace", "remove" });
+            ["replace", "remove"]);
         if (!patchAppliedResult.IsSuccess)
         {
             return patchAppliedResult;
         }
-        IReadOnlyList<Book> books = await _bookRepository.GetAllBySpecificationAsync(new BooksByIdsSpecification(changeCustomerBooksByBookIdsDto.BookIds));
-        if (books.Count() != changeCustomerBooksByBookIdsDto.BookIds.Count())
+        IEnumerable<Guid> distinctBookIds = changeCustomerBooksByBookIdsDto.BookIds.Distinct();
+        IReadOnlyList<Book> books = await bookRepository.GetAllBySpecificationAsync(new BooksByIdsSpecification(distinctBookIds), cancellationToken);
+        if (books.Count != distinctBookIds.Count())
         {
             return Result.Fail("bookIds", "Could not find some of the books for the provided IDs.");
         }
@@ -40,17 +33,15 @@ internal sealed class ChangeCustomerBooksByBookIdsCommandHandler : IRequestHandl
             if (changeCustomerBooksByBookIdsCommand.IsReturn)
             {
                 returnBookResults = Result.Combine(returnBookResults, customer.ReturnBook(book));
+                continue;
             }
-            else
-            {
-                returnBookResults = Result.Combine(returnBookResults, customer.RentBook(book));
-            }
+            returnBookResults = Result.Combine(returnBookResults, customer.RentBook(book));
         }
         if (!returnBookResults.IsSuccess)
         {
             return returnBookResults;
         }
-        await _customerRepository.UpdateAsync(customer);
+        await customerRepository.UpdateAsync(customer, cancellationToken);
         return Result.Success();
     }
 }

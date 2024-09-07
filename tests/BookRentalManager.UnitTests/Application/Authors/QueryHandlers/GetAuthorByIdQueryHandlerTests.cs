@@ -3,7 +3,6 @@ namespace BookRentalManager.UnitTests.Application.Authors.QueryHandlers;
 public sealed class GetAuthorByIdQueryHandlerTests
 {
     private readonly Mock<IRepository<Author>> _authorRepositoryStub;
-    private readonly Mock<IMapper<Author, GetAuthorDto>> _authorToGetAuthorDtoMapperStub;
     private readonly GetAuthorByIdQueryHandler _getAuthorByIdQueryHandler;
     private readonly Author _author;
     private readonly GetAuthorDto _getAuthorDto;
@@ -13,16 +12,10 @@ public sealed class GetAuthorByIdQueryHandlerTests
         _author = TestFixtures.CreateDummyAuthor();
         _getAuthorDto = new(
             _author.Id,
-            _author.FullName,
-            new List<GetBookFromAuthorDto>());
-        _authorToGetAuthorDtoMapperStub = new();
+            _author.FullName.ToString(),
+            []);
         _authorRepositoryStub = new();
-        _getAuthorByIdQueryHandler = new(
-            _authorRepositoryStub.Object,
-            _authorToGetAuthorDtoMapperStub.Object);
-        _authorToGetAuthorDtoMapperStub
-            .Setup(authorToGetAuthorDtoMapper => authorToGetAuthorDtoMapper.Map(It.IsAny<Author>()))
-            .Returns(_getAuthorDto);
+        _getAuthorByIdQueryHandler = new(_authorRepositoryStub.Object);
     }
 
     [Fact]
@@ -61,6 +54,7 @@ public sealed class GetAuthorByIdQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
     }
 }

@@ -1,31 +1,26 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class CustomerCreatedDto : IdentifiableDto
+[method: JsonConstructor]
+public sealed record CustomerCreatedDto(
+    Guid Id,
+    string FirstName,
+    string LastName,
+    string Email,
+    int AreaCode,
+    int PrefixAndLineNumber,
+    string CustomerStatus,
+    int CustomerPoints)
+    : IdentifiableDto(Id)
 {
-    public string FirstName { get; }
-    public string LastName { get; }
-    public string Email { get; }
-    public int AreaCode { get; }
-    public int PrefixAndLineNumber { get; }
-    public string CustomerStatus { get; }
-    public int CustomerPoints { get; }
-
-    public CustomerCreatedDto(
-        Guid id,
-        string firstName,
-        string lastName,
-        string email,
-        int areaCode,
-        int prefixAndLineNumber,
-        string customerStatus,
-        int customerPoints) : base(id)
+    public CustomerCreatedDto(Customer customer) : this(
+        customer.Id,
+        customer.FullName.FirstName,
+        customer.FullName.LastName,
+        customer.Email.ToString(),
+        customer.PhoneNumber.AreaCode,
+        customer.PhoneNumber.PrefixAndLineNumber,
+        customer.CustomerStatus.CustomerType.ToString(),
+        customer.CustomerPoints)
     {
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
-        AreaCode = areaCode;
-        PrefixAndLineNumber = prefixAndLineNumber;
-        CustomerStatus = customerStatus;
-        CustomerPoints = customerPoints;
     }
 }

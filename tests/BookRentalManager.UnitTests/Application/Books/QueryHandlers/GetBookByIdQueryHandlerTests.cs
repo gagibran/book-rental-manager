@@ -6,7 +6,6 @@ public sealed class GetBookByIdQueryHandlerTests
     private readonly GetBookDto _getBookDto;
     private readonly GetBookByIdQuery _getBookByIdQuery;
     private readonly Mock<IRepository<Book>> _bookRepositoryStub;
-    private readonly Mock<IMapper<Book, GetBookDto>> _bookToGetBookDtoMapperStub;
     private readonly GetBookByIdQueryHandler _getBookByIdQueryHandler;
 
     public GetBookByIdQueryHandlerTests()
@@ -14,22 +13,16 @@ public sealed class GetBookByIdQueryHandlerTests
         _book = TestFixtures.CreateDummyBook();
         _getBookDto = new(
             _book.Id,
-            _book.BookTitle,
-            new List<GetAuthorFromBookDto>(),
-            _book.Edition,
-            _book.Isbn,
+            _book.BookTitle.Title,
+            [],
+            _book.Edition.EditionNumber,
+            _book.Isbn.ToString(),
             _book.RentedAt,
             _book.DueDate,
-            new GetCustomerThatRentedBookDto());
+            null);
         _getBookByIdQuery = new GetBookByIdQuery(_book.Id);
-        _bookToGetBookDtoMapperStub = new();
         _bookRepositoryStub = new();
-        _getBookByIdQueryHandler = new(
-            _bookRepositoryStub.Object,
-            _bookToGetBookDtoMapperStub.Object);
-        _bookToGetBookDtoMapperStub
-            .Setup(bookToGetBookDtoMapper => bookToGetBookDtoMapper.Map(It.IsAny<Book>()))
-            .Returns(_getBookDto);
+        _getBookByIdQueryHandler = new(_bookRepositoryStub.Object);
     }
 
     [Fact]
@@ -49,6 +42,7 @@ public sealed class GetBookByIdQueryHandlerTests
             It.IsAny<CancellationToken>());
 
         // Assert:
+        Assert.Equal("idNotFound", handlerResult.ErrorType);
         Assert.Equal(expectedErrorMessage, handlerResult.ErrorMessage);
     }
 

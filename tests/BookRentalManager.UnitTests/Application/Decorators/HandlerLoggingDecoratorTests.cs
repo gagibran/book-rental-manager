@@ -73,7 +73,7 @@ public sealed class HandlerLoggingDecoratorTests
             .Setup(requestHandlerWithResult => requestHandlerWithResult.HandleAsync(
                 It.IsAny<IRequest<int>>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success<int>(0));
+            .ReturnsAsync(Result.Success(0));
 
         // Act:
         await _handlerLoggingWithResultDecorator.HandleAsync(It.IsAny<IRequest<int>>(), It.IsAny<CancellationToken>());

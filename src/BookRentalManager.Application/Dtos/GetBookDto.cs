@@ -1,32 +1,28 @@
 namespace BookRentalManager.Application.Dtos;
 
-public sealed class GetBookDto : IdentifiableDto
+[method: JsonConstructor]
+public sealed record GetBookDto(
+    Guid Id,
+    string BookTitle,
+    IReadOnlyList<GetAuthorFromBookDto> Authors,
+    int Edition,
+    string Isbn,
+    DateTime? RentedAt,
+    DateTime? DueDate,
+    GetCustomerThatRentedBookDto? RentedBy)
+    : IdentifiableDto(Id)
 {
-    public string BookTitle { get; }
-    public IReadOnlyList<GetAuthorFromBookDto> Authors { get; }
-    public int Edition { get; }
-    public string Isbn { get; }
-    public DateTime? RentedAt { get; internal set; }
-    public DateTime? DueDate { get; internal set; }
-    public GetCustomerThatRentedBookDto RentedBy { get; }
-
-    public GetBookDto(
-        Guid id,
-        string bookTitle,
-        IReadOnlyList<GetAuthorFromBookDto> authors,
-        Edition edition,
-        Isbn isbn,
-        DateTime? rentedAt,
-        DateTime? dueDate,
-        GetCustomerThatRentedBookDto rentedBy)
-        : base(id)
+    public GetBookDto(Book book) : this(
+        book.Id,
+        book.BookTitle.Title,
+        book.Authors.Select(author => new GetAuthorFromBookDto(author)).ToList().AsReadOnly(),
+        book.Edition.EditionNumber,
+        book.Isbn.ToString(),
+        book.RentedAt,
+        book.DueDate,
+        book.Customer is not null
+            ? new GetCustomerThatRentedBookDto(book.Customer.FullName.ToString(), book.Customer.Email.ToString())
+            : null)
     {
-        BookTitle = bookTitle;
-        Authors = authors;
-        Edition = edition.EditionNumber;
-        Isbn = isbn.IsbnValue;
-        RentedAt = rentedAt;
-        DueDate = dueDate;
-        RentedBy = rentedBy;
     }
 }
